@@ -1,0 +1,54 @@
+---
+title: "Parte 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+
+cursos = read.csv("../../alunosUFCGAnon.csv")
+
+cursos_mediana = aggregate(cursos$Media_Disciplina, list(cursos$Cod_Curso, cursos$Nome_Curso), FUN = median, na.rm=TRUE)
+
+cursos_mediana$Group.2 <- factor(cursos_mediana$Group.2, levels =cursos_mediana$Group.2[order(cursos_mediana$x)])
+
+cursos_mediana = cursos_mediana[ order( cursos_mediana$x),]
+
+
+ggplot(cursos_mediana[1:4,], aes( y = x, x = reorder(Group.2, -x))) + geom_bar(stat="identity", fill = "darkred") +  geom_text(aes(label=x),size = 3) + coord_flip() 
+
+```
+
+```{r}
+ccc_medias = subset(cursos, Cod_Curso == 14102100)
+
+ggplot(ccc_medias, aes(factor(Periodo), Media_Disciplina )) + geom_boxplot()
+
+ccc_medias = aggregate(ccc_medias$Media_Disciplina, list(ccc_medias$Periodo), FUN = mean, na.rm=TRUE)
+ggplot(ccc_medias, aes( y = x, x = reorder(Group.1, -x))) + geom_bar(stat="identity", fill = "darkred") +  geom_text(aes(label=x),size = 3) + coord_flip() 
+```
+
+```{r}
+library(dplyr)
+
+discreta = subset(cursos, Cod_Disciplina == 1109113) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina)
+calculo = subset(cursos, Cod_Disciplina == 1109103) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina)
+
+disc = subset(discreta, select = c("Matricula", "Media_Disciplina"))
+calc = subset(calculo, select = c("Matricula", "Media_Disciplina"))
+
+disc.calc = merge(calc,disc, by.x = "Matricula", by.y = "Matricula")
+
+disc.calc = na.omit(disc.calc)
+
+ggplot(disc.calc, aes(Media_Disciplina.x, Media_Disciplina.y)) + geom_point(alpha = 0.5, color = "darkgreen")
+
+cor(disc.calc$Media_Disciplina.x, disc.calc$Media_Disciplina.y)
+
+
+
+```
