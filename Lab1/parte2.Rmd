@@ -40,13 +40,13 @@ Para cada curso, foi calculada a mediana sobre todas as médias de disciplinas d
 
 ```{r warning=FALSE}
 cursos = cursos[!is.na(cursos$Media_Disciplina),]
-cursos_mediana = aggregate(cursos$Media_Disciplina, list(cursos$Cod_Curso, cursos$Nome_Curso), FUN = median)
+cursos_mediana = aggregate(cursos$Media_Disciplina, list(cursos$Cod_Curso, cursos$Nome_Curso, cursos$Campus), FUN = median)
 
 cursos_mediana = cursos_mediana[ order( cursos_mediana$x),]
 
-ggplot(cursos_mediana[1:4,], aes( y = x, x = reorder(Group.2, -x))) + geom_bar(stat="identity", color = "#2171b5", fill = "#c6dbef") +  geom_text(aes(label=x),size = 4) + coord_flip() + labs(title = "Cursos com piores notas", x = "Curso", y = "Mediana")
+ggplot(cursos_mediana[1:10,], aes( y = x, x = reorder(Group.2, -x), fill=factor(Group.3))) + geom_bar(position="dodge", stat="identity") +  geom_text(aes(label=x),size = 4) + coord_flip() + labs(title = "Cursos com piores notas", x = "Curso", y = "Mediana", fill = "Campus")
 
-ggplot(cursos_mediana[92:95,], aes( y = x, x = reorder(Group.2, -x))) + geom_bar(stat="identity", color = "#2171b5", fill = "#c6dbef") +  geom_text(aes(label=x),size = 4) + coord_flip()  + labs(title = "Cursos com melhores notas", x = "Curso", y = "Mediana")
+ggplot(cursos_mediana[86:95,], aes( y = x, x = reorder(Group.2, -x),, fill=factor(Group.3))) + geom_bar(stat="identity", position="dodge") +  geom_text(aes(label=x),size = 4) + coord_flip()  + labs(title = "Cursos com melhores notas", x = "Curso", y = "Mediana", fill = "Campus")
 ```
 
 Segundo os gráficos acima, podemos concluir que, com mediana igual a 0.7, o curso **FÍSICA (LIC) - D** é considerado aquele com piores notas, enquanto **DIREITO - M**,  com mediana igual a 8.6, é considerado aquele com melhores notas. O curso de Física pertence ao campus **1** e o de direito ao campus **3**.

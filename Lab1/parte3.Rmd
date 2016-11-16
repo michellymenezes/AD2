@@ -1,0 +1,80 @@
+---
+title: "Lab 1 - Parte 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(corrplot)
+library(plyr)
+library(RColorBrewer)
+```
+
+## Apresentação dos dados
+
+Este documento faz uma análise descritiva e responde algumas perguntas sobre dados referentes a disciplinas da Universidade Federal de Campina Grande (UFCG). Em nosso data frame os dados correspondem aos períodos 2002.1 - 2014.1 em que cada linha representa uma disciplina cursada por um aluno. As principais variáveis que podemos destacar são:
+
+* *Matricula*: Não a original, mas capaz de identificar cada aluno diferente
+* *Cod_Curso*: Código para identificar cursos diferentes. Cursos com o mesmo nome, mas em campi diferentes são considerados distintos.
+* *Nome_Curso*: Nome do curso.
+* *Cod_Disciplina*: Código para identificar cada disciplina.
+* *Nome_Disciplina*: Nome da disciplina
+* *Periodo_Relativo*: Período relativo ao qual o aluno ingressou no curso.
+* *Media_Disciplina*: Média atinginda pelo aluno ao final do período.
+* *Tipo*: Tipo de disciplina que pode ser Optativa ou Obrigatória
+* *Creditos*: Quantidade de créditos de uma disciplina, diretamente ligado a carga-horário da mesma.
+* *Situacao*: Situação com relação a disciplina que pode ser Aprovado, Reprovado, Reprovado por Falta ou Trancado.
+
+Para esta análise especificamente estaremos respondendo perguntas relacionadas ao curso de Ciêncai da Computação. Das três perguntas apresentadas no tópico a seguir, escolheremos duas para serem respondidas com base na análise dos dados.
+
+## Perguntas
+
+#### 1 - Como estão caracterizadas as disciplinas cursadas em que os alunos tracaram ou não obtiveram aprovação?
+
+**Provavelmente **
+
+#### 2 - Há correlação entre as notas de disciplinas de laboratório/projeto no curso de Ciência da Computação?
+
+**Disciplinas **
+
+#### 3 - Como se comportam os dados relacionados a notas de disciplinas obrigatórias e optativas?
+
+**d**
+```{r warning=FALSE }
+cursos = read.csv("../../alunosUFCGAnon.csv")
+```
+
+```{r fig.width=10, fig.width=5}
+notas.cc = subset(cursos, Cod_Curso == 14102100)
+
+repr.cc = subset(notas.cc, Situacao == "Reprovado" | Situacao == "Reprovado por Falta" | Situacao == "Trancado")
+
+ggplot(repr.cc, aes( Situacao, Periodo_Relativo, colour = Tipo)) + geom_boxplot() + facet_grid(Creditos ~ Tipo) + coord_flip()
+
+#ggplot(repr.cc, aes( Situacao, Periodo_Relativo, colour = Tipo)) + geom_point(position = position_jitter(width = .4, height = 0.4), alpha = 0.2) + facet_grid(Creditos ~ Tipo) + coord_flip() 
+
+```
+
+
+```{r}
+# lab.cc = subset(notas.cc, Cod_Disciplina == 1411180 | Cod_Disciplina == 1411181 | Cod_Disciplina == 1411179 | Cod_Disciplina == 1411183 | Cod_Disciplina == 1411182 | Cod_Disciplina == 1411184 | Cod_Disciplina == 1411185 | Cod_Disciplina == 1411178)
+
+notas.cc = notas.cc[!is.na(notas.cc$Media_Disciplina),]
+
+lp1 = subset(notas.cc, Cod_Disciplina == 1411180) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="lp1"))
+lp2 = subset(notas.cc, Cod_Disciplina == 1411181) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="lp2"))
+leda = subset(notas.cc, Cod_Disciplina == 1411179) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="leda"))
+les = subset(notas.cc, Cod_Disciplina == 1411183) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="les"))
+loac = subset(notas.cc, Cod_Disciplina == 1411182) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="loac"))
+lirc = subset(notas.cc, Cod_Disciplina == 1411184) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="lirc"))
+p1 = subset(notas.cc, Cod_Disciplina == 1411185) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="p1"))
+si1 = subset(notas.cc, Cod_Disciplina == 1411178) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="si1"))
+
+corr.labs = merge(lp1,lp2, by.x = "Matricula", by.y = "Matricula") %>% merge(leda, by.x = "Matricula", by.y = "Matricula") %>% merge(les, by.x = "Matricula", by.y = "Matricula") %>% merge(loac, by.x = "Matricula", by.y = "Matricula") %>% merge(lirc, by.x = "Matricula", by.y = "Matricula") %>% merge(p1, by.x = "Matricula", by.y = "Matricula")  %>% merge(si1, by.x = "Matricula", by.y = "Matricula") 
+
+M = cor(corr.labs[,2:9])
+corrplot(M, type="upper", order="hclust", col=brewer.pal(n=6, name="PuOr"), addCoef.col = "black", tl.col="black", tl.srt=45, )
+
+```
