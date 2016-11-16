@@ -36,7 +36,7 @@ summary(cursos)
 
 Existem duas maneiras principais e diretas de avaliar quais são os cursos com melhores e piores notas, pelo cáclculo de média ou mediana. Devido a quantidade muito variada de alunos em cada curso, escolhemos responder esta pergunta utilizando a mediana, dessa forma o valor não será afetado por outliers.
 
-Para cada curso, foi calculada a mediana sobre todas as médias de disciplinas dos alunos, desconsiderando valores vazios. Abaixo temos dois gráficos que, de maneira ordenada, exibe os quatro melhores e piores piores cursos com relação a médias em disciplinas. 
+Para cada curso, foi calculada a mediana sobre todas as médias de disciplinas dos alunos, desconsiderando valores vazios. Abaixo temos dois gráficos que, de maneira ordenada, exibe os dez melhores e piores cursos com relação a médias em disciplinas. 
 
 ```{r warning=FALSE}
 cursos = cursos[!is.na(cursos$Media_Disciplina),]
@@ -95,10 +95,10 @@ calc = subset(calculo, select = c("Matricula", "Media_Disciplina"))
 
 disc.calc = merge(calc,disc, by.x = "Matricula", by.y = "Matricula")
 
-ggplot(disc.calc, aes(Media_Disciplina.x, Media_Disciplina.y)) + geom_point(alpha = 0.5, color = "#7a0177") + labs(title = "Relação de notas Cálculo I x Matemática Discreta", x = "Notas de Cálculo I", y = "Notas de Matemática Discreta")
+ggplot(disc.calc, aes(Media_Disciplina.x, Media_Disciplina.y)) + geom_point(alpha = 0.5, color = "#7a0177") + labs(title = "Relação de notas Cálculo I x Matemática Discreta", x = "Notas de Cálculo I", y = "Notas de Matemática Discreta") + geom_smooth(method = lm)
 ```
 
-Apesar de um pouco disperso, no gráfico acima os pontos se desenham de maneira em é possóvel observar uma tendência. Desconsiderando outliers, vemos que a dendência é de que as notas de ambas as disciplinas geralmente crescem juntas. Esse é um indicativo de que há correlação entre as duas variáveis. Abaixo temos o valor da correlação calculado:
+Apesar de um pouco disperso, no gráfico acima os pontos se desenham de maneira em é possível observar uma tendência. Desconsiderando outliers, vemos que a dendência é de que as notas de ambas as disciplinas geralmente crescem juntas. Esse é um indicativo de que há correlação entre as duas variáveis. Abaixo temos o valor da correlação calculado:
 
 ```{r warning=FALSE}
 cor(disc.calc$Media_Disciplina.x, disc.calc$Media_Disciplina.y)

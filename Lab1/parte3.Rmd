@@ -35,7 +35,7 @@ cursos = read.csv("../../alunosUFCGAnon.csv")
 
 ## Perguntas
 
-#### 1 - Como estão caracterizadas as disciplinas cursadas em que os alunos tracaram ou não obtiveram aprovação?
+#### 1 - Como estão caracterizadas as disciplinas cursadas em que os alunos trancaram ou não obtiveram aprovação?
 
 *Provavelmente, reprovações são mais frequentes em disciplinas de 4 créditos por serem de maior quantidade e exigirem mais dedicação dos alunos. Reprovações também devem estar concentradas nos primeiros períodos de curso, já que existem alunos que ainda não conseguem conciliar bem as disciplinas ou ainda não se decidiram sobre permanecer no curso.*
 
@@ -79,7 +79,7 @@ ggplot(repr.cc, aes( Situacao, Periodo_Relativo, colour = Tipo)) + geom_point(po
 
 #### 2 - Há correlação entre as notas de disciplinas de laboratório/projeto no curso de Ciência da Computação? Se sim, como ela se comporta?
 
-Para esta análise consideramos disciplinas de laboratório ou aquelas em que parte da avaliação é referente a uma atividade prática como um projeto. Apesar de, pelo senso comum, algumas disciplinas de laboratório se diferenciarem por não apresentar conteúdo relacionado com boa parte das outras disciplinas, resolvemos incluí-las na análise por curiosidade. Foram considerados apenas alunos que cursaram pelo menos uma vez cada uma das disciplinas incluídas na análise. Utilizamos um gráfico para ilustrar a correlação de cada disciplina em pares. Abaixo você pode ver o significado de cada sigla presente na visualização.
+Para esta análise consideramos disciplinas de laboratório ou aquelas em que parte da avaliação é referente a uma atividade prática como um projeto. Apesar de, pelo senso comum, algumas disciplinas de laboratório se diferenciarem por não apresentar conteúdo relacionado com boa parte das outras disciplinas, resolvemos incluí-las na análise por curiosidade. Foram considerados apenas alunos que cursaram pelo menos uma vez cada uma das disciplinas incluídas na análise. Nos casos em que o aluno tem mais de uma nota para a mesma disciplina, é considerada a maior nota. Utilizamos um gráfico para ilustrar a correlação de cada disciplina em pares. Abaixo você pode ver o significado de cada sigla presente na visualização.
 
 * *leda*: Laboratório de Estrutuda de Dados - Período 3
 * *si1*: Sistemas de Informação 1 - Período 4
