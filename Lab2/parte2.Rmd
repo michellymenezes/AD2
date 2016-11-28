@@ -24,12 +24,25 @@ graduados = read.csv("graduados_disciplinas.csv")
 
 graduados = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
 
-graduados1 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "cra")]
+graduados1 = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "cra")]
 
-graduados2 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
+graduados2 = graduados[, c("Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
 
-ggpairs(graduados1[,2:8], upper = list(continuous = wrap("cor", size = 10)))
-ggpairs(graduados2[,2:8], upper = list(continuous = wrap("cor", size = 10))) 
+ggpairs(graduados1, upper = list(continuous = wrap("cor", size = 10)))
+ggpairs(graduados2, upper = list(continuous = wrap("cor", size = 10))) 
+
+
+
+my_fn <- function(data){
+  p <- ggplot(data = data) + 
+    geom_point() + 
+    geom_smooth(method=lm, fill="blue", color="blue")
+  p
+}
+
+ggpairs(graduados, lower = list(continuous = "smooth"))
+
+
 ```
 ```{r, fig.width=18, fig.height=10}
 # ggcorr(graduados1[, 2:8], geom = "circle", nbreaks = 5)
