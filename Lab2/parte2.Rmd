@@ -1,0 +1,71 @@
+---
+title: "Lab 2 - Parte 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(GGally)
+```
+## Apresentação dos dados
+
+Nesse laboratório utilizamos dados referentes aos alunos que já concluíram o curso de Ciência da Computação - UFCG. Nele se encontram, de cada aluno, todas as médias finais obtidas em cada disciplina (5-10), assim como o coeficiente de rendimento acadêmico (cra, ~4-10).
+
+Queremos realizar análises de regressão utilizando as disciplinas dos dois primeiros períodos e cra na tentativa de responder a seguinte pergunta:
+
+  ***O desempenho dos alunos nos dois primeiros períodos consegue explicar, em algum grau, seus desempenhos no curso como um todo?***
+
+Para isso, contruiremos dois modelos de regressão, um para com disciplinas do primeiro período e outro com disciplinas do segundo. Ao longo desse documento iremos responder perguntas a respeito dos modelos e realizar comparações entre eles. Logo abaixo um breve resumo de como de distribuem as variáveis quando relacionas e seus respectivos coeficientes de correlação.
+
+
+```{r, warning=FALSE, fig.width=22, fig.height=18}
+graduados = read.csv("graduados_disciplinas.csv")
+
+graduados1 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "cra")]
+
+graduados2 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
+
+ggpairs(graduados1[,2:8], upper = list(continuous = wrap("cor", size = 10)))
+ggpairs(graduados2[,2:8], upper = list(continuous = wrap("cor", size = 10))) 
+```
+```{r, fig.width=18, fig.height=10}
+# ggcorr(graduados1[, 2:8], geom = "circle", nbreaks = 5)
+# ggcorr(graduados1[, 2:8], nbreaks = 5,  label = TRUE, label_size = 3, label_round = 2, label_alpha = TRUE)
+
+```
+### Um modelo de regressão múltipla com todas as variáveis é plausível para explicar a variação em y? Em que grau?
+```{r}
+graduados1 = na.omit(graduados1)
+graduados2 = na.omit(graduados2)
+
+rl1 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.I + graduados$Álgebra.Vetorial.e.Geometria.Analítica + graduados$Leitura.e.Produção.de.Textos + graduados$Programação.I + graduados$Laboratório.de.Programação.I + graduados$Introdução.à.Computação)
+
+rl2 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.II + graduados$Matemática.Discreta + graduados$Programação.II + graduados$Laboratório.de.Programação.II + graduados$Teoria.dos.Grafos + graduados$Fundamentos.de.Física.Clássica)
+
+summary(rl1)
+summary(rl2)
+```
+### Todas as variáveis são úteis para o modelo de regressão?
+
+### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
+```{r}
+graduados1 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Introdução.à.Computação", "cra")]
+
+graduados2 = graduados[, c("matricula", "Matemática.Discreta", "Programação.II", "Teoria.dos.Grafos", "cra")]
+
+graduados1 = na.omit(graduados1)
+graduados2 = na.omit(graduados2)
+
+rl1 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.I + graduados$Álgebra.Vetorial.e.Geometria.Analítica + graduados$Leitura.e.Produção.de.Textos + graduados$Introdução.à.Computação)
+
+rl2 = lm(graduados$cra ~ graduados$Matemática.Discreta + graduados$Programação.II + graduados$Teoria.dos.Grafos)
+
+summary(rl1)
+summary(rl2)
+
+```
+### Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.
+
+### Que período consegue explicar melhor o desempenho final (primeiro ou segundo)?
+
+### Use o modelo para predizer o seu próprio desempenho e compare a predição com o seu CRA atual. Comente o resultado.
