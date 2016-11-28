@@ -6,6 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(GGally)
+library(ggplot2)
 ```
 ## Apresentação dos dados
 
@@ -20,6 +21,8 @@ Para isso, contruiremos dois modelos de regressão, um para com disciplinas do p
 
 ```{r, warning=FALSE, fig.width=22, fig.height=18}
 graduados = read.csv("graduados_disciplinas.csv")
+
+graduados = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
 
 graduados1 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "cra")]
 
@@ -42,26 +45,40 @@ rl1 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.I + graduados
 
 rl2 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.II + graduados$Matemática.Discreta + graduados$Programação.II + graduados$Laboratório.de.Programação.II + graduados$Teoria.dos.Grafos + graduados$Fundamentos.de.Física.Clássica)
 
+rl3 = lm(cra ~ ., data = graduados)
+
+
 summary(rl1)
 summary(rl2)
+summary(rl3)
 ```
 ### Todas as variáveis são úteis para o modelo de regressão?
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
 ```{r}
-graduados1 = graduados[, c("matricula", "Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Introdução.à.Computação", "cra")]
+graduados1 = graduados[, c("matricula", "Introdução.à.Computação", "cra")]
 
-graduados2 = graduados[, c("matricula", "Matemática.Discreta", "Programação.II", "Teoria.dos.Grafos", "cra")]
+graduados2 = graduados[, c("matricula", "Matemática.Discreta", "Programação.II","cra")]
 
 graduados1 = na.omit(graduados1)
 graduados2 = na.omit(graduados2)
 
-rl1 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.I + graduados$Álgebra.Vetorial.e.Geometria.Analítica + graduados$Leitura.e.Produção.de.Textos + graduados$Introdução.à.Computação)
+rl1 = lm(graduados1$cra ~  graduados1$Introdução.à.Computação)
 
-rl2 = lm(graduados$cra ~ graduados$Matemática.Discreta + graduados$Programação.II + graduados$Teoria.dos.Grafos)
+rl2 = lm(graduados2$cra ~ graduados2$Matemática.Discreta + graduados2$Programação.II)
 
 summary(rl1)
 summary(rl2)
+
+ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra)) +  
+  geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
+  labs(title="Previsão do modelo", x= "Nota em IC", y="CRA") +  
+  geom_line(aes(y = predict(rl1, graduados1)), colour = "red")
+
+ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra)) +  
+  geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
+  labs(title="Previsão do modelo", x= "Nota em IC", y="CRA") +  
+  geom_line(aes(y = predict(rl1, graduados1)), colour = "red")
 
 ```
 ### Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.
