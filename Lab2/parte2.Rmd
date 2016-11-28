@@ -16,7 +16,7 @@ Queremos realizar análises de regressão utilizando as disciplinas dos dois pri
 
   ***O desempenho dos alunos nos dois primeiros períodos consegue explicar, em algum grau, seus desempenhos no curso como um todo?***
 
-Para isso, contruiremos dois modelos de regressão, um para com disciplinas do primeiro período e outro com disciplinas do segundo. Ao longo desse documento iremos responder perguntas a respeito dos modelos e realizar comparações entre eles. Logo abaixo um breve resumo de como de distribuem as variáveis quando relacionas e seus respectivos coeficientes de correlação.
+Para isso, construiremos um modelo de regressão com disciplinas do primeiro e segundo período. Ao longo desse documento iremos responder perguntas a respeito do modelo e realizar comparações. Logo abaixo um breve resumo de como de distribuem as variáveis quando relacionas e seus respectivos coeficientes de correlação.
 
 
 ```{r, warning=FALSE, fig.width=22, fig.height=18}
@@ -24,25 +24,9 @@ graduados = read.csv("graduados_disciplinas.csv")
 
 graduados = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
 
-graduados1 = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetorial.e.Geometria.Analítica", "Leitura.e.Produção.de.Textos", "Programação.I", "Laboratório.de.Programação.I", "Introdução.à.Computação", "cra")]
-
-graduados2 = graduados[, c("Cálculo.Diferencial.e.Integral.II", "Matemática.Discreta", "Programação.II", "Laboratório.de.Programação.II", "Teoria.dos.Grafos", "Fundamentos.de.Física.Clássica", "cra")]
-
-ggpairs(graduados1, upper = list(continuous = wrap("cor", size = 10)))
-ggpairs(graduados2, upper = list(continuous = wrap("cor", size = 10))) 
-
-
-
-my_fn <- function(data){
-  p <- ggplot(data = data) + 
-    geom_point() + 
-    geom_smooth(method=lm, fill="blue", color="blue")
-  p
-}
+colnames(graduados) = c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3", "cra")
 
 ggpairs(graduados, lower = list(continuous = "smooth"))
-
-
 ```
 ```{r, fig.width=18, fig.height=10}
 # ggcorr(graduados1[, 2:8], geom = "circle", nbreaks = 5)
@@ -51,37 +35,14 @@ ggpairs(graduados, lower = list(continuous = "smooth"))
 ```
 ### Um modelo de regressão múltipla com todas as variáveis é plausível para explicar a variação em y? Em que grau?
 ```{r}
-graduados1 = na.omit(graduados1)
-graduados2 = na.omit(graduados2)
+rl = lm(cra ~ ., data = graduados)
 
-rl1 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.I + graduados$Álgebra.Vetorial.e.Geometria.Analítica + graduados$Leitura.e.Produção.de.Textos + graduados$Programação.I + graduados$Laboratório.de.Programação.I + graduados$Introdução.à.Computação)
-
-rl2 = lm(graduados$cra ~ graduados$Cálculo.Diferencial.e.Integral.II + graduados$Matemática.Discreta + graduados$Programação.II + graduados$Laboratório.de.Programação.II + graduados$Teoria.dos.Grafos + graduados$Fundamentos.de.Física.Clássica)
-
-rl3 = lm(cra ~ ., data = graduados)
-
-
-summary(rl1)
-summary(rl2)
-summary(rl3)
+summary(rl)
 ```
 ### Todas as variáveis são úteis para o modelo de regressão?
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
 ```{r}
-graduados1 = graduados[, c("matricula", "Introdução.à.Computação", "cra")]
-
-graduados2 = graduados[, c("matricula", "Matemática.Discreta", "Programação.II","cra")]
-
-graduados1 = na.omit(graduados1)
-graduados2 = na.omit(graduados2)
-
-rl1 = lm(graduados1$cra ~  graduados1$Introdução.à.Computação)
-
-rl2 = lm(graduados2$cra ~ graduados2$Matemática.Discreta + graduados2$Programação.II)
-
-summary(rl1)
-summary(rl2)
 
 ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra)) +  
   geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
@@ -96,6 +57,26 @@ ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra))
 ```
 ### Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.
 
+```{r}
+
+```
 ### Que período consegue explicar melhor o desempenho final (primeiro ou segundo)?
+
+```{r}
+graduados1 = graduados[,c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "cra")]
+graduados2 = graduados[, c("Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3", "cra")]
+
+ggpairs(graduados1, upper = list(continuous = wrap("cor", size = 10)))
+ggpairs(graduados2, upper = list(continuous = wrap("cor", size = 10))) 
+
+graduados1 = na.omit(graduados1)
+graduados2 = na.omit(graduados2)
+
+rl1 = lm(cra ~ ., data = graduados1)
+rl2 = lm(cra ~ ., data = graduados2)
+
+summary(rl1)
+summary(rl2)
+```
 
 ### Use o modelo para predizer o seu próprio desempenho e compare a predição com o seu CRA atual. Comente o resultado.
