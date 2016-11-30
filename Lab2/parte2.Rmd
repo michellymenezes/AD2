@@ -16,7 +16,23 @@ Queremos realizar análises de regressão utilizando as disciplinas dos dois pri
 
   ***O desempenho dos alunos nos dois primeiros períodos consegue explicar, em algum grau, seus desempenhos no curso como um todo?***
 
-Para isso, construiremos um modelo de regressão com disciplinas do primeiro e segundo período. Ao longo desse documento iremos responder perguntas a respeito do modelo e realizar comparações. Logo abaixo um breve resumo de como de distribuem as variáveis quando relacionas e seus respectivos coeficientes de correlação.
+
+Para isso, construiremos um modelo de regressão com disciplinas do primeiro e segundo período. Ao longo desse documento iremos responder perguntas a respeito do modelo e realizar comparações. Logo abaixo um breve resumo de como se distribuem as variáveis quando relacionadas e seus respectivos coeficientes de correlação.
+
+*Legenda*
+
+* ***Cálculo.1***: Cálculo Diferencial e Integral I - Período 1
+* ***Vetorial***: Álgebra Vetorial e Geometria Analítica - Período 1
+* ***LPT***: Leitura e Produção de Textos - Período 1
+* ***P1***: Programação I - Período 1
+* ***LP1***: Laboratório de Programação I - Período 1
+* ***IC***: Introdução à Computação - Período 1
+* ***Cálculo.2***: Cálculo Diferencial e Integral II - Período 2
+* ***Discreta***: Matemática Discreta - Período 2
+* ***P2***: Programação II - Período 2
+* ***LP2***: Laboratório de Programação II - Período 2
+* ***Grafos***: Teoria dos Grafos - Período 2
+* ***Física.3***: Fundamentos de Física Clássica - Período 2
 
 
 ```{r, warning=FALSE, fig.width=22, fig.height=18}
@@ -26,14 +42,17 @@ graduados = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetori
 
 colnames(graduados) = c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3", "cra")
 
-ggpairs(graduados, lower = list(continuous = "smooth"))
+ggpairs(graduados, lower = list(continuous = "smooth"), upper = list(continuous = wrap("cor", size = 10)))
 ```
+
 ```{r, fig.width=18, fig.height=10}
 # ggcorr(graduados1[, 2:8], geom = "circle", nbreaks = 5)
 # ggcorr(graduados1[, 2:8], nbreaks = 5,  label = TRUE, label_size = 3, label_round = 2, label_alpha = TRUE)
 
 ```
 ### Um modelo de regressão múltipla com todas as variáveis é plausível para explicar a variação em y? Em que grau?
+
+Para responder esta pergunta criamos um modelo de regressão linear múltipla que englobe todas disciplinas como variáveis independentes e o cra como variável dependente. Após a criação do modelo, 
 ```{r}
 rl = lm(cra ~ ., data = graduados)
 
@@ -43,16 +62,13 @@ summary(rl)
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
 ```{r}
+# 
+# ggplot(graduados1, aes(graduados1$IC, graduados1$cra)) +  
+#   geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
+#   labs(title="Previsão do modelo", x= "Nota em IC", y="CRA") +  
+#   geom_line(aes(y = predict(rl1, graduados1)), colour = "red")
 
-ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra)) +  
-  geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
-  labs(title="Previsão do modelo", x= "Nota em IC", y="CRA") +  
-  geom_line(aes(y = predict(rl1, graduados1)), colour = "red")
 
-ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra)) +  
-  geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
-  labs(title="Previsão do modelo", x= "Nota em IC", y="CRA") +  
-  geom_line(aes(y = predict(rl1, graduados1)), colour = "red")
 
 ```
 ### Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.
@@ -66,8 +82,6 @@ ggplot(graduados1, aes(graduados1$Introdução.à.Computação, graduados1$cra))
 graduados1 = graduados[,c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "cra")]
 graduados2 = graduados[, c("Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3", "cra")]
 
-ggpairs(graduados1, upper = list(continuous = wrap("cor", size = 10)))
-ggpairs(graduados2, upper = list(continuous = wrap("cor", size = 10))) 
 
 graduados1 = na.omit(graduados1)
 graduados2 = na.omit(graduados2)
