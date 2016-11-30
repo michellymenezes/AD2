@@ -52,12 +52,16 @@ ggpairs(graduados, lower = list(continuous = "smooth"), upper = list(continuous 
 ```
 ### Um modelo de regressão múltipla com todas as variáveis é plausível para explicar a variação em y? Em que grau?
 
-Para responder esta pergunta criamos um modelo de regressão linear múltipla que englobe todas disciplinas como variáveis independentes e o cra como variável dependente. Após a criação do modelo, 
+Para responder esta pergunta criamos um modelo de regressão linear múltipla que englobe todas disciplinas como variáveis independentes e o cra como variável dependente. Após a criação do modelo, obtemos um resumo do mesmo com suas principais características relacionadas a efetividade.
+
 ```{r}
 rl = lm(cra ~ ., data = graduados)
 
 summary(rl)
 ```
+
+
+
 ### Todas as variáveis são úteis para o modelo de regressão?
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
