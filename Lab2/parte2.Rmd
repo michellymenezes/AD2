@@ -48,11 +48,6 @@ colnames(graduados) = c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "Cá
 ggpairs(na.omit(graduados), lower = list(continuous = "smooth"), upper = list(continuous = wrap("cor", size = 10)))
 ```
 
-```{r, fig.width=18, fig.height=10}
-# ggcorr(graduados1[, 2:8], geom = "circle", nbreaks = 5)
-# ggcorr(graduados1[, 2:8], nbreaks = 5,  label = TRUE, label_size = 3, label_round = 2, label_alpha = TRUE)
-
-```
 ### Um modelo de regressão múltipla com todas as variáveis é plausível para explicar a variação em y? Em que grau?
 
 Para responder esta pergunta criamos um modelo de regressão linear múltipla que englobe todas disciplinas como variáveis independentes e o cra como variável dependente. Após a criação do modelo, obtemos um resumo do mesmo com suas principais características relacionadas a efetividade.
@@ -87,14 +82,6 @@ Selecionaremos variáveis baseadas em seus coeficientes e p-valor. Além disso, 
 M = cor(na.omit(graduados[,1:12]))
 
 corrplot(M, type = "lower", title = "Correlação de disciplinas",  order="hclust", col=brewer.pal(n=7, name="PuOr"), addCoef.col = "black", tl.col="black", tl.srt=45, mar=c(0,0,1,0) )
-# 
-# ggplot(graduados1, aes(graduados1$IC, graduados1$cra)) +  
-#   geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
-#   labs(title="Previsão do modelo", x= "Nota em IC", y="CRA") +  
-#   geom_line(aes(y = predict(rl1, graduados1)), colour = "red")
-
-
-
 ```
 
 Iniciaremos removendo variáveis com alto coeficiente de correlação:
@@ -111,34 +98,131 @@ Agora removemos as variáveis menos significativas considerando menores valores 
 
 Sendo assim, nosso modelo fica da seguinte maneira:
 
-```{r}
+```{r, warning=FALSE}
 graduados = graduados[, c("LPT", "P1", "IC", "Vetorial", "Discreta", "P2", "cra")]
-rl = lm(cra ~ ., data = graduados)
+
+rl = lm(cra ~ ., data = na.omit(graduados))
+predicoes = predict.lm(rl ,graduados)
+
+ggplot(graduados, aes(y=graduados$cra, x=predicoes)) +  
+  geom_point(alpha = 0.5, position = position_jitter(width = 0.3), color="#a6761d") + 
+  labs(title="Previsão do modelo", x= "", y="") +  
+  geom_line(aes(y = predict(rl, graduados)), colour = "#e41a1c")
 
 summary(rl)
+
 ```
 
 O modelo agora apresenta um R-quadrado ajustado mais elevado, com valor igual a 0.5921, ou seja, ele explica em 59.21% a variável dependente. Por outro lado, o RSE teve seu valor elevado para 0,5342. Apesar disso, devido ao fato de que removemos variáveis, a quantidade de linhas com valores nulos diminuiu, aumentanto o tamanho da amostra e, consequentemente, a quantidade de graus de liberdade. 
 
 ### Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.
 
-```{r}
+Os plots abaixo são referentes aos resíduos de cada disciplina. Se obsevarmos bem, todos se comportam de maneira bem semelhante. Os resíduos estão bem espalhados em torno da reta em 0 e percebemos alguns outliers próximos ao valor -2. Não é possível notar a presença de nenhum padrão na formação dos plots, indicando que os resíduos são aleatórios, algo positivo. 
 
+```{r}
+ggplot(rl, aes(LPT, .resid)) + 
+  labs(title="Resíduos do modelo para a disciplina LPT", x= "Nota", y="Resíduos") +
+  geom_point(alpha = 0.4, color="#1b9e77") +
+  geom_hline(yintercept = 0, colour = "#1f78b4")
 ```
+```{r}
+ggplot(rl, aes(P1, .resid)) + 
+  labs(title="Resíduos do modelo para a disciplina P1", x= "Nota", y="Resíduos") +
+  geom_point(alpha = 0.4, color="#d95f02") +
+  geom_hline(yintercept = 0, colour = "#1f78b4")
+```
+```{r}
+ggplot(rl, aes(IC, .resid)) + 
+  labs(title="Resíduos do modelo para a disciplina IC", x= "Nota", y="Resíduos") +
+  geom_point(alpha = 0.4, color="#7570b3") +
+  geom_hline(yintercept = 0, colour = "#1f78b4")
+```
+```{r}
+ggplot(rl, aes(Vetorial, .resid)) + 
+  labs(title="Resíduos do modelo para a disciplina Vetorial", x= "Nota", y="Resíduos") +
+  geom_point(alpha = 0.4, color="#e7298a") +
+  geom_hline(yintercept = 0, colour = "#1f78b4")
+```
+```{r}
+ggplot(rl, aes(Discreta, .resid)) + 
+  labs(title="Resíduos do modelo para a disciplina Discreta", x= "Nota", y="Resíduos") +
+  geom_point(alpha = 0.4, color="#66a61e") +
+  geom_hline(yintercept = 0, colour = "#1f78b4")
+```
+```{r}
+ggplot(rl, aes(P2, .resid)) + 
+  labs(title="Resíduos do modelo para a disciplina LPT", x= "Nota", y="Resíduos") +
+  geom_point(alpha = 0.4, color="#e6ab02") +
+  geom_hline(yintercept = 0, colour = "#1f78b4")
+```
+
+Para complementar o comentário sobre os gráficos acima temos abaixo um gráfico que apresenta a frequência de resíduos. Os resíduos seguem uma distribuição normal de média 0, algo desejado para a representação de um bom modelo.
+
+```{r}
+ggplot(rl, aes(.resid)) + labs(title="Frequência de resíduos para grupo do sexo feminino", x= "Resíduo", y="Frequência") + 
+  geom_freqpoly(binwidth = 0.5, color="springgreen4")
+```
+
 ### Que período consegue explicar melhor o desempenho final (primeiro ou segundo)?
 
-```{r}
-graduados1 = graduados[,c("Vetorial", "LPT", "P1", "IC", "cra")]
-graduados2 = graduados[, c("Discreta", "P2", "cra")]
+Com base no modelo anterior criado, geramos dois novos modelos de regressão linear para cada um dos semestre e comparamos seus valores de R-quadrado ajustado e RSE.
 
+##### Semestre 1
+
+Abaixo temos a criação do modelo para as disciplinas do primeiro semestre e seu gráfico mostrando os dados da amostra com relação a predição do modelo linear proposto. Logo após, os detalhes sobre o modelo. 
+
+```{r, warning=FALSE}
+graduados1 = graduados[,c("Vetorial", "LPT", "P1", "IC", "cra")]
 graduados1 = na.omit(graduados1)
-graduados2 = na.omit(graduados2)
 
 rl1 = lm(cra ~ ., data = graduados1)
-rl2 = lm(cra ~ ., data = graduados2)
+predicoes1 = predict.lm(rl1 ,graduados1)
 
+ggplot(graduados1, aes(y=graduados1$cra, x=predicoes1)) +  
+  geom_point(alpha = 0.5, position = position_jitter(width = 0.3), color="#984ea3") + 
+  labs(title="Previsão do modelo Semestre 1", x= "", y="") +  
+  geom_line(aes(y = predict(rl1, graduados1)), colour = "#e41a1c")
+```
+Nos detalhes abaixo concluímos que o modelo com disciplinas do primeiro período explica em 50.89% a variável dependente, pois o mesmo apresenta R-quadrado ajustado com valor igual a 0.5089. Já seu RSE é igual a 0.5841.
+
+```{r}
 summary(rl1)
-summary(rl2)
 ```
 
+##### Semestre 2
+
+Abaixo temos a criação do modelo para as disciplinas do segundo semestre e seu gráfico mostrando os dados da amostra com relação a predição do modelo linear proposto. Logo após, os detalhes sobre o modelo. 
+
+```{r, warning=FALSE}
+graduados2 = graduados[, c("Discreta", "P2", "cra")]
+graduados2 = na.omit(graduados2)
+
+rl2 = lm(cra ~ ., data = graduados2)
+predicoes2 = predict.lm(rl2 ,graduados2)
+
+ggplot(graduados2, aes(y=graduados2$cra, x=predicoes2)) +  
+  geom_point(alpha = 0.5, position = position_jitter(width = 0.3), color="#fb8072") + 
+  labs(title="Previsão do modelo Semestre 2", x= "", y="") +  
+  geom_line(aes(y = predict(rl2, graduados2)), colour = "#e41a1c")
+```
+
+Nos detalhes abaixo concluímos que o modelo com disciplinas do segundo período explica em 46.03% a variável dependente, pois o mesmo apresenta R-quadrado ajustado com valor igual a 0.4603 Já seu RSE é igual a 0.6216.
+
+```{r}
+summary(rl2)
+```
+##### Conclusão
+
+Considero que o modelo com variáveis relacionadas apenas ao primeiro período consegue explicar melhor o desempenho final de cada aluno porque, além de apresentar um maior R-quadrado ajustado (0.5089 > 0.4603), seu RSE é de menor valor (0.5841 < 0.6216).
+
 ### Use o modelo para predizer o seu próprio desempenho e compare a predição com o seu CRA atual. Comente o resultado.
+
+Utilizando o modelo inicial ajustados com disciplinas do primeiro e segundo período:
+
+```{r}
+notas = data.frame(LPT = 8.2, P1 = 7.6, IC = 8.4, Vetorial = 7.3, Discreta = 7.1, P2 = 7.3)
+
+predict(rl, notas)
+```
+
+O modelo prediz que, de acordo com minhas notas, meu cra deverá ser 7.35. Meu cra atual é iqual a 7.45, valor bem próximo do previsto. Talvez faltem uma ou mais variáveis no modelo para ter um valor mais próximo do real, ou uma amostra maior. Outros fatores podem influênciar como inconsistência nos dados, o fato de que atualmente alunos podem optar por cursar ou não LPT no início do curso ou simplesmente porque meu cra atual ainda não sofreu todas as alterações das disciplinas que ainda faltam ser cursadas até a conclusão do curso, fato que está incluso nos dados utilizados para construir o modelo.
