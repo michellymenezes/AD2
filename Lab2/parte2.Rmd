@@ -60,21 +60,21 @@ summary(rl)
 
 Utilizamos o Residual standart error (RSE) para interpretar parte do nosso modelo. RSE é o desvio padrão dos resíduos que descreve a variabilidade referente ao modelo de regressão utilizado. Queremos que o valor RSE seja o menor possível. O RSE do modelo tem valor igual a 0.5046.
 
-Uma segunda variável que utilizamos é o R-quadrado que apresenta valor referente ao coeficiente de determinação, ela varia entre 0-1 e indica quanto o modelo consegue explicar o valor observado, no nosso caso, o cra. Quanto maior o R-quadrado, melhor, significando que o modelo é mais explicativo. Existe um tendência de que quanto mais variáveis o modelo possuir, maior o seu poder explicativo, incentivando a inserção de muitas variáveis e para combater isso existe o R-quadrado ajustado. R-quadrado ajustado funciona da mesma maneira que o R-quadrado, com a diferença de que ele sofre penalização se há inclusão de variáveis com muito pouco poder explicativo. Para todos os modelos deste documento estaremos utilizando valores relacionados ao R-quadrado ajustado para medir o poder de explicação dos mesmos.
+Uma segunda variável que utilizamos é o R-quadrado que apresenta valor referente ao coeficiente de determinação, ela varia entre 0-1 e indica quanto o modelo consegue explicar o valor observado, no nosso caso, o cra. Quanto maior o R-quadrado, melhor, significando que o modelo é mais explicativo. Existe uma tendência de que quanto mais variáveis o modelo possuir, maior o seu poder explicativo, incentivando a inserção de muitas variáveis e para combater isso existe o R-quadrado ajustado. R-quadrado ajustado funciona da mesma maneira que o R-quadrado, com a diferença de que ele sofre penalização se há inclusão de variáveis com muito pouco poder explicativo. Para todos os modelos deste documento estaremos utilizando valores relacionados ao R-quadrado ajustado para medir o poder de explicação dos mesmos.
 
-Interpretandos os dados acima temos que o R-quadrado ajustado tem valor igual a 0.6474, isso signigica que 64.74% do cra consegue ser explicado pelas variáveis independentes presentes no modelo. Então, sim, o modelo explica parte da variável dependente em mais de 50%.
+Interpretando os dados acima temos que o R-quadrado ajustado tem valor igual a 0.6474, isso significa que 64.74% do cra consegue ser explicado pelas variáveis independentes presentes no modelo. Então, sim, o modelo explica parte da variável dependente em mais de 50%.
 
 ### Todas as variáveis são úteis para o modelo de regressão?
 
 Apesar de o modelo explicar a variável dependente em quase 67%, nem todas as variáveis independentes que fazem parte dele apresentam influência considerável. Neste documento, utilizaremos dois principais valores para avaliar a utilidade e significância de uma variável independente presente em um modelo: seu coeficiente (relacionado a magnitude) e p-valor.
 
-O coeficiente de uma variável é referênte ao poder de influência que ela tem na variável dependente. O p-valor é referente a probabilidade de exisência por chance, queremos que este valor seja o menor possível para que a variável seja considerada importante para o modelo. 
+O coeficiente de uma variável é referente ao poder de influência que ela tem na variável dependente. O p-valor é referente a probabilidade de existência por chance, queremos que este valor seja o menor possível para que a variável seja considerada importante para o modelo. 
 
 Disciplinas como Física 3, Cálculo 2, Cálculo 1 etc, apresentam baixo coeficiente e p-valor elevado. Essas variáveis influenciam minimamente e não são consideradas úteis para o modelo. Portanto, nem todas as variáveis são úteis para o modelo de regressão apresentado.
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
 
-Selecionaremos variáveis baseadas em seus coeficientes e p-valor. Além disso, quando duas variáveis possuírem um alto coeficiente de correlação**, removeremos uma delas, já que váriáveis muito correlacionadas inserem redundância no modelo e podem proporcionar geração de valores incosistentes. Utilizaremos o summary do modelo e o correlograma abaixo para extrair e analisar esses valores.
+Selecionaremos variáveis baseadas em seus coeficientes e p-valor. Além disso, quando duas variáveis possuírem um alto coeficiente de correlação**, removeremos uma delas, já que váriáveis muito correlacionadas inserem redundância no modelo e podem proporcionar geração de valores incosistentes. Utilizaremos o *summary* do modelo e o correlograma abaixo para extrair e analisar esses valores.
 
 ***Um valor será considerado alto quando for >= 0.65. Valor escolhido com base na comparação relativa de coeficientes obtidos.*
 
@@ -90,7 +90,7 @@ Iniciaremos removendo variáveis com alto coeficiente de correlação:
 * O coeficiente de correlação de P2 e Grafos é igual a 0.65, decidimos manter P2 porque apresenta coeficiente (0.29214) mais significativo e menor p-valor (0.00293).
 * O coeficiente de correlação de LP2 e Discreta é igual a 0.65, decidimos manter Discreta porque apresenta coeficiente (0.23935) mais significativo e menor p-valor (9.63e-05).
 
-Agora removemos as variáveis menos significativas considerando menores valores referentes ao coeficiente e maiors referentes ao p-valor:
+Agora removemos as variáveis menos significativas considerando menores valores referentes ao coeficiente e maiores referentes ao p-valor:
 
 * Cálculo.1 - coeficiente: 0.02121 / p-valor: 0.66661
 * Cálculo.2 - coeficiente: -0.00100 / p-valor: 0.98499
@@ -183,6 +183,7 @@ ggplot(graduados1, aes(y=graduados1$cra, x=predicoes1)) +
   labs(title="Previsão do modelo Semestre 1", x= "", y="") +  
   geom_line(aes(y = predict(rl1, graduados1)), colour = "#e41a1c")
 ```
+
 Nos detalhes abaixo concluímos que o modelo com disciplinas do primeiro período explica em 50.89% a variável dependente, pois o mesmo apresenta R-quadrado ajustado com valor igual a 0.5089. Já seu RSE é igual a 0.5841.
 
 ```{r}
