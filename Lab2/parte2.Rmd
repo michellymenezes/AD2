@@ -7,6 +7,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(GGally)
 library(ggplot2)
+library(corrplot)
+library(RColorBrewer)
+
 ```
 ## Apresentação dos dados
 
@@ -42,7 +45,7 @@ graduados = graduados[, c("Cálculo.Diferencial.e.Integral.I",  "Álgebra.Vetori
 
 colnames(graduados) = c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3", "cra")
 
-ggpairs(graduados, lower = list(continuous = "smooth"), upper = list(continuous = wrap("cor", size = 10)))
+ggpairs(na.omit(graduados), lower = list(continuous = "smooth"), upper = list(continuous = wrap("cor", size = 10)))
 ```
 
 ```{r, fig.width=18, fig.height=10}
@@ -75,7 +78,15 @@ O coeficiente de uma variável é referênte ao poder de influência que ela tem
 Disciplinas como Física 3, Cálculo 2, Cálculo 1 etc, apresentam baixo coeficiente e p-valor elevado. Essas variáveis influenciam minimamente e não são consideradas úteis para o modelo. Portanto, nem todas as variáveis são úteis para o modelo de regressão apresentado.
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
-```{r}
+
+Selecionaremos variáveis baseadas em seus coeficientes e p-valor. Além disso, quando duas variáveis possuírem um alto coeficiente de correlação**, removeremos uma delas, já que váriáveis muito correlacionadas inserem redundância no modelo e podem proporcionar geração de valores incosistentes. Utilizaremos o summary do modelo e o correlograma abaixo para extrair e analisar esses valores.
+
+***Um valor será considerado alto quando for >= 0.65. Valor escolhido com base na comparação relativa de coeficientes obtidos.*
+
+```{r, fig.width=9, fig.height=7}
+M = cor(na.omit(graduados[,1:12]))
+
+corrplot(M, type = "lower", title = "Correlação de disciplinas",  order="hclust", col=brewer.pal(n=7, name="PuOr"), addCoef.col = "black", tl.col="black", tl.srt=45, mar=c(0,0,1,0) )
 # 
 # ggplot(graduados1, aes(graduados1$IC, graduados1$cra)) +  
 #   geom_point(alpha = 0.1, position = position_jitter(width = 0.3), color="purple4") + 
@@ -85,6 +96,30 @@ Disciplinas como Física 3, Cálculo 2, Cálculo 1 etc, apresentam baixo coefici
 
 
 ```
+
+Iniciaremos removendo variáveis com alto coeficiente de correlação:
+
+* O coeficiente de correlação de P1 e LP1 é igual a 0.77, decidimos manter P1 porque apresenta coeficiente (-0.02593) mais significativo e menor p-valor (0.73660).
+* O coeficiente de correlação de P2 e Grafos é igual a 0.65, decidimos manter P2 porque apresenta coeficiente (0.29214) mais significativo e menor p-valor (0.00293).
+* O coeficiente de correlação de LP2 e Discreta é igual a 0.65, decidimos manter Discreta porque apresenta coeficiente (0.23935) mais significativo e menor p-valor (9.63e-05).
+
+Agora removemos as variáveis menos significativas considerando menores valores referentes ao coeficiente e maiors referentes ao p-valor:
+
+* Cálculo.1 - coeficiente: 0.02121 / p-valor: 0.66661
+* Cálculo.2 - coeficiente: -0.00100 / p-valor: 0.98499
+* Física.3 - coeficiente: -0.01024 / p-valor: 0.86745
+
+Sendo assim, nosso modelo fica da seguinte maneira:
+
+```{r}
+graduados = graduados[, c("LPT", "P1", "IC", "Vetorial", "Discreta", "P2", "cra")]
+rl = lm(cra ~ ., data = graduados)
+
+summary(rl)
+```
+
+O modelo agora apresenta um R-quadrado ajustado mais elevado, com valor igual a 0.5921, ou seja, ele explica em 59.21% a variável dependente. Por outro lado, o RSE teve seu valor elevado para 0,5342. Apesar disso, devido ao fato de que removemos variáveis, a quantidade de linhas com valores nulos diminuiu, aumentanto o tamanho da amostra e, consequentemente, a quantidade de graus de liberdade. 
+
 ### Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.
 
 ```{r}
@@ -93,9 +128,8 @@ Disciplinas como Física 3, Cálculo 2, Cálculo 1 etc, apresentam baixo coefici
 ### Que período consegue explicar melhor o desempenho final (primeiro ou segundo)?
 
 ```{r}
-graduados1 = graduados[,c("Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "cra")]
-graduados2 = graduados[, c("Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3", "cra")]
-
+graduados1 = graduados[,c("Vetorial", "LPT", "P1", "IC", "cra")]
+graduados2 = graduados[, c("Discreta", "P2", "cra")]
 
 graduados1 = na.omit(graduados1)
 graduados2 = na.omit(graduados2)
