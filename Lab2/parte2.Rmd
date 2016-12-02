@@ -60,9 +60,19 @@ rl = lm(cra ~ ., data = graduados)
 summary(rl)
 ```
 
+Utilizamos o Residual standart error (RSE) para interpretar parte do nosso modelo. RSE é o desvio padrão dos resíduos que descreve a variabilidade referente ao modelo de regressão utilizado. Queremos que o valor RSE seja o menor possível. O RSE do modelo tem valor igual a 0.5046.
 
+Uma segunda variável que utilizamos é o R-quadrado que apresenta valor referente ao coeficiente de determinação, ela varia entre 0-1 e indica quanto o modelo consegue explicar o valor observado, no nosso caso, o cra. Quanto maior o R-quadrado, melhor, significando que o modelo é mais explicativo. Existe um tendência de que quanto mais variáveis o modelo possuir, maior o seu poder explicativo, incentivando a inserção de muitas variáveis e para combater isso existe o R-quadrado ajustado. R-quadrado ajustado funciona da mesma maneira que o R-quadrado, com a diferença de que ele sofre penalização se há inclusão de variáveis com muito pouco poder explicativo. Para todos os modelos deste documento estaremos utilizando valores relacionados ao R-quadrado ajustado para medir o poder de explicação dos mesmos.
+
+Interpretandos os dados acima temos que o R-quadrado ajustado tem valor igual a 0.6474, isso signigica que 64.74% do cra consegue ser explicado pelas variáveis independentes presentes no modelo. Então, sim, o modelo explica parte da variável dependente em mais de 50%.
 
 ### Todas as variáveis são úteis para o modelo de regressão?
+
+Apesar de o modelo explicar a variável dependente em quase 67%, nem todas as variáveis independentes que fazem parte dele apresentam influência considerável. Neste documento, utilizaremos dois principais valores para avaliar a utilidade e significância de uma variável independente presente em um modelo: seu coeficiente (relacionado a magnitude) e p-valor.
+
+O coeficiente de uma variável é referênte ao poder de influência que ela tem na variável dependente. O p-valor é referente a probabilidade de exisência por chance, queremos que este valor seja o menor possível para que a variável seja considerada importante para o modelo. 
+
+Disciplinas como Física 3, Cálculo 2, Cálculo 1 etc, apresentam baixo coeficiente e p-valor elevado. Essas variáveis influenciam minimamente e não são consideradas úteis para o modelo. Portanto, nem todas as variáveis são úteis para o modelo de regressão apresentado.
 
 ### Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).
 ```{r}
