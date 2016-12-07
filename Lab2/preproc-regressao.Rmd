@@ -7,8 +7,8 @@ output: html_notebook
 
 library(readr)
 library(dplyr)
-graduados <- read_csv("graduados.csv", col_types = cols(matricula = col_character())) %>%
-  mutate(matricula = as.factor(matricula))
+graduados <- read_csv("../../../Downloads/graduados_treino_avaliacao.csv", col_types = cols(ALU_NOVAMATRICULA = col_character())) %>%
+  mutate(matricula = as.factor(ALU_NOVAMATRICULA))
 head(graduados)
 
 ```
@@ -39,7 +39,7 @@ Como lidar com isso?
 ```{r}
 
 graduados.clean <- graduados %>%
-  filter(!is.na(media))
+  filter(!is.na(MAT_MEDIA_FINAL))
 
 summary(graduados.clean)
 View(graduados.clean)
@@ -51,9 +51,9 @@ Agora, vamos calcular o CRA dos alunos:
 ```{r}
 
 graduados.cra <- graduados.clean %>%
-  group_by(matricula) %>%
-  mutate(cra.contrib = media*creditos) %>%
-  summarise(cra = sum(cra.contrib)/sum(creditos))
+  group_by(ALU_NOVAMATRICULA) %>%
+  mutate(cra.contrib = MAT_MEDIA_FINAL*ALU_PERIODO_EVASAO) %>%
+  summarise(cra = sum(cra.contrib)/sum(ALU_PERIODO_EVASAO))
 
 head(graduados.cra)
 
@@ -73,15 +73,15 @@ Qual seria o formato ideal?
 library(reshape2)
 
 graduados.model.input <- graduados.clean %>%
-  group_by(matricula,disciplina)  %>%
-  filter(media == max(media)) %>%
+  group_by(ALU_NOVAMATRICULA,DISCIPLINA)  %>%
+  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
   ungroup() %>%
-  select(matricula,disciplina,media) %>% 
-  mutate(disciplina = as.factor(gsub(" ",".",disciplina))) %>%
-  dcast(matricula ~ disciplina, mean) %>%
+  select(ALU_NOVAMATRICULA,DISCIPLINA,MAT_MEDIA_FINAL) %>% 
+  mutate(DISCIPLINA = as.factor(gsub(" ",".",DISCIPLINA))) %>%
+  dcast(ALU_NOVAMATRICULA ~ DISCIPLINA, mean) %>%
   merge(graduados.cra)
 
-head(graduados.model.input)
+MAT_MEDIA_FINALhead(graduados.model.input)
 View(graduados.model.input)
 
 ```
