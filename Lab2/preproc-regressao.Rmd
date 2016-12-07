@@ -7,7 +7,7 @@ output: html_notebook
 
 library(readr)
 library(dplyr)
-graduados <- read_csv("../../../Downloads/graduados_treino_avaliacao.csv", col_types = cols(ALU_NOVAMATRICULA = col_character())) %>%
+graduados <- read_csv("../../../Downloads/graduados_treino.csv", col_types = cols(ALU_NOVAMATRICULA = col_character())) %>%
   mutate(matricula = as.factor(ALU_NOVAMATRICULA))
 head(graduados)
 
@@ -52,8 +52,8 @@ Agora, vamos calcular o CRA dos alunos:
 
 graduados.cra <- graduados.clean %>%
   group_by(ALU_NOVAMATRICULA) %>%
-  mutate(cra.contrib = MAT_MEDIA_FINAL*ALU_PERIODO_EVASAO) %>%
-  summarise(cra = sum(cra.contrib)/sum(ALU_PERIODO_EVASAO))
+  mutate(cra.contrib = MAT_MEDIA_FINAL*CREDITOS) %>%
+  summarise(cra = sum(cra.contrib)/sum(CREDITOS))
 
 head(graduados.cra)
 
@@ -81,7 +81,7 @@ graduados.model.input <- graduados.clean %>%
   dcast(ALU_NOVAMATRICULA ~ DISCIPLINA, mean) %>%
   merge(graduados.cra)
 
-MAT_MEDIA_FINALhead(graduados.model.input)
+head(graduados.model.input)
 View(graduados.model.input)
 
 ```
