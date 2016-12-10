@@ -7,7 +7,7 @@ output: html_notebook
 
 library(readr)
 library(dplyr)
-graduados <- read_csv("../../../Downloads/graduados_treino.csv", col_types = cols(ALU_NOVAMATRICULA = col_character())) %>%
+graduados <- read_csv("graduados_treino.csv", col_types = cols(ALU_NOVAMATRICULA = col_character())) %>%
   mutate(matricula = as.factor(ALU_NOVAMATRICULA))
 head(graduados)
 

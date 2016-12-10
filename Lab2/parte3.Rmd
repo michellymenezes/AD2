@@ -1,0 +1,23 @@
+---
+title: "Lab 2 - Parte 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Usando todas as variáveis disponíveis (disciplinas do primeiro e segundo período), use validação cruzada (nos dados de treino) para tunar um modelo de regressão Ridge.
+2. Mesmo que o item acima mas usando um modelo de regressão Lasso.
+3. Compare os dois modelos nos dados de teste em termos de RMSE.
+4. Quais as variáveis mais importantes segundo o modelo de regressão Lasso? Alguma variável foi descartada? Quais?
+5. Re-treine o melhor modelo (dessa vez nos dados de treino sem validação cruzada) e reporte o RMSE no teste.
+6. Use o modelo treinado em 6 e aplique nos dados de teste que vamos disponibilizar.
+7. Crie novos atributos a partir dos existentes para tentar melhorar o seu modelo.
+
+
+```{r}
+dados_treino = read_csv("p1p2.graduados_treino.csv")
+dados_teste = read_csv("p1p2.graduados_teste.csv")
+```
+
