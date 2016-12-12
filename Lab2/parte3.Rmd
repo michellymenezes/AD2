@@ -5,6 +5,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library()
+library(ISLR)
+library(caret)
 ```
 
 1. Usando todas as variáveis disponíveis (disciplinas do primeiro e segundo período), use validação cruzada (nos dados de treino) para tunar um modelo de regressão Ridge.
@@ -17,7 +21,57 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-dados_treino = read_csv("p1p2.graduados_treino.csv")
-dados_teste = read_csv("p1p2.graduados_teste.csv")
+dados_treino = read.csv("p1p2.graduados_treino.csv")
+dados_teste = read.csv("p1p2.graduados_teste.csv")
+
+for(i in 1:nrow(dados_teste)){
+  for(j in 1:ncol(dados_teste)){
+    if(is.na(dados_teste[i,j])){
+      dados_teste[i, j] = dados_teste$cra[i]
+    }
+  }
+}
+
+for(i in 1:nrow(dados_treino)){
+  for(j in 1:ncol(dados_treino)){
+    if(is.na(dados_treino[i,j])){
+      dados_treino[i, j] = dados_treino$cra[i]
+    }
+  }
+}
+```
+
+### Modelo de regressão Ridge
+
+```{r}
+ridge <- train(cra ~., data = dados_treino,
+               method='ridge',
+               lambda = 4,
+               preProcess=c('scale', 'center'))
+ridge
+```
+
+```{r}
+ridge.pred <- predict(ridge, dados_teste)
+
+```
+
+```{r}
+set.seed(825)
+fitControl <- trainControl(method = "cv",
+                           number = 10)
+# Set seq of lambda to test
+lambdaGrid <- expand.grid(lambda = 10^seq(10, -2, length=100))
+
+ridge <- train(cra~., data = dados_treino,
+               method='ridge',
+               trControl = fitControl,
+                tuneGrid = lambdaGrid,
+               preProcess=c('center', 'scale')
+)
+
+ridge
+predict(ridge$finalModel, type='coef', mode='norm')$coefficients[13,]
+
 ```
 
