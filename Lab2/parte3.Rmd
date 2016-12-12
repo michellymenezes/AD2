@@ -7,7 +7,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library()
-library(ISLR)
 library(caret)
 ```
 
@@ -24,18 +23,15 @@ library(caret)
 dados_treino = read.csv("p1p2.graduados_treino.csv")
 dados_teste = read.csv("p1p2.graduados_teste.csv")
 
-for(i in 1:nrow(dados_teste)){
-  for(j in 1:ncol(dados_teste)){
-    if(is.na(dados_teste[i,j])){
-      dados_teste[i, j] = dados_teste$cra[i]
-    }
-  }
-}
-
 for(i in 1:nrow(dados_treino)){
   for(j in 1:ncol(dados_treino)){
     if(is.na(dados_treino[i,j])){
       dados_treino[i, j] = dados_treino$cra[i]
+    }
+    if(i <= nrow(dados_teste)){
+      if(is.na(dados_teste[i,j])){
+        dados_teste[i, j] = dados_teste$cra[i]
+      }
     }
   }
 }
@@ -45,9 +41,7 @@ for(i in 1:nrow(dados_treino)){
 
 ```{r}
 ridge <- train(cra ~., data = dados_treino,
-               method='ridge',
-               lambda = 4,
-               preProcess=c('scale', 'center'))
+               method='ridge')
 ridge
 ```
 
