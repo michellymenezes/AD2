@@ -51,7 +51,7 @@ ridge.pred <- predict(ridge, dados_teste)
 ```
 
 ```{r}
-set.seed(825)
+#set.seed(825)
 fitControl <- trainControl(method = "cv",
                            number = 10)
 # Set seq of lambda to test
@@ -65,7 +65,21 @@ ridge <- train(cra~., data = dados_treino,
 )
 
 ridge
+
 predict(ridge$finalModel, type='coef', mode='norm')$coefficients[13,]
+
+```
+### Modelo de regressão Lasso
+
+```{r}
+
+lasso <- train(cra~., data = dados_treino,
+               method='lasso',
+                tuneLength = 10,
+               preProcess=c('center', 'scale')
+)
+
+lasso
 
 ```
 
