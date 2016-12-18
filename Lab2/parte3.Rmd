@@ -6,11 +6,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library()
 library(caret)
 ```
 
-1. Usando todas as variáveis disponíveis (disciplinas do primeiro e segundo período), use validação cruzada (nos dados de treino) para tunar um modelo de regressão Ridge.
 2. Mesmo que o item acima mas usando um modelo de regressão Lasso.
 3. Compare os dois modelos nos dados de teste em termos de RMSE.
 4. Quais as variáveis mais importantes segundo o modelo de regressão Lasso? Alguma variável foi descartada? Quais?
@@ -21,65 +19,88 @@ library(caret)
 
 ```{r}
 dados_treino = read.csv("p1p2.graduados_treino.csv")
-dados_teste = read.csv("p1p2.graduados_teste.csv")
+dados_validacao = read.csv("p1p2.graduados_validacao.csv")
+
+dados_treino = dados_treino[,2:15]
+dados_validacao = dados_validacao[,2:15]
 
 for(i in 1:nrow(dados_treino)){
   for(j in 1:ncol(dados_treino)){
     if(is.na(dados_treino[i,j])){
       dados_treino[i, j] = dados_treino$cra[i]
     }
-    if(i <= nrow(dados_teste)){
-      if(is.na(dados_teste[i,j])){
-        dados_teste[i, j] = dados_teste$cra[i]
+    if(i <= nrow(dados_validacao)){
+      if(is.na(dados_validacao[i,j])){
+        dados_validacao[i, j] = dados_validacao$cra[i]
       }
     }
   }
 }
 ```
 
-### Modelo de regressão Ridge
+## Modelo de regressão Ridge
 
-```{r}
-ridge <- train(cra ~., data = dados_treino,
-               method='ridge')
-ridge
-```
+Iniciaremos utilizando o método de regularização Ridge Regression, que suaviza atributos relacionados e que aumentam o ruído no modelo. Porque queremos encontrar o bom valor lambda para o modelo, utilizamos nos dados de treino a função *train* para escolher aquele com menor RMSE dentre 100 possíveis valores lambda.
 
-```{r}
-ridge.pred <- predict(ridge, dados_teste)
-
-```
-
-```{r}
-#set.seed(825)
+```{r warning=FALSE, message=FALSE}
+set.seed(825)
 fitControl <- trainControl(method = "cv",
                            number = 10)
-# Set seq of lambda to test
+
 lambdaGrid <- expand.grid(lambda = 10^seq(10, -2, length=100))
 
-ridge <- train(cra~., data = dados_treino,
+ridge <- train(cra~., data = dados_treino[,2:14],
                method='ridge',
                trControl = fitControl,
                 tuneGrid = lambdaGrid,
                preProcess=c('center', 'scale')
 )
+```
 
+Abaixo vemos a sequência de valores obtidos e uma representação gráfica do mesmo. 
+
+```{r warning=FALSE, message=FALSE}
 ridge
+plot(ridge)
+```
 
-predict(ridge$finalModel, type='coef', mode='norm')$coefficients[13,]
+Em seguida, realizamos a predição dos dados, mas agora utilizando os dados de teste. Abaixo temos um gráfico representando a validação do modelo, incluindo a "linha preditora" e resíduos. 
+
+```{r}
+ridge.pred <- predict(ridge, dados_validacao[,2:14])
+
+ridge.pred <- data.frame(pred = ridge.pred, obs = dados_validacao$cra)
+ggplot(ridge.pred, aes(x = pred, y = obs)) + geom_point(alpha = 0.5, position = position_jitter(width=0.2)) + geom_abline(colour = "darkred") + ggtitle("Previsão x Observado (validação")
+```
+
+O RMSE alto indica que o erro na predição foi alto. Ao utlizar a função *round* é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.449. 
+
+```{r}
+round(defaultSummary(ridge.pred), digits = 3)
+```
+
+```{r}
+##treino sem cross val.: remover fitControl
+
+##predict(ridge$finalModel, type='coef', mode='norm')$coefficients[13,]
 
 ```
-### Modelo de regressão Lasso
+O RMSE alto indica que o erro na predição foi alto. O que acontece é que, por conta dos outliers, o modelo se ajusta bem a boa parte dos dados tendo como consequência grandes erros na previsão alguns valores. Dependendo do caso, isso pode indicar que a regressão não seria a melhor técnica para resolver o problema.
+
+## Modelo de regressão Lasso
 
 ```{r}
 
-lasso <- train(cra~., data = dados_treino,
+lasso <- train(cra~., data = dados_treino[,2:14],
                method='lasso',
                 tuneLength = 10,
                preProcess=c('center', 'scale')
 )
 
+plot(lasso)
 lasso
+
+varImp(lasso)
 
 ```
 
