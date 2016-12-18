@@ -9,7 +9,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(caret)
 ```
 
-2. Mesmo que o item acima mas usando um modelo de regressão Lasso.
 3. Compare os dois modelos nos dados de teste em termos de RMSE.
 4. Quais as variáveis mais importantes segundo o modelo de regressão Lasso? Alguma variável foi descartada? Quais?
 5. Re-treine o melhor modelo (dessa vez nos dados de treino sem validação cruzada) e reporte o RMSE no teste.
@@ -64,13 +63,14 @@ ridge
 plot(ridge)
 ```
 
-Em seguida, realizamos a predição dos dados, mas agora utilizando os dados de teste. Abaixo temos um gráfico representando a validação do modelo, incluindo a "linha preditora" e resíduos. 
+Em seguida, realizamos a predição dos dados, mas agora utilizando os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a "linha preditora" e resíduos. 
 
 ```{r}
 ridge.pred <- predict(ridge, dados_validacao[,2:14])
 
 ridge.pred <- data.frame(pred = ridge.pred, obs = dados_validacao$cra)
-ggplot(ridge.pred, aes(x = pred, y = obs)) + geom_point(alpha = 0.5, position = position_jitter(width=0.2)) + geom_abline(colour = "darkred") + ggtitle("Previsão x Observado (validação")
+
+ggplot(ridge.pred, aes(x = pred, y = obs)) + geom_point(alpha = 0.5, position = position_jitter(width=0.2)) + geom_abline(colour = "darkred") + ggtitle("Previsão x Observado (validação)")
 ```
 
 O RMSE alto indica que o erro na predição foi alto. Ao utlizar a função *round* é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.449. 
@@ -85,22 +85,40 @@ round(defaultSummary(ridge.pred), digits = 3)
 ##predict(ridge$finalModel, type='coef', mode='norm')$coefficients[13,]
 
 ```
-O RMSE alto indica que o erro na predição foi alto. O que acontece é que, por conta dos outliers, o modelo se ajusta bem a boa parte dos dados tendo como consequência grandes erros na previsão alguns valores. Dependendo do caso, isso pode indicar que a regressão não seria a melhor técnica para resolver o problema.
 
 ## Modelo de regressão Lasso
 
-```{r}
+Assim como no tópico anterior, criaremos um novo modelo agora utilizando o método Lasso para a seleção de preditores. Após a criação e treinamento do modelo, também realizaremos a predição do mesmo. 
 
+```{r}
 lasso <- train(cra~., data = dados_treino[,2:14],
                method='lasso',
                 tuneLength = 10,
                preProcess=c('center', 'scale')
 )
+```
 
+O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.
+
+```{r}
 plot(lasso)
 lasso
 
-varImp(lasso)
-
+#varImp(lasso)
 ```
 
+Para realizar a predição dos dados também utilizamos os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a "linha preditora" e resíduos.
+
+```{r}
+lasso.pred <- predict(lasso, dados_validacao[,2:14])
+
+lasso.pred <- data.frame(pred = lasso.pred, obs = dados_validacao$cra)
+
+ggplot(lasso.pred, aes(x = pred, y = obs)) + geom_point(alpha = 0.5, position = position_jitter(width=0.2)) + geom_abline(colour = "darkred") + ggtitle("Previsão x Observado (validação)")
+```
+
+Utilizando a função *round* é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.437. 
+
+```{r}
+round(defaultSummary(lasso.pred), digits = 3)
+```
