@@ -9,16 +9,17 @@ knitr::opts_chunk$set(echo = TRUE)
 library(caret)
 ```
 
-3. Compare os dois modelos nos dados de teste em termos de RMSE.
-4. Quais as variáveis mais importantes segundo o modelo de regressão Lasso? Alguma variável foi descartada? Quais?
-5. Re-treine o melhor modelo (dessa vez nos dados de treino sem validação cruzada) e reporte o RMSE no teste.
-6. Use o modelo treinado em 6 e aplique nos dados de teste que vamos disponibilizar.
-7. Crie novos atributos a partir dos existentes para tentar melhorar o seu modelo.
+- Re-treine o melhor modelo (dessa vez nos dados de treino sem validação cruzada) e reporte o RMSE no teste.
+- Use ou tente melhorar o seu modelo para prever os dados de teste que disponibilizamos por meio da plataforma Kaggle: https://inclass.kaggle.com/c/previsao-do-cra-dos-alunos-de-computacao (Links para um site externo)
 
+## Apresentação dos dados
 
 ```{r}
 dados_treino = read.csv("p1p2.graduados_treino.csv")
 dados_validacao = read.csv("p1p2.graduados_validacao.csv")
+dados_teste = read.csv("test.csv")
+
+colnames(dados_teste) = c("Matricula", "Cálculo.1", "Vetorial", "LPT", "P1", "LP1", "IC", "Cálculo.2", "Discreta", "P2", "LP2", "Grafos", "Física.3")
 
 dados_treino = dados_treino[,2:15]
 dados_validacao = dados_validacao[,2:15]
@@ -121,4 +122,42 @@ Utilizando a função *round* é fornecido que o RMSE obtido no modelo Ridge foi
 
 ```{r}
 round(defaultSummary(lasso.pred), digits = 3)
+```
+
+## Comparação de modelos
+
+Realizamos a comparação de modelos com base nos valores obtidos no RMSE. Quanto mais baixo o valor, melhor. Abaixo temos os gráficos mostrados anteriormente, agora lado a lado para uma melhor comparação.Vemos que o comportamento nos dados de validação é bem semelhante, os gráficos gerados não apresentam uma diferença perceptível muito significante.
+
+```{r}
+compare <- ridge.pred
+compare$model <- "Ridge"
+lasso.pred$model <- "Lasso"
+
+compare <- rbind(compare, lasso.pred)
+
+ggplot(compare, aes(x = pred, y = obs)) + 
+  geom_point(alpha = 0.5, position = position_jitter(width=0.2)) + 
+  facet_grid(. ~ model) + 
+  geom_abline() +
+  ggtitle("Observado x Previsão (validação)")
+```
+
+Assim como nos gráficos, o fenômeno se repetiu para os valores de RSME. Ambos são altos e com quase o mesmo valor. Porém, o RMSE do modelo Lasso consegue atingir um menor valor. Podemos então considerar que o melhor modelo é o que utiliza da técnica Lasso. O melhor modelo é aquele que possui o RMSE mais baixo. 
+
+```{r}
+round(defaultSummary(ridge.pred), digits = 3)
+round(defaultSummary(lasso.pred), digits = 3)
+```
+
+## Importância de variáveis no modelo Lasso
+
+Geramos uma representação gráfica com a importância das variáveis e mais abaixo estão os valores detalhados sobre a importância das mesmas. Vemos que Cálculo 2 é apresentada como a variável de maior importância, seguida por IC e P2. Temos apenas uma variável discartada que foi Física 3, apresentando overall igual a 0. 
+
+```{r}
+plot(varImp(lasso))
+varImp(lasso)
+```
+
+```{r}
+predict(lasso, dados_teste)
 ```
