@@ -104,8 +104,6 @@ O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com 
 ```{r}
 plot(lasso)
 lasso
-
-#varImp(lasso)
 ```
 
 Para realizar a predição dos dados também utilizamos os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a "linha preditora" e resíduos.
@@ -156,6 +154,40 @@ Geramos uma representação gráfica com a importância das variáveis e mais ab
 ```{r}
 plot(varImp(lasso))
 varImp(lasso)
+```
+
+## Re-treino de modelo Lasso com dados de validação
+
+Repetiremos aqui os passos realizados na construção e treino do modelo Lasso. Porém, desta vez estaremos utilizando os dados de validação para treinar o modelo. Segue:
+
+```{r}
+lasso <- train(cra~., data = dados_validacao[,2:14],
+               method='lasso',
+                tuneLength = 10,
+               preProcess=c('center', 'scale'))
+```
+
+O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.
+
+```{r}
+plot(lasso)
+lasso
+```
+
+Em seguida, a realização de predição utilizando os mesmos dados. Abaixo temos um gráfico representando a validação do modelo, incluindo a "linha preditora" e resíduos.
+
+```{r}
+lasso.pred <- predict(lasso, dados_validacao[,2:14])
+
+lasso.pred <- data.frame(pred = lasso.pred, obs = dados_validacao$cra)
+
+ggplot(lasso.pred, aes(x = pred, y = obs)) + geom_point(alpha = 0.5, position = position_jitter(width=0.2)) + geom_abline(colour = "darkred") + ggtitle("Previsão x Observado (validação)")
+```
+
+Utilizando a função *round* é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.416. Ao interpretar o resultado da função entendemos que houve uma redução no valor do RMSE e, consequentemente, uma melhora no modelo.
+
+```{r}
+round(defaultSummary(lasso.pred), digits = 3)
 ```
 
 ```{r}
