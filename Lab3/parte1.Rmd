@@ -27,6 +27,8 @@ dados = read.csv("treino_classificacao.csv")
 
 ## Uma visualização que mostre em que ano houve mais evasões
 
+Abaixo temos uma visualização que mostra a quantidade de evasões ao longo dos anos. É possível perceber que 2011 foi o ano em que ocorreu mais evasões, um total de 9. Vale salientar que esse valor pode ser maior nesse ano pela maior quantidade de alunos que se matricularam. Até 2010 a quantidade de matrículas atingiu o valor máximo de 83, a partir de 2011 esse valor passou para 113, chegando a atingor 197 em 2015.
+
 ```{r}
 evasoes = subset(dados, EVADIU == T)
 contagem.evasoes = group_by(evasoes[!duplicated(evasoes[,1]),], MAT_TUR_ANO) %>% summarise(Evasao = as.numeric(sum(EVADIU == T)))
@@ -36,6 +38,8 @@ p
 ```
 
 ## Distribuição das classes
+
+A classe de evasão está distribuída da seguinte maneira ao longo dos anos:
 
 ```{r}
 mat_unicas = dados[!duplicated(dados[,1]),]
@@ -62,23 +66,32 @@ Observando o gráfico acima é possível reparar que a classe relacionada a evas
 contagem.total[2,2]/(contagem.total[1,2] + contagem.total[2,2])
 ```
 
+Uma classe desbalanceada pode influenciar negativamente nos algorítimos de aprendizado uma vez que a parte de maior proporção tende a enviesar o desempenho de classficadores. Tais algorítimos visam minimizar erros gerais, que classes em minoria possuem baixa contribuição. Além disso, os algorítmos assumem que os dados apresentam classes balanceadas assim como que erros são obtidos de diferentes classes.
+
 ## Um novo atributo
 
-Adicionamos agora um novo atributo aos dados. O atributo é referente a frequência de disciplinas reprovadas de um aluno no primeiro período. Entram nessa situação aquelas disciplinas com médias abaixo de 5.0. Disciplinas sem notas são tratadas como aprovação considerando que quando um aluno consegue dispensar, a mesma fica sem nota.
+Adicionamos agora um novo atributo aos dados. O atributo é referente a reprovações nas disciplinas Programação I e Laboratório de Programação I. Entram nessa situação notas nas disciplinas que são abaixo de 5.0. São possíveis os seguintes valores:
+
+* **0**: quando o aluno não reprovou nenhuma da duas disciplinas.
+* **1**: quando o aluno reprovou apenas uma das disciplinas.
+* **2**: quando o aluno reprovou ambas as disciplinas.
+
+Utilizamos esse atributo por imaginar que alunos que reprovam disciplinas de programação no primeiro semestre são aqueles que não se interessam ou têm dificuldade no conteúdo e tendem a ficar desmotivados com relação ao futuro no curso. Em outras palavras, eles percebem que essa não é a carreira que querem seguir e como consequência evadem.
+
+Abaixo vemos uma repersentação gráfica com o novo atributo:
 
 ```{r}
-
-dados$MAT_MEDIA_FINAL[is.na(dados$MAT_MEDIA_FINAL)] = 7
-
-novo_atr = group_by(dados, MAT_ALU_MATRICULA) %>% mutate(count = n(), rep = sum(MAT_MEDIA_FINAL <5))
-novo_atr$Frequencia_Rep = novo_atr$rep/novo_atr$count
+novo_atr = subset(dados, disciplina == "Programação I" | disciplina == "Laboratório de Programação I") %>% group_by(MAT_ALU_MATRICULA) %>% mutate(rep = sum(MAT_MEDIA_FINAL <5))
 
 mat_unicas = novo_atr[!duplicated(novo_atr[,1]),]
+contagem.freq = group_by(mat_unicas, rep,EVADIU) %>% summarise(count = n())
 
-contagem.freq = group_by(mat_unicas, Frequencia_Rep,EVADIU) %>% summarise(count = n())
+hchart(contagem.freq[contagem.freq$EVADIU==T,], "column", hcaes(x = rep,y=count, group = EVADIU), name= c("Evadiu")) %>%  hc_title(text = "Distribuição evasão") %>% hc_colors(c("darkred")) %>% hc_xAxis(title = list(text = "Número de reprovações em P1 e LP1")) %>% hc_yAxis(title = list(text = "Total de alunos"))
 
-hchart(contagem.freq[contagem.freq$EVADIU==T,], "column", hcaes(x = Frequencia_Rep,y=count, group = EVADIU), name= c("Evadiu")) %>%  hc_title(text = "Distribuição evasão") %>% hc_colors(c("darkred")) %>% hc_xAxis(title = list(text = "Frequência de reprovação")) %>% hc_yAxis(title = list(text = "Total de alunos"))
-
-hchart(contagem.freq[contagem.freq$EVADIU==F,], "column", hcaes(x = Frequencia_Rep,y=count, group = EVADIU), name= c("Não evadiu")) %>%  hc_title(text = "Distribuição não evasão") %>% hc_colors(c("darkred"))  %>% hc_xAxis(title = list(text = "Frequência de reprovação")) %>% hc_yAxis(title = list(text = "Total de alunos"))
+hchart(contagem.freq[contagem.freq$EVADIU==F,], "column", hcaes(x = rep,y=count, group = EVADIU), name= c("Não evadiu")) %>%  hc_title(text = "Distribuição não-evasão") %>% hc_colors(c("darkred")) %>% hc_xAxis(title = list(text = "Número de reprovações em P1 e LP1")) %>% hc_yAxis(title = list(text = "Total de alunos"))
 
 ```
+
+Percebemos que os alunos que evadiram se concentram no grupo dos que reprovaram ambas as disciplinas, reparamos também que dos alunos que evadiram nenhum reprovou apenas uma das disciplinas. Também é possível notar que o número de alunos que **não** evadiram é consideravelmente maior no cenário em que não há reprovações.
+ 
+Os gráficos nos mostram que a maior frequência de evasão e não-evasão ocorrem em grupos diferentes. As distribuições dos atributos tem valores diferentes entre as classes e isso ajuda mais o classificador, pois os valores podem ser separados mais facilmente, reduzindo a probabilidade de erros no momento de predição da classe.
