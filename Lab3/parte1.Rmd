@@ -1,0 +1,46 @@
+---
+title: "Lab 3 - Parte 1"
+author: "Martha Michelly"
+date: "12 de fevereiro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(highcharter)
+library(dplyr)
+library(ggplot2)
+```
+
+Este documento é referente a Parte 1 do Lab 3, aqui estaremos fazendo uma análise descritiva para o entendimento dos dados. A base de dados que iremos utilizar é referente aos anos de 2000 a 2015 e mostra a frequência de evasão de alunos de Ciência da Computação ao fim do primeiro semestre de aula no curso durante esse período de tempo. Teremos as seguintes colunas em nossa base de dados com seus respectivos significados:
+
+* **MAT_ALU_MATRICULA**: Matrícula aluno (anonimizado)
+* **MAT_TUR_DIS_DISCIPLINA**: Código Disciplina
+* **disciplina**: Nome Disciplina
+* **MAT_TUR_ANO**: Ano da matrícula
+* **MAT_MEDIA_FINAL**: Média obtida na disciplina
+* **EVADIU**: Variável-alvo que indica se o aluno evadiu ou não ao término do período.
+
+```{r}
+dados = read.csv("treino_classificacao.csv")
+```
+
+### Uma visualização que mostre em que ano houve mais evasões
+
+```{r}
+evasoes = subset(dados, EVADIU == T)
+contagem.evasoes = group_by(evasoes[!duplicated(evasoes[,1]),], MAT_TUR_ANO) %>% summarise(Evasao = as.numeric(sum(EVADIU == T)))
+#p = highchart() %>% hc_hart(contagem.evasoes, type="column", x = MAT_TUR_ANO, y = Evasao) %>% title(text = "Evasões ao longo dos anos")
+p = highchart() %>% hc_xAxis(categories = contagem.evasoes$MAT_TUR_ANO) %>% hc_add_series(data = contagem.evasoes$Evasao, name = "Evasões") %>% hc_title(text = "Evasões ao longo dos anos")
+p
+```
+
+## Distribuição das classes
+
+```{r}
+mat_unicas = dados[!duplicated(dados[,1]),]
+mat_unicas$MAT_MEDIA_FINAL[is.na(mat_unicas$MAT_MEDIA_FINAL)] = 0
+
+hchart(mat_unicas, "scatter", hcaes(x = MAT_TUR_ANO, y = MAT_MEDIA_FINAL, group = EVADIU))
+
+```
