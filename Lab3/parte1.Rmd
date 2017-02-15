@@ -30,7 +30,7 @@ dados = read.csv("treino_classificacao.csv")
 ```{r}
 evasoes = subset(dados, EVADIU == T)
 contagem.evasoes = group_by(evasoes[!duplicated(evasoes[,1]),], MAT_TUR_ANO) %>% summarise(Evasao = as.numeric(sum(EVADIU == T)))
-#p = highchart() %>% hc_hart(contagem.evasoes, type="column", x = MAT_TUR_ANO, y = Evasao) %>% title(text = "Evasões ao longo dos anos")
+
 p = highchart() %>% hc_xAxis(categories = contagem.evasoes$MAT_TUR_ANO) %>% hc_add_series(data = contagem.evasoes$Evasao, name = "Evasões") %>% hc_title(text = "Evasões ao longo dos anos")
 p
 ```
