@@ -31,7 +31,7 @@ dados = read.csv("treino_classificacao.csv")
 evasoes = subset(dados, EVADIU == T)
 contagem.evasoes = group_by(evasoes[!duplicated(evasoes[,1]),], MAT_TUR_ANO) %>% summarise(Evasao = as.numeric(sum(EVADIU == T)))
 
-p = highchart() %>% hc_xAxis(categories = contagem.evasoes$MAT_TUR_ANO) %>% hc_add_series(data = contagem.evasoes$Evasao, name = "Evasões") %>% hc_title(text = "Evasões ao longo dos anos")
+p = highchart() %>% hc_xAxis(categories = contagem.evasoes$MAT_TUR_ANO) %>% hc_add_series(data = contagem.evasoes$Evasao, name = "Evasões") %>% hc_title(text = "Evasões ao longo dos anos") %>% hc_colors(c("purple")) %>% hc_yAxis(title = list(text = "Total de evasões")) %>% hc_xAxis(title = list(text = "Ano"))
 p
 ```
 
@@ -39,13 +39,11 @@ p
 
 ```{r}
 mat_unicas = dados[!duplicated(dados[,1]),]
-mat_unicas$MAT_MEDIA_FINAL[is.na(mat_unicas$MAT_MEDIA_FINAL)] = 0
 
 contagem.distr = group_by(mat_unicas, MAT_TUR_ANO, EVADIU) %>% summarise(count = n())
 
-hchart(contagem.distr, "column", hcaes(x = MAT_TUR_ANO, y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes")
+hchart(contagem.distr, "column", hcaes(x = MAT_TUR_ANO, y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes") %>% hc_colors(c("darkblue", "orange")) %>% hc_yAxis(title = list(text = "Total de alunos")) %>% hc_xAxis(title = list(text = "Ano"))
 
-# hchart(mat_unicas, "scatter", hcaes(x = MAT_TUR_ANO, y = MAT_MEDIA_FINAL, group = EVADIU), name= c('Não evadiu', "Evadiu"))
 ```
 
 
@@ -54,7 +52,8 @@ hchart(contagem.distr, "column", hcaes(x = MAT_TUR_ANO, y = count, group = EVADI
 ```{r}
  contagem.total = group_by(mat_unicas, EVADIU) %>% summarise(count = n())
 
-# hchart(contagem.total, "column", hcaes(y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes") %>% hc_plotOptions(column = list(stacking = "normal")) %>% hc_colors(c("darkblue", "orange"))
+hchart(contagem.total, "column", hcaes(y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição da classe") %>% hc_plotOptions(column = list(stacking = "normal")) %>% hc_colors(c("darkblue", "orange")) %>% hc_yAxis(title = list(text = "Total de alunos"))
+
 ```
 
 Observando o gráfico acima é possível reparar que a classe relacionada a evasão está desbalanceada, apresentando a seguinte proporção:
@@ -65,9 +64,21 @@ contagem.total[2,2]/(contagem.total[1,2] + contagem.total[2,2])
 
 ## Um novo atributo
 
-Adicionamos agora um novo atributo aos dados. O atributo é referente a frequência de disciplinas não pagas de um aluno no primeiro período. Entram nessa situação aquelas disciplinas com médias abaixo de 5.0 ou sem nota.
+Adicionamos agora um novo atributo aos dados. O atributo é referente a frequência de disciplinas reprovadas de um aluno no primeiro período. Entram nessa situação aquelas disciplinas com médias abaixo de 5.0. Disciplinas sem notas são tratadas como aprovação considerando que quando um aluno consegue dispensar, a mesma fica sem nota.
 
 ```{r}
+
+dados$MAT_MEDIA_FINAL[is.na(dados$MAT_MEDIA_FINAL)] = 7
+
 novo_atr = group_by(dados, MAT_ALU_MATRICULA) %>% mutate(count = n(), rep = sum(MAT_MEDIA_FINAL <5))
 novo_atr$Frequencia_Rep = novo_atr$rep/novo_atr$count
+
+mat_unicas = novo_atr[!duplicated(novo_atr[,1]),]
+
+contagem.freq = group_by(mat_unicas, Frequencia_Rep,EVADIU) %>% summarise(count = n())
+
+hchart(contagem.freq[contagem.freq$EVADIU==T,], "column", hcaes(x = Frequencia_Rep,y=count, group = EVADIU), name= c("Evadiu")) %>%  hc_title(text = "Distribuição evasão") %>% hc_colors(c("darkred")) %>% hc_xAxis(title = list(text = "Frequência de reprovação")) %>% hc_yAxis(title = list(text = "Total de alunos"))
+
+hchart(contagem.freq[contagem.freq$EVADIU==F,], "column", hcaes(x = Frequencia_Rep,y=count, group = EVADIU), name= c("Não evadiu")) %>%  hc_title(text = "Distribuição não evasão") %>% hc_colors(c("darkred"))  %>% hc_xAxis(title = list(text = "Frequência de reprovação")) %>% hc_yAxis(title = list(text = "Total de alunos"))
+
 ```
