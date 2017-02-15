@@ -45,5 +45,29 @@ contagem.distr = group_by(mat_unicas, MAT_TUR_ANO, EVADIU) %>% summarise(count =
 
 hchart(contagem.distr, "column", hcaes(x = MAT_TUR_ANO, y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes")
 
-hchart(mat_unicas, "scatter", hcaes(x = MAT_TUR_ANO, y = MAT_MEDIA_FINAL, group = EVADIU), name= c('Não evadiu', "Evadiu"))
+# hchart(mat_unicas, "scatter", hcaes(x = MAT_TUR_ANO, y = MAT_MEDIA_FINAL, group = EVADIU), name= c('Não evadiu', "Evadiu"))
+```
+
+
+## Desbalanceamento de classes
+
+```{r}
+ contagem.total = group_by(mat_unicas, EVADIU) %>% summarise(count = n())
+
+# hchart(contagem.total, "column", hcaes(y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes") %>% hc_plotOptions(column = list(stacking = "normal")) %>% hc_colors(c("darkblue", "orange"))
+```
+
+Observando o gráfico acima é possível reparar que a classe relacionada a evasão está desbalanceada, apresentando a seguinte proporção:
+
+```{r}
+contagem.total[2,2]/(contagem.total[1,2] + contagem.total[2,2])
+```
+
+## Um novo atributo
+
+Adicionamos agora um novo atributo aos dados. O atributo é referente a frequência de disciplinas não pagas de um aluno no primeiro período. Entram nessa situação aquelas disciplinas com médias abaixo de 5.0 ou sem nota.
+
+```{r}
+novo_atr = group_by(dados, MAT_ALU_MATRICULA) %>% mutate(count = n(), rep = sum(MAT_MEDIA_FINAL <5))
+novo_atr$Frequencia_Rep = novo_atr$rep/novo_atr$count
 ```
