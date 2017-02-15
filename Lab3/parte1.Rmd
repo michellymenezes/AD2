@@ -25,7 +25,7 @@ Este documento é referente a Parte 1 do Lab 3, aqui estaremos fazendo uma anál
 dados = read.csv("treino_classificacao.csv")
 ```
 
-### Uma visualização que mostre em que ano houve mais evasões
+## Uma visualização que mostre em que ano houve mais evasões
 
 ```{r}
 evasoes = subset(dados, EVADIU == T)
@@ -41,6 +41,9 @@ p
 mat_unicas = dados[!duplicated(dados[,1]),]
 mat_unicas$MAT_MEDIA_FINAL[is.na(mat_unicas$MAT_MEDIA_FINAL)] = 0
 
-hchart(mat_unicas, "scatter", hcaes(x = MAT_TUR_ANO, y = MAT_MEDIA_FINAL, group = EVADIU))
+contagem.distr = group_by(mat_unicas, MAT_TUR_ANO, EVADIU) %>% summarise(count = n())
 
+hchart(contagem.distr, "column", hcaes(x = MAT_TUR_ANO, y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes")
+
+hchart(mat_unicas, "scatter", hcaes(x = MAT_TUR_ANO, y = MAT_MEDIA_FINAL, group = EVADIU), name= c('Não evadiu', "Evadiu"))
 ```
