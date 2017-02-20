@@ -1,0 +1,17 @@
+---
+title: "Lab 3 - Parte 2"
+author: "Martha Michelly"
+date: "20 de fevereiro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# library(highcharter)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+dados = read.csv("treino_classificacao_v2.csv")
+```
