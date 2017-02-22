@@ -10,8 +10,92 @@ knitr::opts_chunk$set(echo = TRUE)
 # library(highcharter)
 library(dplyr)
 library(ggplot2)
+library(reshape2)
 ```
 
-```{r}
+### Separação dos dados em treino e teste
+
+```{r, message=FALSE}
 dados = read.csv("treino_classificacao_v2.csv")
+
+dados.treino = subset(dados, MAT_TUR_ANO > 2010 & (MAT_TUR_ANO < 2015))
+dados.treino = rbind(dados.treino, subset(dados, MAT_TUR_ANO == 2015 & MAT_TUR_PERIODO == 1))
+
+dados.teste = subset(dados, MAT_TUR_ANO == 2015 & MAT_TUR_PERIODO == 2)
+
+dados.treino = dados.treino %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO) %>% filter(!is.na(MAT_MEDIA_FINAL))
+dados.teste = dados.teste %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO) %>% filter(!is.na(MAT_MEDIA_FINAL))
+
+alunos.evadiu.treino = dados.treino %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise(evadiu = any(EVADIU))
+
+alunos.evadiu.teste = dados.teste %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise(evadiu = any(EVADIU))
+
+dados.treino <- dados.treino %>%
+  group_by(MAT_ALU_MATRICULA, disciplina)  %>%
+  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, disciplina, MAT_MEDIA_FINAL) %>% 
+  mutate(disciplina = as.factor(gsub(" ",".",disciplina))) %>%
+  dcast(MAT_ALU_MATRICULA ~ disciplina, mean) %>%
+  merge(alunos.evadiu.treino)
+
+dados.teste <- dados.teste %>%
+  group_by(MAT_ALU_MATRICULA, disciplina)  %>%
+  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, disciplina, MAT_MEDIA_FINAL) %>% 
+  mutate(disciplina = as.factor(gsub(" ",".",disciplina))) %>%
+  dcast(MAT_ALU_MATRICULA ~ disciplina, mean) %>%
+  merge(alunos.evadiu.teste)
+```
+
+### Adicionando atributos
+
+```{r}
+
+```
+
+### Treino - Modelos de regressão logística
+
+```{r}
+
+```
+
+### Treino - Modelos de árvore de decisão
+
+```{r}
+```
+
+### Interpretação de coeficientes da regressão
+
+```{r}
+
+```
+
+### Acurácia, precision e recall no treino e teste
+
+```{r}
+
+```
+
+### Controle overfitting usando validação-cruzada
+
+```{r}
+
+```
+
+### Acurácia, precision e recall da validação-cruzada e teste (para os melhores modelos)
+
+```{r}
+
+```
+
+### Aplicação do melhor modelo
+
+```{r}
+
 ```
