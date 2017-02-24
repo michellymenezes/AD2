@@ -27,7 +27,7 @@ dados = read.csv("treino_classificacao.csv")
 
 ## Uma visualização que mostre em que ano houve mais evasões
 
-Abaixo temos uma visualização que mostra a quantidade de evasões ao longo dos anos. É possível perceber que 2011 foi o ano em que ocorreu mais evasões, um total de 9. Vale salientar que esse valor pode ser maior nesse ano pela maior quantidade de alunos que se matricularam. Até 2010 a quantidade de matrículas atingiu o valor máximo de 83, a partir de 2011 esse valor passou para 113, chegando a atingor 197 em 2015.
+Abaixo temos uma visualização que mostra a quantidade de evasões ao longo dos anos. É possível perceber que 2011 foi o ano em que ocorreu mais evasões, um total de 9. Vale salientar que esse valor pode ser maior nesse ano pela maior quantidade de alunos que se matricularam. Até 2010 a quantidade de matrículas atingiu o valor máximo de 83, a partir de 2011 esse valor passou para 113, chegando a atingir 197 em 2015.
 
 ```{r}
 evasoes = subset(dados, EVADIU == T)

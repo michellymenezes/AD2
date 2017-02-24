@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
+library(C50)
 ```
 
 ### Separação dos dados em treino e teste
@@ -57,17 +58,69 @@ dados.teste <- dados.teste %>%
 
 ```{r}
 
+for(i in 1:nrow(dados.treino)){
+  dados.treino$media[i] = sum(dados.treino[i,2:7], na.rm = T)/(6-sum(is.na(dados.treino[i,2:7])))
+  if(i < 93){
+    dados.teste$media[i] = sum(dados.teste[i,2:7], na.rm = T)/(6-sum(is.na(dados.treino[i,2:7])))
+  }
+}
+
 ```
 
+Percebemos que algumas notas de disciplinas estão com valores vazios. Para que não precisemos remover toda a linha do data frame, vamos realizar imputação de dados. Decidimos que os valores vazios em disciplinas serão substituídos pelo valor do cra de suas respectivas matrículas.
+
+```{r}
+for(i in 1:nrow(dados.treino)){
+  for(j in 1:ncol(dados.treino)){
+    if(is.na(dados.treino[i,j])){
+      dados.treino[i, j] = dados.treino$media[i]
+    }
+    if(i <= nrow(dados.teste)){
+      if(is.na(dados.teste[i,j])){
+        dados.teste[i, j] = dados.teste$media[i]
+      }
+    }
+  }
+}
+
+head(dados.treino)
+```
+
+```{r}
+dados.treino$Programacao[dados.treino$Programação.I >= 5 & dados.treino$Laboratório.de.Programação.I >= 5 ] = 0
+dados.teste$Programacao[dados.teste$Programação.I >= 5 & dados.teste$Laboratório.de.Programação.I >= 5 ] = 0
+
+dados.treino$Programacao[dados.treino$Programação.I < 5 & dados.treino$Laboratório.de.Programação.I < 5 ] = 2
+dados.teste$Programacao[dados.teste$Programação.I < 5 & dados.teste$Laboratório.de.Programação.I < 5 ] = 2
+
+dados.treino$Programacao[is.na(dados.treino$Programacao)] = 1 
+dados.teste$Programacao[is.na(dados.teste$Programacao)] = 1
+```
 ### Treino - Modelos de regressão logística
 
 ```{r}
+dados.treino$evadiu = as.factor(dados.treino$evadiu)
+dados.teste$evadiu = as.factor(dados.teste$evadiu)
+
+dados.treino$Programacao = as.factor(dados.treino$Programacao)
+dados.teste$Programacao = as.factor(dados.teste$Programacao)
+
+dados.treino$media = as.numeric(dados.treino$media)
+dados.teste$media = as.numeric(dados.teste$media)
+
+model <- glm(evadiu ~.,family=binomial(link='logit'),data=dados.treino[,2:ncol(dados.treino)])
+summary(model)
 
 ```
 
 ### Treino - Modelos de árvore de decisão
 
 ```{r}
+
+treeModel <- C5.0(select(dados.treino, -evadiu, -MAT_ALU_MATRICULA), as.factor(dados.treino$evadiu))
+treeModel
+summary(treeModel)
+
 ```
 
 ### Interpretação de coeficientes da regressão
@@ -83,6 +136,12 @@ dados.teste <- dados.teste %>%
 ```
 
 ### Controle overfitting usando validação-cruzada
+
+#### Ridge
+
+#### Lasso
+
+#### Condições de "early stopping"
 
 ```{r}
 

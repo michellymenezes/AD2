@@ -68,7 +68,6 @@ M = cor(na.omit(dados_treino[,2:14]))
 
 corrplot(M, type = "lower", title = "Correlação de disciplinas",  order="hclust", col=brewer.pal(n=7, name="PuOr"), addCoef.col = "black", tl.col="black", tl.srt=45, mar=c(0,0,1,0) )
 ```
-```
 
 ## Modelo de regressão Ridge
 

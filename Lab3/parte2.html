@@ -163,12 +163,183 @@ dados.teste &lt;- dados.teste %&gt;%
 </div>
 <div id="adicionando-atributos" class="section level3">
 <h3>Adicionando atributos</h3>
+<pre class="r"><code>for(i in 1:nrow(dados.treino)){
+  dados.treino$media[i] = sum(dados.treino[i,2:7], na.rm = T)/(6-sum(is.na(dados.treino[i,2:7])))
+  if(i &lt; 93){
+    dados.teste$media[i] = sum(dados.teste[i,2:7], na.rm = T)/(6-sum(is.na(dados.treino[i,2:7])))
+  }
+}</code></pre>
+<p>Percebemos que algumas notas de disciplinas estão com valores vazios. Para que não precisemos remover toda a linha do data frame, vamos realizar imputação de dados. Decidimos que os valores vazios em disciplinas serão substituídos pelo valor do cra de suas respectivas matrículas.</p>
+<pre class="r"><code>for(i in 1:nrow(dados.treino)){
+  for(j in 1:ncol(dados.treino)){
+    if(is.na(dados.treino[i,j])){
+      dados.treino[i, j] = dados.treino$media[i]
+    }
+    if(i &lt;= nrow(dados.teste)){
+      if(is.na(dados.teste[i,j])){
+        dados.teste[i, j] = dados.teste$media[i]
+      }
+    }
+  }
+}
+
+head(dados.treino)</code></pre>
+<pre><code>##                  MAT_ALU_MATRICULA Álgebra.Vetorial.e.Geometria.Analítica
+## 1 0044fe18610b0e666a8630b6b7f98386                                    9.4
+## 2 0049c0b6a2e2db661f8e15e7bc2b7581                                    1.0
+## 3 0134dc0b387e4dff42a0d2b45423564b                                    7.8
+## 4 0189d03cbf10376083a4a70ec39dab90                                    2.0
+## 5 01cb852b7b7bc76cc99e7f32376d7166                                    7.0
+## 6 02188304b2556b3bd0a6a4f4bc2f1f4d                                    3.8
+##   Cálculo.Diferencial.e.Integral.I Introdução.à.Computação
+## 1                              8.5                     8.8
+## 2                              0.7                     8.6
+## 3                              6.3                     8.0
+## 4                              3.8                     5.3
+## 5                              0.0                     5.0
+## 6                              3.4                     7.2
+##   Laboratório.de.Programação.I Leitura.e.Produção.de.Textos Programação.I
+## 1                          8.4                         9.30           8.3
+## 2                          8.8                         5.54           8.6
+## 3                          8.4                         7.76           8.3
+## 4                          5.1                         7.40           5.1
+## 5                          3.8                         7.50           3.8
+## 6                          7.4                         7.80           7.4
+##   evadiu    media
+## 1  FALSE 8.783333
+## 2  FALSE 5.540000
+## 3  FALSE 7.760000
+## 4  FALSE 4.783333
+## 5  FALSE 4.516667
+## 6  FALSE 6.166667</code></pre>
+<pre class="r"><code>dados.treino$Programacao[dados.treino$Programação.I &gt;= 5 &amp; dados.treino$Laboratório.de.Programação.I &gt;= 5 ] = 0
+dados.teste$Programacao[dados.teste$Programação.I &gt;= 5 &amp; dados.teste$Laboratório.de.Programação.I &gt;= 5 ] = 0
+
+dados.treino$Programacao[dados.treino$Programação.I &lt; 5 &amp; dados.treino$Laboratório.de.Programação.I &lt; 5 ] = 2
+dados.teste$Programacao[dados.teste$Programação.I &lt; 5 &amp; dados.teste$Laboratório.de.Programação.I &lt; 5 ] = 2
+
+dados.treino$Programacao[is.na(dados.treino$Programacao)] = 1 
+dados.teste$Programacao[is.na(dados.teste$Programacao)] = 1</code></pre>
 </div>
 <div id="treino---modelos-de-regressao-logistica" class="section level3">
 <h3>Treino - Modelos de regressão logística</h3>
+<pre class="r"><code>dados.treino$evadiu = as.factor(dados.treino$evadiu)
+dados.teste$evadiu = as.factor(dados.teste$evadiu)
+
+dados.treino$Programacao = as.factor(dados.treino$Programacao)
+dados.teste$Programacao = as.factor(dados.teste$Programacao)
+
+dados.treino$media = as.numeric(dados.treino$media)
+dados.teste$media = as.numeric(dados.teste$media)
+
+model &lt;- glm(evadiu ~.,family=binomial(link='logit'),data=dados.treino[,2:ncol(dados.treino)])
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = evadiu ~ ., family = binomial(link = &quot;logit&quot;), 
+##     data = dados.treino[, 2:ncol(dados.treino)])
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0043  -0.2656  -0.2042  -0.1575   2.9912  
+## 
+## Coefficients: (1 not defined because of singularities)
+##                                        Estimate Std. Error z value
+## (Intercept)                             2.44665    1.24505   1.965
+## Álgebra.Vetorial.e.Geometria.Analítica  0.14095    0.12996   1.085
+## Cálculo.Diferencial.e.Integral.I       -0.02382    0.11934  -0.200
+## Introdução.à.Computação                -0.27365    0.13146  -2.082
+## Laboratório.de.Programação.I            0.22050    0.42583   0.518
+## Leitura.e.Produção.de.Textos           -0.63918    0.14586  -4.382
+## Programação.I                          -0.20915    0.40949  -0.511
+## media                                        NA         NA      NA
+## Programacao2                            0.45035    0.83894   0.537
+##                                        Pr(&gt;|z|)    
+## (Intercept)                              0.0494 *  
+## Álgebra.Vetorial.e.Geometria.Analítica   0.2781    
+## Cálculo.Diferencial.e.Integral.I         0.8418    
+## Introdução.à.Computação                  0.0374 *  
+## Laboratório.de.Programação.I             0.6046    
+## Leitura.e.Produção.de.Textos           1.18e-05 ***
+## Programação.I                            0.6095    
+## media                                        NA    
+## Programacao2                             0.5914    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 362.94  on 575  degrees of freedom
+## Residual deviance: 194.56  on 568  degrees of freedom
+## AIC: 210.56
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
 </div>
 <div id="treino---modelos-de-arvore-de-decisao" class="section level3">
 <h3>Treino - Modelos de árvore de decisão</h3>
+<pre class="r"><code>treeModel &lt;- C5.0(select(dados.treino, -evadiu, -MAT_ALU_MATRICULA), as.factor(dados.treino$evadiu))
+treeModel</code></pre>
+<pre><code>## 
+## Call:
+## C5.0.default(x = select(dados.treino, -evadiu, -MAT_ALU_MATRICULA), y
+##  = as.factor(dados.treino$evadiu))
+## 
+## Classification Tree
+## Number of samples: 576 
+## Number of predictors: 8 
+## 
+## Tree size: 5 
+## 
+## Non-standard options: attempt to group attributes</code></pre>
+<pre class="r"><code>summary(treeModel)</code></pre>
+<pre><code>## 
+## Call:
+## C5.0.default(x = select(dados.treino, -evadiu, -MAT_ALU_MATRICULA), y
+##  = as.factor(dados.treino$evadiu))
+## 
+## 
+## C5.0 [Release 2.07 GPL Edition]      Fri Feb 24 11:54:35 2017
+## -------------------------------
+## 
+## Class specified by attribute `outcome'
+## 
+## Read 576 cases (9 attributes) from undefined.data
+## 
+## Decision tree:
+## 
+## Leitura.e.Produção.de.Textos &gt; 3.3: FALSE (528/17)
+## Leitura.e.Produção.de.Textos &lt;= 3.3:
+## :...Programacao = 0: FALSE (2)
+##     Programacao = 2:
+##     :...Leitura.e.Produção.de.Textos &lt;= 2: TRUE (23)
+##         Leitura.e.Produção.de.Textos &gt; 2:
+##         :...Cálculo.Diferencial.e.Integral.I &lt;= 1.8: FALSE (7/2)
+##             Cálculo.Diferencial.e.Integral.I &gt; 1.8: TRUE (16/3)
+## 
+## 
+## Evaluation on training data (576 cases):
+## 
+##      Decision Tree   
+##    ----------------  
+##    Size      Errors  
+## 
+##       5   22( 3.8%)   &lt;&lt;
+## 
+## 
+##     (a)   (b)    &lt;-classified as
+##    ----  ----
+##     518     3    (a): class FALSE
+##      19    36    (b): class TRUE
+## 
+## 
+##  Attribute usage:
+## 
+##  100.00% Leitura.e.Produção.de.Textos
+##    8.33% Programacao
+##    3.99% Cálculo.Diferencial.e.Integral.I
+## 
+## 
+## Time: 0.0 secs</code></pre>
 </div>
 <div id="interpretacao-de-coeficientes-da-regressao" class="section level3">
 <h3>Interpretação de coeficientes da regressão</h3>
@@ -178,6 +349,15 @@ dados.teste &lt;- dados.teste %&gt;%
 </div>
 <div id="controle-overfitting-usando-validacao-cruzada" class="section level3">
 <h3>Controle overfitting usando validação-cruzada</h3>
+<div id="ridge" class="section level4">
+<h4>Ridge</h4>
+</div>
+<div id="lasso" class="section level4">
+<h4>Lasso</h4>
+</div>
+<div id="condicoes-de-early-stopping" class="section level4">
+<h4>Condições de “early stopping”</h4>
+</div>
 </div>
 <div id="acuracia-precision-e-recall-da-validacao-cruzada-e-teste-para-os-melhores-modelos" class="section level3">
 <h3>Acurácia, precision e recall da validação-cruzada e teste (para os melhores modelos)</h3>
