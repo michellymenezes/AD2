@@ -7,21 +7,35 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(highcharter)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
 
 library(rpart)
 library(caret)
+library(glmnet)
 ```
 
 Esta é a continuação do laboratório 3. Aqui damos continuidade ao tema "evasão no primeiro período". Na parte 1 foi feita a análise descritiva dos dados, nesta parte 2 estaremos utilizando algoritmos de classificação para tentar prever evasão de alunos no curso de computação ao fim do primeiro período.
 
 ### Separação dos dados em treino e teste
 
-```{r, message=FALSE}
+A utilização dos dados será feita a partir do ano 2011, já que é a partir desse ano que se observa um aumento considerável no número de matrículas, enquanto o número de evasões permanece semelhante nos anos seguintes.
+
+```{r}
 dados = read.csv("treino_classificacao_v2.csv")
 
+mat_unicas = dados[!duplicated(dados[,1]),]
+
+contagem.distr = group_by(mat_unicas, MAT_TUR_ANO, EVADIU) %>% summarise(count = n())
+
+hchart(contagem.distr, "column", hcaes(x = MAT_TUR_ANO, y = count, group = EVADIU), name= c('Não evadiu', "Evadiu")) %>%  hc_title(text = "Distribuição das classes") %>% hc_colors(c("darkblue", "orange")) %>% hc_yAxis(title = list(text = "Total de alunos")) %>% hc_xAxis(title = list(text = "Ano"))
+```
+
+Desses dados, os dividimos em treino e teste. Os dados de teste serão aqueles referentes as matrículas realizadas em 2015.2, o resto dos dados a partir de 2011 irão compor os dados de treino.
+
+```{r, message=FALSE}
 dados.treino = subset(dados, MAT_TUR_ANO > 2010 & (MAT_TUR_ANO < 2015))
 dados.treino = rbind(dados.treino, subset(dados, MAT_TUR_ANO == 2015 & MAT_TUR_PERIODO == 1))
 
@@ -38,7 +52,7 @@ alunos.evadiu.teste = dados.teste %>%
   group_by(MAT_ALU_MATRICULA) %>%
   summarise(evadiu = any(EVADIU))
 
-dados.treino <- dados.treino %>%
+dados.treino = dados.treino %>%
   group_by(MAT_ALU_MATRICULA, disciplina)  %>%
   filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
   ungroup() %>%
@@ -47,7 +61,7 @@ dados.treino <- dados.treino %>%
   dcast(MAT_ALU_MATRICULA ~ disciplina, mean) %>%
   merge(alunos.evadiu.treino)
 
-dados.teste <- dados.teste %>%
+dados.teste = dados.teste %>%
   group_by(MAT_ALU_MATRICULA, disciplina)  %>%
   filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
   ungroup() %>%
@@ -78,14 +92,11 @@ for(i in 1:nrow(dados.treino)){
 head(dados.treino)
 ```
 
-Para um segundo atributo, decidimos que será uma variável categórica. Se o aluno reprovou Programação I ou Lab. de Programação I, o valor será TRUE, caso contrário, FALSE.
+Para um novo atributo, decidimos que será uma variável categórica chamada **Programacao**. Se o aluno reprovou Programação I ou Lab. de Programação I, o valor será TRUE, caso contrário, FALSE.
 
 ```{r}
 dados.treino$Programacao[dados.treino$Programação.I >= 5 & dados.treino$Laboratório.de.Programação.I >= 5 ] = F
 dados.teste$Programacao[dados.teste$Programação.I >= 5 & dados.teste$Laboratório.de.Programação.I >= 5 ] = F
-
-dados.treino$Programacao[dados.treino$Programação.I < 5 & dados.treino$Laboratório.de.Programação.I < 5 ] = T
-dados.teste$Programacao[dados.teste$Programação.I < 5 & dados.teste$Laboratório.de.Programação.I < 5 ] = T
 
 dados.treino$Programacao[is.na(dados.treino$Programacao)] = T
 dados.teste$Programacao[is.na(dados.teste$Programacao)] = T
@@ -110,16 +121,19 @@ model.gml = train(evadiu ~. -MAT_ALU_MATRICULA,
 
 ### Treino - Modelos de árvore de decisão
 
+Tivemos que substituir os valores da variável criada por valores numéricos porque a função de criar o modelo não estava aceitando a variável caregórica.
+
 ```{r}
 dtf2 = select(dados.treino, -Programacao)
 dtf2$Programacao[dados.treino$Programacao==T] = 1
 dtf2$Programacao[dados.treino$Programacao==F] = 0
+
 model.tree = rpart(evadiu ~ . -MAT_ALU_MATRICULA, data=dtf2)
 ```
 
 ### Interpretação de coeficientes da regressão
 
-Vemos abaixo que as variáveis mais significativas são Leitura e Produção de Texto de Introdução à Computação. Essas variáveis apresentam os menores p-valores, o que para mim não faz muito sentido. Talvez essa importância seja resultado da imputação dos dados.
+Vemos abaixo que as variáveis mais significativas são Leitura.e.Produção.de.Texto e Introdução.à.Computação. Essas variáveis apresentam os menores p-valores, o que para mim não faz muito sentido. Talvez essa importância seja resultado da imputação dos dados.
 
 ```{r}
 summary(model.gml)
@@ -127,26 +141,33 @@ summary(model.gml)
 
 ### Acurácia, precision e recall no treino e teste
 
-* **Acurácia**: proporção de observações corretamente classificadas. (TP+TN)/(TP+TN+FP+FN).
-* **Precisão**: quantas das observaçoes preditas como positivas são realmente positivas. TP/(TP+FP).
+* **TP**: true-positive;
+* **TN**: true-negative;
+* **FP**: false-positive;
+* **FN**: false-negative.
+
+* **Acurácia**: proporção de observações corretamente classificadas. (TP+TN)/(TP+TN+FP+FN);
+* **Precisão**: quantas das observaçoes preditas como positivas são realmente positivas. TP/(TP+FP);
 * **Recall**: quantas observaçoes positivas foram corretamente classificadas. TP/(TP+FN).
 
 #### Regressão logística
 
 ```{r}
 dados.teste$predicao.gml = predict(model.gml, dados.teste)
-
-
 temp = dados.teste %>% select(evadiu, predicao.gml)
 
-TP = temp %>% filter(evadiu == TRUE, predicao.gml == TRUE) %>% nrow()
-TN = temp %>% filter(evadiu == FALSE, predicao.gml == FALSE) %>% nrow()
-FP = temp %>% filter(evadiu == FALSE, predicao.gml == TRUE) %>% nrow() 
-FN = temp %>% filter(evadiu == TRUE, predicao.gml == FALSE) %>% nrow()
+TP = subset(temp, evadiu == TRUE & predicao.gml == TRUE) %>% nrow()
+TN = subset(temp, evadiu == FALSE & predicao.gml == FALSE) %>% nrow()
+FP = subset(temp, evadiu == FALSE & predicao.gml == TRUE) %>% nrow() 
+FN = subset(temp, evadiu == TRUE & predicao.gml == FALSE) %>% nrow()
+```
 
-print(paste('Accuracy', (TP + TN)/(TP+TN+FP+FN)))
-print(paste('Precision', TP / (TP + FP)))
-print(paste('Recall', TP / (TP + FN)))
+Vemos abaixo que a acurácia do modelo parece boa, mais de 90% das previsões foram realizadas corretamente. Porém, os valores de precisão e recall são bem mais baixos. Com precisão igual a 0.5 siginifica que em metade das vezes foi prevista uma evasão quando não ocorreu. Com o valor de Recall aproximadamente igual a 0.57 significa que o modelo só preveu 57% dos alunos que evadiram. Essa característica se deve ao fato de que as classes estão desbalanceadas.
+
+```{r echo=F}
+print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))
+print(paste('Precisão:', TP / (TP + FP)))
+print(paste('Recall:', TP / (TP + FN)))
 ```
 
 #### Árvore de decisão
@@ -155,22 +176,25 @@ print(paste('Recall', TP / (TP + FN)))
 tst2 = select(dados.teste, -Programacao)
 tst2$Programacao[dados.teste$Programacao==T] = 1
 tst2$Programacao[dados.teste$Programacao==F] = 0
-predicao.tree <- as.data.frame(predict(model.tree, tst2))
+predicao.tree = as.data.frame(predict(model.tree, tst2))
 
 temp = apply(predicao.tree['TRUE'], 2, FUN = function(x){return(x > 0.5)})
-tst2$predicao.tree <- as.factor(temp)
+tst2$predicao.tree = as.factor(temp)
 
 temp = tst2 %>% select(evadiu, predicao.tree)
 
-TP = temp %>% filter(evadiu == TRUE, predicao.tree == TRUE) %>% nrow()
-TN = temp %>% filter(evadiu == FALSE, predicao.tree == FALSE) %>% nrow()
-FP = temp %>% filter(evadiu == FALSE, predicao.tree == TRUE) %>% nrow() 
-FN = temp %>% filter(evadiu == TRUE, predicao.tree == FALSE) %>% nrow()
+TP = subset(temp, evadiu == TRUE & predicao.tree == TRUE) %>% nrow()
+TN = subset(temp, evadiu == FALSE & predicao.tree == FALSE) %>% nrow()
+FP = subset(temp, evadiu == FALSE & predicao.tree == TRUE) %>% nrow() 
+FN = subset(temp, evadiu == TRUE & predicao.tree == FALSE) %>% nrow()
+```
 
+Vemos abaixo que a acurácia do modelo parece boa, mais de 90% das previsões foram realizadas corretamente. Porém, não foi possível calcular a precisão, dado que, como não houve nenhuma ocorrência de valores TP e FP, não é possível realizar uma divisão por zero. De maneira análoga, o valor de Recall foi igual a zero, dado que TP também é igual a zero, implicando que o modelo não conseguiu prever a evasão de nenhum aluno. Mais uma vez, essa característica se deve ao fato de que as classes estão desbalanceadas e quando isso ocorre a acurácia do modelo será enganadora.
 
-print(paste('Accuracy', (TP + TN)/(TP+TN+FP+FN)))
-print(paste('Precision', TP / (TP + FP)))
-print(paste('Recall', TP / (TP + FN)))
+```{r echo=F}
+print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))
+print(paste('Precisão:', TP / (TP + FP)))
+print(paste('Recall:', TP / (TP + FN)))
 ```
 
 ### Controle overfitting usando validação-cruzada
@@ -182,9 +206,8 @@ print(paste('Recall', TP / (TP + FN)))
 O modelo de regressão para ridge é ajustado chamando a função glmnet com alpha igual a 0. Glmnet desenvolve modelos em uma grade com cerca de 100 valores de lambda, como podemos ver no gráfico abaixo. Quando log de lambda é 4, todos os coeficientes são essencialmente zero. Então, à medida que relaxamos lambda, os coeficientes crescem de distanciando de zero.
 
 ```{r}
-library(glmnet)
 
-set.seed(825)
+set.seed(123)
 
 model.ridge = glmnet(x = model.matrix( ~ . -MAT_ALU_MATRICULA -evadiu, dados.treino),
                 y = dados.treino$evadiu,
@@ -199,7 +222,7 @@ Para selecionar um modelo ridge executamos a função **cv.glmnet** que fará va
 No início, o desvio binomial é mais alto e os coeficientes são pequenos até que, em algum ponto, ele se eleva e o intervalo é reduzido.
 
 ```{r}
-cv.ridge <- cv.glmnet(model.matrix( ~ . -MAT_ALU_MATRICULA -evadiu, dados.treino), y=dados.treino$evadiu, alpha=0, family="binomial")
+cv.ridge = cv.glmnet(model.matrix( ~ . -MAT_ALU_MATRICULA -evadiu, dados.treino), y=dados.treino$evadiu, alpha=0, family="binomial")
 
 plot(cv.ridge, sub = T)
 ```
@@ -209,6 +232,8 @@ plot(cv.ridge, sub = T)
 O modelo de regressão para lasso é ajustado chamando a função glmnet com alpha igual a 1. 
 
 ```{r}
+set.seed(123)
+
 model.lasso = glmnet(x = model.matrix( ~ . -MAT_ALU_MATRICULA -evadiu, dados.treino),
                 y = dados.treino$evadiu,
                 alpha = 1,
@@ -231,16 +256,17 @@ coef(model.lasso)[,10]
 Assim como em ridge, realizamos o processo para visualização da validação cruzada.
 
 ```{r}
-cv.lasso <- cv.glmnet(model.matrix( ~ . -MAT_ALU_MATRICULA -evadiu, dados.treino), y=dados.treino$evadiu, alpha=1, family="binomial")
+cv.lasso = cv.glmnet(model.matrix( ~ . -MAT_ALU_MATRICULA -evadiu, dados.treino), y=dados.treino$evadiu, alpha=1, family="binomial")
 plot(cv.lasso)
 ```
 
 E definimos o **novo melhor modelo de regressão logística**.
 
 ```{r}
-# novo modelo
+set.seed(123)
+
 fitControl = trainControl(method = "cv", number = 10)
-best.glm.model <- model.lasso <- train(evadiu ~ Introdução.à.Computação + Leitura.e.Produção.de.Textos,
+best.glm.model = model.lasso = train(evadiu ~ Introdução.à.Computação + Leitura.e.Produção.de.Textos,
                    data=dados.treino,
                    method="glm",
                    family="binomial",
@@ -272,17 +298,21 @@ best.tree = prune(model.tree,
 #### Regressão Logística
 
 ```{r}
-dados.teste$best.glm.prediction <- predict(best.glm.model, dados.teste)
+dados.teste$best.glm.prediction = predict(best.glm.model, dados.teste)
 temp = dados.teste %>% select(evadiu, best.glm.prediction)
 
-TP = temp %>% filter(evadiu == TRUE, best.glm.prediction == TRUE) %>% nrow()
-TN = temp %>% filter(evadiu == FALSE, best.glm.prediction == FALSE) %>% nrow()
-FP = temp %>% filter(evadiu == FALSE, best.glm.prediction == TRUE) %>% nrow() 
-FN = temp %>% filter(evadiu == TRUE, best.glm.prediction == FALSE) %>% nrow()
+TP = subset(temp, evadiu == TRUE & best.glm.prediction == TRUE) %>% nrow()
+TN = subset(temp, evadiu == FALSE & best.glm.prediction == FALSE) %>% nrow()
+FP = subset(temp, evadiu == FALSE & best.glm.prediction == TRUE) %>% nrow() 
+FN = subset(temp, evadiu == TRUE & best.glm.prediction == FALSE) %>% nrow()
+```
 
-print(paste('Accuracy', (TP + TN)/(TP+TN+FP+FN)))
-print(paste('Precision', TP / (TP + FP)))
-print(paste('Recall', TP / (TP + FN)))
+Comparando com o modelo anterior de regressão logística, vemos que ambos os modelos apresentam os mesmos valores para acurácia, precisão e recall. Isso significa que o novo modelo não é pior, mas também não é melhor.
+
+```{r echo=F}
+print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))
+print(paste('Precisão:', TP / (TP + FP)))
+print(paste('Recall:', TP / (TP + FN)))
 ```
 
 #### Árvore de decisão
@@ -294,20 +324,34 @@ tst2$predicao.best.tree = as.factor(temp)
 
 temp = tst2 %>% select(evadiu, predicao.best.tree)
 
-TP = temp %>% filter(evadiu == TRUE, predicao.best.tree == TRUE) %>% nrow()
-TN = temp %>% filter(evadiu == FALSE, predicao.best.tree == FALSE) %>% nrow()
-FP = temp %>% filter(evadiu == FALSE, predicao.best.tree == TRUE) %>% nrow() 
-FN = temp %>% filter(evadiu == TRUE, predicao.best.tree == FALSE) %>% nrow()
+TP = subset(temp, evadiu == TRUE & predicao.best.tree == TRUE) %>% nrow()
+TN = subset(temp, evadiu == FALSE & predicao.best.tree == FALSE) %>% nrow()
+FP = subset(temp, evadiu == FALSE & predicao.best.tree == TRUE) %>% nrow() 
+FN = subset(temp, evadiu == TRUE & predicao.best.tree == FALSE) %>% nrow()
+```
 
-print(paste('Accuracy', (TP + TN)/(TP+TN+FP+FN)))
-print(paste('Precision', TP / (TP + FP)))
-print(paste('Recall', TP / (TP + FN)))
+Já para o novo modelo de árvore de decisão, o valor de acurácia teve uma leve reduzida, mas ainda se mantém acima dos 90%. Por outro lado, agora é possível calcular um valor de precisão, que agora se apresenta em aproximadamente 0.45. O recall que antes era zero, foi alterado para 0.71. Vemos uma melhora considerável nesse novo modelo de árvore de decisão.
+
+```{r echo=F}
+print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))
+print(paste('Precisão:', TP / (TP + FP)))
+print(paste('Recall:', TP / (TP + FN)))
 ```
 
 ### Aplicação do melhor modelo
 
+Aplicando meus dados pessoais nos dois melhores modelos, vemos que ambos acertam na predição. Tando a regressão logística quanto a árvore de decisão apontam para não evasão, que é a resposta esperada.
+
 ```{r}
-pessoal.dados <- data.frame(Introdução.à.Computação=8, Leitura.e.Produção.de.Textos = 8)
-pessoal.predicao <- predict(best.glm.model, pessoal.dados)
+pessoal.dados = data.frame(Introdução.à.Computação=8.4, Leitura.e.Produção.de.Textos = 8.2)
+pessoal.predicao = predict(best.glm.model, pessoal.dados)
+pessoal.predicao
+
+pessoal.dados = data.frame(MAT_ALU_MATRICULA="0674a56175b24881b769d167a199cb41", Álgebra.Vetorial.e.Geometria.Analítica = 7.3, Cálculo.Diferencial.e.Integral.I = 5.5, Introdução.à.Computação=8.4, Laboratório.de.Programação.I = 7.7, Leitura.e.Produção.de.Textos = 8.2, Programação.I = 7.6, evadiu = F, Programacao = 0)
+
+pessoal.predicao = as.data.frame(predict(best.tree, pessoal.dados))
+temp = apply(pessoal.predicao['TRUE'], 2, FUN = function(x){return(x > 0.5)})
+pessoal.predicao = as.factor(temp)
+
 pessoal.predicao
 ```
