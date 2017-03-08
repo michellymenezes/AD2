@@ -340,13 +340,13 @@ print(paste('Recall:', TP / (TP + FN)))
 
 ### Aplicação do melhor modelo
 
-Aplicando meus dados pessoais nos dois melhores modelos, vemos que ambos acertam na predição. Tando a regressão logística quanto a árvore de decisão apontam para não evasão, que é a resposta esperada.
+Consideramos como melhor modelo o modelo de árvore de regressão melhorado, alguns dos motivos são:
+
+* Não podemos considerar o valor da acurária dado que os dados estão muito desbalanceados.
+* Neste caso, o Recall é o que utilizamos para considerar o melhor modelo. É muito mais importante identificar alunos que vão evadir, classificar como false um aluno que vai evadir é considerado uma grande perda.
+* Classificar como true um aluno que na verdade não vai evadir não implicará em grande impactos.
 
 ```{r}
-pessoal.dados = data.frame(Introdução.à.Computação=8.4, Leitura.e.Produção.de.Textos = 8.2)
-pessoal.predicao = predict(best.glm.model, pessoal.dados)
-pessoal.predicao
-
 pessoal.dados = data.frame(MAT_ALU_MATRICULA="0674a56175b24881b769d167a199cb41", Álgebra.Vetorial.e.Geometria.Analítica = 7.3, Cálculo.Diferencial.e.Integral.I = 5.5, Introdução.à.Computação=8.4, Laboratório.de.Programação.I = 7.7, Leitura.e.Produção.de.Textos = 8.2, Programação.I = 7.6, evadiu = F, Programacao = 0)
 
 pessoal.predicao = as.data.frame(predict(best.tree, pessoal.dados))
@@ -355,3 +355,5 @@ pessoal.predicao = as.factor(temp)
 
 pessoal.predicao
 ```
+
+Como resultado para os dados pessoais, o modelo fez a predição correta a meu respeito.
