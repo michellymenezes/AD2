@@ -1,0 +1,116 @@
+---
+title: "Lab 3 - Parte 3"
+author: "Martha Michelly"
+date: "08/03/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(reshape2)
+library(rpart)
+
+
+dados = read.csv("lab3_kaggle_classificacao_treino.csv")
+dados.teste = read.csv("lab3_kaggle_classificacao_teste.csv")
+
+mat_unicas = dados[!duplicated(dados[,1]),]
+
+contagem.distr = group_by(mat_unicas, MAT_TUR_ANO, EVADIU) %>% summarise(count = n())
+
+dados.treino = subset(dados, MAT_TUR_ANO > 2010)
+
+# dados.treino = subset(dados, MAT_TUR_ANO > 2010 & (MAT_TUR_ANO < 2015))
+# dados.treino = rbind(dados.treino, subset(dados, MAT_TUR_ANO == 2015 & MAT_TUR_PERIODO == 1))
+
+
+dados.treino = dados.treino %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO) %>% filter(!is.na(MAT_MEDIA_FINAL))
+
+dados.teste = dados.teste %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO)
+# dados.teste = dados.teste %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO) %>% filter(!is.na(MAT_MEDIA_FINAL))
+
+alunos.evadiu.treino = dados.treino %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise(EVADIU = any(EVADIU))
+
+alunos.evadiu.teste = dados.teste %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise()
+
+dados.treino = dados.treino %>%
+  group_by(MAT_ALU_MATRICULA, DISCIPLINA)  %>%
+  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, DISCIPLINA, MAT_MEDIA_FINAL) %>% 
+  mutate(DISCIPLINA = as.factor(gsub(" ",".",DISCIPLINA))) %>%
+  dcast(MAT_ALU_MATRICULA ~ DISCIPLINA, mean) %>%
+  merge(alunos.evadiu.treino)
+
+dados.teste = dados.teste %>%
+  group_by(MAT_ALU_MATRICULA, DISCIPLINA)  %>%
+#  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, DISCIPLINA, MAT_MEDIA_FINAL) %>% 
+  mutate(DISCIPLINA = as.factor(gsub(" ",".",DISCIPLINA))) %>%
+  dcast(MAT_ALU_MATRICULA ~ DISCIPLINA, mean) %>%
+  merge(alunos.evadiu.teste)
+
+for(i in 1:nrow(dados.treino)){
+  for(j in 1:ncol(dados.treino)){
+    
+    if(is.na(dados.treino[i,j])){
+      
+      if(6-(sum(is.na(dados.treino[i,2:7]))) == 0){
+        dados.treino[i, j] = 10
+      }
+      else{
+       dados.treino[i, j] = sum(dados.treino[i,2:7], na.rm = T)/(6-sum(is.na(dados.treino[i,2:7])))
+      }
+    }
+    if(i <= nrow(dados.teste) && j <= ncol(dados.teste)){
+      if(is.na(dados.teste[i,j])){
+        
+          if(6-sum(is.na(dados.teste[i,2:7])) == 0){
+        dados.teste[i, j] = 10
+          }
+        else{
+        
+        dados.teste[i, j] = sum(dados.teste[i,2:7], na.rm = T)/(6-sum(is.na(dados.teste[i,2:7])))
+        }
+      }
+    }
+  }
+}
+
+dados.treino$Programacao[dados.treino$Programação.I >= 5 & dados.treino$Laboratório.de.Programação.I >= 5 ] = 0
+dados.teste$Programacao[dados.teste$Programação.I >= 5 & dados.teste$Laboratório.de.Programação.I >= 5 ] = 0
+
+dados.treino$Programacao[is.na(dados.treino$Programacao)] = 1
+dados.teste$Programacao[is.na(dados.teste$Programacao)] = 1
+
+
+
+
+dt.control = rpart.control(maxdepth=30)
+
+model.tree = rpart(EVADIU ~ .,
+                           data=select(dados.treino, -MAT_ALU_MATRICULA),
+                           method="class",
+                           control=dt.control)
+
+printcp(model.tree)
+
+best.tree = prune(model.tree,
+ + model.tree$cptable[which.min(model.tree$cptable[,"xerror"]),"CP"])
+
+#dados.teste$EVADIU = NA
+
+predicao = as.data.frame(predict(best.tree, select(dados.teste, -MAT_ALU_MATRICULA), type = "class"))
+
+result = select(dados.teste, MAT_ALU_MATRICULA) %>% cbind(predicao)
+
+names(result) = c("MAT_ALU_MATRICULA", "EVADIU")
+
+write.csv(result, "resultado.csv", row.names = F, col.names = F)
+```
