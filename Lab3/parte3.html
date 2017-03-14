@@ -124,6 +124,8 @@ $(document).ready(function () {
 </div>
 
 
+<div id="prevendo-evasao" class="section level2">
+<h2>Prevendo evasão</h2>
 <p>Este documento é referente a continuação do Lab 3. Nesta parte 3 o objetivo é utilizar os dados anteriores e melhorar o modelo para tentar prever quais alunos irão evadir.</p>
 <p>Continuaremos utilizando o modelo de árvore de decisão, já que foi o que teve melhor resultado na parte 2. Utilizamos como dados de treino um recorte dos dados fornecidos, considerando os períodos a partir de 2011 e deixando o último período para utilizar como dados de teste.</p>
 <pre class="r"><code>dados = read.csv(&quot;lab3_kaggle_classificacao_treino.csv&quot;)
@@ -173,13 +175,15 @@ dados.teste = dados.teste %&gt;%
 
 dados.teste.final = dados.teste.final %&gt;%
   group_by(MAT_ALU_MATRICULA, DISCIPLINA)  %&gt;%
-  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %&gt;%
   ungroup() %&gt;%
   select(MAT_ALU_MATRICULA, DISCIPLINA, MAT_MEDIA_FINAL) %&gt;% 
   mutate(DISCIPLINA = as.factor(gsub(&quot; &quot;,&quot;.&quot;,DISCIPLINA))) %&gt;%
   dcast(MAT_ALU_MATRICULA ~ DISCIPLINA, mean) %&gt;%
   merge(alunos.evadiu.teste.final)</code></pre>
-<p>A abordagem utilizada foi uso das médias das disciplinas como atributos e a adição de um novo atributo, referente se o aluno reprovou alguma das disciplinas de programação.</p>
+<div id="melhorando-o-modelo" class="section level3">
+<h3>Melhorando o modelo</h3>
+<p>A abordagem anterior utilizada foi uso das médias das disciplinas como atributos e a adição de um novo atributo, referente se o aluno reprovou alguma das disciplinas de programação. Para a inputação de dados, foi feita uma média das notas presentes de um aluno e colocadas onde havia NA.</p>
+<p>Nessa parte, temos duas diferenças: adicionamos um novo atributo que é referente a quantidade de NA’s que um aluno possui e no momento de inputação, se um aluno só possui NA’s, todas as suas notas são substituídas por zero.</p>
 <pre class="r"><code>dados.treino$nNA = NA
 dados.teste$nNA = NA
 dados.teste.final$nNA = NA
@@ -237,6 +241,9 @@ dados.teste.final$Programacao[dados.teste.final$Programação.I &gt;= 5 &amp; da
 dados.treino$Programacao[is.na(dados.treino$Programacao)] = 1
 dados.teste$Programacao[is.na(dados.teste$Programacao)] = 1
 dados.teste.final$Programacao[is.na(dados.teste.final$Programacao)] = 1</code></pre>
+</div>
+<div id="criando-modelo-de-arvore-de-decisao" class="section level3">
+<h3>Criando modelo de árvore de decisão</h3>
 <pre class="r"><code>dt.control = rpart.control(maxdepth=30)
 
 model.tree = rpart(EVADIU ~ .,
@@ -245,9 +252,12 @@ model.tree = rpart(EVADIU ~ .,
                            control=dt.control)
 
 best.tree = prune(model.tree,
- + model.tree$cptable[which.min(model.tree$cptable[,&quot;xerror&quot;]),&quot;CP&quot;])
-
-predicao = as.data.frame(predict(model.tree, select(dados.teste, -MAT_ALU_MATRICULA)))
+ + model.tree$cptable[which.min(model.tree$cptable[,&quot;xerror&quot;]),&quot;CP&quot;])</code></pre>
+</div>
+<div id="acuracia-precision-e-recall" class="section level3">
+<h3>Acurácia, precision e recall</h3>
+<p>Criamos o novo modelo de árvore de decisão e pudemos notar algumas melhoras. Apesar de o valor de Recall ter permanecido o mesmo, a Acurácia foi minimamente elevada e a Precisão subiu em quase 0.20 “pontos”.</p>
+<pre class="r"><code>predicao = as.data.frame(predict(model.tree, select(dados.teste, -MAT_ALU_MATRICULA)))
 temp = apply(predicao['TRUE'], 2, FUN = function(x){return(x &gt; 0.5)})
 
 dados.teste$predicao = as.factor(temp)
@@ -256,21 +266,54 @@ temp = dados.teste %&gt;% select(EVADIU, predicao)
 TP = subset(temp, EVADIU == TRUE &amp; predicao == TRUE) %&gt;% nrow()
 TN = subset(temp, EVADIU == FALSE &amp; predicao == FALSE) %&gt;% nrow()
 FP = subset(temp, EVADIU == FALSE &amp; predicao == TRUE) %&gt;% nrow() 
-FN = subset(temp, EVADIU == TRUE &amp; predicao == FALSE) %&gt;% nrow()
-
-print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))</code></pre>
+FN = subset(temp, EVADIU == TRUE &amp; predicao == FALSE) %&gt;% nrow()</code></pre>
+<p>Conferindo os valores abaixo é possível conrfimar que o novo modelo apresenta melhores resultados para o teste executado. Sendo assim, esse será o modelo utilizado para tentar prever quais alunos irão evadir no desafio do Kaggle.</p>
+<pre class="r"><code>print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))</code></pre>
 <pre><code>## [1] &quot;Acurácia: 0.945652173913043&quot;</code></pre>
 <pre class="r"><code>print(paste('Precisão:', TP / (TP + FP)))</code></pre>
 <pre><code>## [1] &quot;Precisão: 0.625&quot;</code></pre>
 <pre class="r"><code>print(paste('Recall:', TP / (TP + FN)))</code></pre>
 <pre><code>## [1] &quot;Recall: 0.714285714285714&quot;</code></pre>
+<p>Para mais detalhes, observe o a informações da matriz de confusão abaixo:</p>
+<pre class="r"><code>confusionMatrix(dados.teste$EVADIU, dados.teste$predicao)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction FALSE TRUE
+##      FALSE    82    3
+##      TRUE      2    5
+##                                           
+##                Accuracy : 0.9457          
+##                  95% CI : (0.8777, 0.9821)
+##     No Information Rate : 0.913           
+##     P-Value [Acc &gt; NIR] : 0.1789          
+##                                           
+##                   Kappa : 0.6372          
+##  Mcnemar's Test P-Value : 1.0000          
+##                                           
+##             Sensitivity : 0.9762          
+##             Specificity : 0.6250          
+##          Pos Pred Value : 0.9647          
+##          Neg Pred Value : 0.7143          
+##              Prevalence : 0.9130          
+##          Detection Rate : 0.8913          
+##    Detection Prevalence : 0.9239          
+##       Balanced Accuracy : 0.8006          
+##                                           
+##        'Positive' Class : FALSE           
+## </code></pre>
+</div>
+<div id="utilizando-o-melhor-modelo-no-desafio-kaggle" class="section level3">
+<h3>Utilizando o melhor modelo no desafio Kaggle</h3>
 <pre class="r"><code>predicao.final = as.data.frame(predict(best.tree, select(dados.teste.final, -MAT_ALU_MATRICULA), type = &quot;class&quot;))
 
 result = select(dados.teste.final, MAT_ALU_MATRICULA) %&gt;% cbind(predicao.final)
 
 names(result) = c(&quot;MAT_ALU_MATRICULA&quot;, &quot;EVADIU&quot;)
 
-write.csv(result, &quot;resultado.csv&quot;, row.names = F, col.names = F)</code></pre>
+write.csv(result, &quot;resultado.csv&quot;, row.names = F)</code></pre>
+</div>
+</div>
 
 
 
