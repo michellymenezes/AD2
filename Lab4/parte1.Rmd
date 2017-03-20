@@ -1,0 +1,24 @@
+---
+title: "Lab 4 - Parte 1"
+author: "Martha Michelly"
+date: "20 de março de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# library myMediaLite
+
+library(dplyr)
+
+dados = read.csv("lab4_part1_data.csv")
+dados = na.omit(dados)
+
+titulo = c("Matricula", "Ano", "Periodo", "Linear", "Vetorial", "C1", "C2", "ES", "EDA", "F3", "F4", "GI", "IC", "LEDA", "LOAC", "LP1", "LP2", "LPT", "Logica", "Discreta", "Metodos", "OAC", "PLP", "Probabilidade", "P1", "P2", "SI1", "TC", "Grafos")
+names(dados) = titulo
+
+p4 = c("Metodos", "PLP", "Logica", "OAC", "LOAC", "SI1", "ES")
+
+
+```
