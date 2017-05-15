@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Laboratório 3 - Parte 3</title>
+    <meta name="description" content="Resultados dos laboratórios da disciplina.
+">
+
+    <link rel="stylesheet" href="/AD2/css/main.css">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-3-parte-3.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/AD2/">Análise de Dados 2</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/AD2/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Laboratório 3 - Parte 3</h1>
+    <p class="post-meta">May 15, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <h2 id="prevendo-evaso">Prevendo evasão</h2>
+
+<p>Este documento é referente a continuação do Lab 3. Nesta parte 3 o objetivo é utilizar os dados anteriores e melhorar o modelo para tentar prever quais alunos irão evadir.</p>
+
+<p>Continuaremos utilizando o modelo de árvore de decisão, já que foi o que teve melhor resultado na parte 2. Utilizamos como dados de treino um recorte dos dados fornecidos, considerando os períodos a partir de 2011 e deixando o último período para utilizar como dados de teste.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"lab3_kaggle_classificacao_treino.csv"</span><span class="p">)</span><span class="w">
+</span><span class="n">dados.teste.final</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"lab3_kaggle_classificacao_teste.csv"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">mat_unicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados</span><span class="p">[</span><span class="o">!</span><span class="n">duplicated</span><span class="p">(</span><span class="n">dados</span><span class="p">[,</span><span class="m">1</span><span class="p">]),]</span><span class="w">
+
+</span><span class="n">contagem.distr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">mat_unicas</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">summarise</span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">())</span><span class="w">
+
+</span><span class="n">dados.treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">dados</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">2010</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">MAT_TUR_ANO</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">2015</span><span class="p">))</span><span class="w">
+</span><span class="n">dados.treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">dados</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">2015</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">MAT_TUR_PERIODO</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="n">dados.teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">dados</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">2015</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">MAT_TUR_PERIODO</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">dados.treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.treino</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="o">-</span><span class="n">MAT_TUR_DIS_DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_TUR_ANO</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_TUR_PERIODO</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="p">))</span><span class="w">
+</span><span class="n">dados.teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="o">-</span><span class="n">MAT_TUR_DIS_DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_TUR_ANO</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_TUR_PERIODO</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="p">))</span><span class="w">
+</span><span class="n">dados.teste.final</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste.final</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="o">-</span><span class="n">MAT_TUR_DIS_DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_TUR_ANO</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_TUR_PERIODO</span><span class="p">)</span><span class="w">
+
+</span><span class="n">alunos.evadiu.treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.treino</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">EVADIU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="n">EVADIU</span><span class="p">))</span><span class="w">
+
+</span><span class="n">alunos.evadiu.teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">EVADIU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="n">EVADIU</span><span class="p">))</span><span class="w">
+
+</span><span class="n">alunos.evadiu.teste.final</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste.final</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">()</span><span class="w">
+
+</span><span class="n">dados.treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.treino</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">,</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">)</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">,</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_MEDIA_FINAL</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">DISCIPLINA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span><span class="s2">"."</span><span class="p">,</span><span class="n">DISCIPLINA</span><span class="p">)))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">dcast</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">merge</span><span class="p">(</span><span class="n">alunos.evadiu.treino</span><span class="p">)</span><span class="w">
+
+</span><span class="n">dados.teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">,</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">)</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">,</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_MEDIA_FINAL</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">DISCIPLINA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span><span class="s2">"."</span><span class="p">,</span><span class="n">DISCIPLINA</span><span class="p">)))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">dcast</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">merge</span><span class="p">(</span><span class="n">alunos.evadiu.teste</span><span class="p">)</span><span class="w">
+
+</span><span class="n">dados.teste.final</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste.final</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">,</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">)</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">,</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_MEDIA_FINAL</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">DISCIPLINA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span><span class="s2">"."</span><span class="p">,</span><span class="n">DISCIPLINA</span><span class="p">)))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">dcast</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">DISCIPLINA</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">merge</span><span class="p">(</span><span class="n">alunos.evadiu.teste.final</span><span class="p">)</span></code></pre></figure>
+
+<h3 id="melhorando-o-modelo">Melhorando o modelo</h3>
+
+<p>A abordagem anterior utilizada foi uso das médias das disciplinas como atributos e a adição de um novo atributo, referente se o aluno reprovou alguma das disciplinas de programação. Para a inputação de dados, foi feita uma média das notas presentes de um aluno e colocadas onde havia NA.</p>
+
+<p>Nessa parte, temos duas diferenças: adicionamos um novo atributo que é referente a quantidade de NA’s que um aluno possui e no momento de inputação, se um aluno só possui NA’s, todas as suas notas são substituídas por zero.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados.treino</span><span class="o">$</span><span class="n">nNA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">nNA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+</span><span class="n">dados.teste.final</span><span class="o">$</span><span class="n">nNA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+
+
+</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">)){</span><span class="w">
+  </span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,]</span><span class="o">$</span><span class="n">nNA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">]))</span><span class="w">
+  </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">)){</span><span class="w">
+    </span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,]</span><span class="o">$</span><span class="n">nNA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">]))</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">)){</span><span class="w">
+    </span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,]</span><span class="o">$</span><span class="n">nNA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">]))</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">)){</span><span class="w">
+  </span><span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">)){</span><span class="w">
+    
+    </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+      </span><span class="k">if</span><span class="p">(</span><span class="m">6</span><span class="o">-</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">])))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">){</span><span class="w">
+        </span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+      </span><span class="k">else</span><span class="p">{</span><span class="w">
+       </span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">],</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="m">6</span><span class="o">-</span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">])))</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    
+    </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">ncol</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">)){</span><span class="w">
+      </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+          </span><span class="k">if</span><span class="p">(</span><span class="m">6</span><span class="o">-</span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">]))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">){</span><span class="w">
+        </span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="k">else</span><span class="p">{</span><span class="w">
+        </span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">],</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="m">6</span><span class="o">-</span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">])))</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">ncol</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">)){</span><span class="w">
+      </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+          </span><span class="k">if</span><span class="p">(</span><span class="m">6</span><span class="o">-</span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">]))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">){</span><span class="w">
+        </span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="k">else</span><span class="p">{</span><span class="w">
+        </span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">],</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="m">6</span><span class="o">-</span><span class="nf">sum</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">7</span><span class="p">])))</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">dados.treino</span><span class="o">$</span><span class="n">Programacao</span><span class="p">[</span><span class="n">dados.treino</span><span class="o">$</span><span class="n">Programa</span><span class="err">çã</span><span class="n">o.I</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">dados.treino</span><span class="o">$</span><span class="n">Laborat</span><span class="err">ó</span><span class="n">rio.de.Programa</span><span class="err">çã</span><span class="n">o.I</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">Programacao</span><span class="p">[</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">Programa</span><span class="err">çã</span><span class="n">o.I</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">dados.teste</span><span class="o">$</span><span class="n">Laborat</span><span class="err">ó</span><span class="n">rio.de.Programa</span><span class="err">çã</span><span class="n">o.I</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">dados.teste.final</span><span class="o">$</span><span class="n">Programacao</span><span class="p">[</span><span class="n">dados.teste.final</span><span class="o">$</span><span class="n">Programa</span><span class="err">çã</span><span class="n">o.I</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">dados.teste.final</span><span class="o">$</span><span class="n">Laborat</span><span class="err">ó</span><span class="n">rio.de.Programa</span><span class="err">çã</span><span class="n">o.I</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+
+</span><span class="n">dados.treino</span><span class="o">$</span><span class="n">Programacao</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.treino</span><span class="o">$</span><span class="n">Programacao</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">Programacao</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">Programacao</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="n">dados.teste.final</span><span class="o">$</span><span class="n">Programacao</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="o">$</span><span class="n">Programacao</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span></code></pre></figure>
+
+<h3 id="criando-modelo-de-rvore-de-deciso">Criando modelo de árvore de decisão</h3>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dt.control</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rpart.control</span><span class="p">(</span><span class="n">maxdepth</span><span class="o">=</span><span class="m">30</span><span class="p">)</span><span class="w">
+
+</span><span class="n">model.tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rpart</span><span class="p">(</span><span class="n">EVADIU</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">
+                           </span><span class="n">data</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">dados.treino</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">),</span><span class="w">
+                           </span><span class="n">method</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span><span class="w">
+                           </span><span class="n">control</span><span class="o">=</span><span class="n">dt.control</span><span class="p">)</span><span class="w">
+
+</span><span class="n">best.tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prune</span><span class="p">(</span><span class="n">model.tree</span><span class="p">,</span><span class="w">
+ </span><span class="o">+</span><span class="w"> </span><span class="n">model.tree</span><span class="o">$</span><span class="n">cptable</span><span class="p">[</span><span class="n">which.min</span><span class="p">(</span><span class="n">model.tree</span><span class="o">$</span><span class="n">cptable</span><span class="p">[,</span><span class="s2">"xerror"</span><span class="p">]),</span><span class="s2">"CP"</span><span class="p">])</span></code></pre></figure>
+
+<h3 id="acurcia-precision-e-recall">Acurácia, precision e recall</h3>
+
+<p>Criamos o novo modelo de árvore de decisão e pudemos notar algumas melhoras. Apesar de o valor de Recall ter permanecido o mesmo, a Acurácia foi minimamente elevada e a Precisão subiu em quase 0.20 “pontos”.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">predicao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">model.tree</span><span class="p">,</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="n">dados.teste</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">)))</span><span class="w">
+</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apply</span><span class="p">(</span><span class="n">predicao</span><span class="p">[</span><span class="s1">'TRUE'</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">FUN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="nf">return</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.5</span><span class="p">)})</span><span class="w">
+
+</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">predicao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span><span class="w">
+</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados.teste</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="n">EVADIU</span><span class="p">,</span><span class="w"> </span><span class="n">predicao</span><span class="p">)</span><span class="w">
+
+</span><span class="n">TP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">predicao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">nrow</span><span class="p">()</span><span class="w">
+</span><span class="n">TN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">FALSE</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">predicao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">nrow</span><span class="p">()</span><span class="w">
+</span><span class="n">FP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">FALSE</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">predicao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">nrow</span><span class="p">()</span><span class="w"> 
+</span><span class="n">FN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">predicao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">nrow</span><span class="p">()</span></code></pre></figure>
+
+<p>Conferindo os valores abaixo é possível conrfimar que o novo modelo apresenta melhores resultados para o teste executado. Sendo assim, esse será o modelo utilizado para tentar prever quais alunos irão evadir no desafio do Kaggle.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Acurácia:'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">TP</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TN</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="n">TN</span><span class="o">+</span><span class="n">FP</span><span class="o">+</span><span class="n">FN</span><span class="p">)))</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## [1] "Acurácia: 0.945652173913043"</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Precisão:'</span><span class="p">,</span><span class="w"> </span><span class="n">TP</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">TP</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">FP</span><span class="p">)))</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## [1] "Precisão: 0.625"</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Recall:'</span><span class="p">,</span><span class="w"> </span><span class="n">TP</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">TP</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">FN</span><span class="p">)))</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## [1] "Recall: 0.714285714285714"</code></pre></figure>
+
+<p>Para mais detalhes, observe o a informações da matriz de confusão abaixo:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">dados.teste</span><span class="o">$</span><span class="n">EVADIU</span><span class="p">,</span><span class="w"> </span><span class="n">dados.teste</span><span class="o">$</span><span class="n">predicao</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction FALSE TRUE
+##      FALSE    82    3
+##      TRUE      2    5
+##                                           
+##                Accuracy : 0.9457          
+##                  95% CI : (0.8777, 0.9821)
+##     No Information Rate : 0.913           
+##     P-Value [Acc &gt; NIR] : 0.1789          
+##                                           
+##                   Kappa : 0.6372          
+##  Mcnemar's Test P-Value : 1.0000          
+##                                           
+##             Sensitivity : 0.9762          
+##             Specificity : 0.6250          
+##          Pos Pred Value : 0.9647          
+##          Neg Pred Value : 0.7143          
+##              Prevalence : 0.9130          
+##          Detection Rate : 0.8913          
+##    Detection Prevalence : 0.9239          
+##       Balanced Accuracy : 0.8006          
+##                                           
+##        'Positive' Class : FALSE           
+## </code></pre></figure>
+
+<h3 id="utilizando-o-melhor-modelo-no-desafio-kaggle">Utilizando o melhor modelo no desafio Kaggle</h3>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">predicao.final</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">best.tree</span><span class="p">,</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">),</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"class"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">select</span><span class="p">(</span><span class="n">dados.teste.final</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_ALU_MATRICULA</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">predicao.final</span><span class="p">)</span><span class="w">
+
+</span><span class="nf">names</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"MAT_ALU_MATRICULA"</span><span class="p">,</span><span class="w"> </span><span class="s2">"EVADIU"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">write.csv</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="s2">"resultado.csv"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span></code></pre></figure>
+
+
+  </article>
+
+</div>
+
+
+
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Análise de Dados 2</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Análise de Dados 2</li>
+          <li><a href="mailto:martha.menezes@ccc.ufcg.edu.br">martha.menezes@ccc.ufcg.edu.br</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/michellymenezes">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">michellymenezes</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Resultados dos laboratórios da disciplina.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
