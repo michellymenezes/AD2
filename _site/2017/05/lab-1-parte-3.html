@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Laboratório 1 - Parte 3</title>
+    <meta name="description" content="Resultados dos laboratórios da disciplina.
+">
+
+    <link rel="stylesheet" href="/AD2/css/main.css">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-1-parte-3.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/AD2/">Análise de Dados 2</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/AD2/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Laboratório 1 - Parte 3</h1>
+    <p class="post-meta">May 15, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <h2 id="apresentao-dos-dados">Apresentação dos dados</h2>
+
+<p>Este documento faz uma análise descritiva e responde algumas perguntas sobre dados referentes a disciplinas da Universidade Federal de Campina Grande (UFCG). Em nosso data frame os dados correspondem aos períodos 2002.1 - 2014.1 em que cada linha representa uma disciplina cursada por um aluno. As principais variáveis que podemos destacar são:</p>
+
+<ul>
+  <li><em>Matricula</em>: Não a original, mas capaz de identificar cada aluno diferente</li>
+  <li><em>Cod_Curso</em>: Código para identificar cursos diferentes. Cursos com o mesmo nome, mas em campi diferentes são considerados distintos.</li>
+  <li><em>Nome_Curso</em>: Nome do curso.</li>
+  <li><em>Cod_Disciplina</em>: Código para identificar cada disciplina.</li>
+  <li><em>Nome_Disciplina</em>: Nome da disciplina</li>
+  <li><em>Periodo_Relativo</em>: Período relativo ao qual o aluno ingressou no curso.</li>
+  <li><em>Media_Disciplina</em>: Média atinginda pelo aluno ao final do período.</li>
+  <li><em>Tipo</em>: Tipo de disciplina que pode ser Optativa ou Obrigatória</li>
+  <li><em>Creditos</em>: Quantidade de créditos de uma disciplina, diretamente ligado a carga-horário da mesma.</li>
+  <li><em>Situacao</em>: Situação com relação a disciplina que pode ser Aprovado, Reprovado, Reprovado por Falta ou Trancado.</li>
+</ul>
+
+<p>Para esta análise especificamente estaremos respondendo perguntas relacionadas ao curso de Ciêncai da Computação. Das três perguntas apresentadas no tópico a seguir, escolheremos duas para serem respondidas com base na análise dos dados.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">cursos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"../../../alunosUFCGAnon.csv"</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="perguntas">Perguntas</h2>
+
+<h4 id="como-esto-caracterizadas-as-disciplinas-cursadas-em-que-os-alunos-trancaram-ou-no-obtiveram-aprovao">1 - Como estão caracterizadas as disciplinas cursadas em que os alunos trancaram ou não obtiveram aprovação?</h4>
+
+<p><em>Provavelmente, reprovações são mais frequentes em disciplinas de 4 créditos por serem de maior quantidade e exigirem mais dedicação dos alunos. Reprovações também devem estar concentradas nos primeiros períodos de curso, já que existem alunos que ainda não conseguem conciliar bem as disciplinas ou ainda não se decidiram sobre permanecer no curso.</em></p>
+
+<h4 id="h-correlao-entre-as-notas-de-disciplinas-de-laboratrioprojeto-no-curso-de-cincia-da-computao-se-sim-como-ela-se-comporta">2 - Há correlação entre as notas de disciplinas de laboratório/projeto no curso de Ciência da Computação? Se sim, como ela se comporta?</h4>
+
+<p><em>As disciplinas devem ter o mínimo de correlação positiva. Aquelas em que o conteúdo contribui para um melhor desenvolvimento de outra devem tem um maior índice de correlação, por ex,  LP2 deve ter maior correlação com LEDA, já que os conhecimentos sobre o conteúdo e linguagens vão permitir uma maior facilidade para implementar as estruturas aprendidas em LEDA.</em></p>
+
+<h4 id="como-se-comportam-os-dados-relacionados-a-notas-de-disciplinas-obrigatrias-e-optativas">3 - Como se comportam os dados relacionados a notas de disciplinas obrigatórias e optativas?</h4>
+
+<p><em>Disciplinas optativas devem apresentar notas mais altas e menor índice de reprovação, isso porque são cursadas por escolha do aluno. Disciplinas obrigatórias relacionadas aos primeiros períodos podem apresentar um maior índice de reprovação por notas baixas ou falta, representando o pouco interesse de alguns estudantes que abandonam o curso no primeiro ano.</em></p>
+
+<h2 id="respostas">Respostas</h2>
+
+<h4 id="como-esto-caracterizadas-as-disciplinas-cursadas-em-que-os-alunos-tracaram-ou-no-obtiveram-aprovao">1 - Como estão caracterizadas as disciplinas cursadas em que os alunos tracaram ou não obtiveram aprovação?</h4>
+
+<p>Para responder a esta pergunta selecionamos apenas as matrículas em disciplinas que a situação é de Reprovado, Reprovado por Falta ou Trancado. Para nos ajudar a visualizar diferentes perspectivas e contribuir nessa análise e extração de detalhes, temos os gráficos abaixo. Ele divide os dados de acordo com o tipo de disciplina, quantidade de créditos e situação ao longo dos períodos relativos. Abaixo de cada gráfico estão ponteadas algumas conclusões as quais podemos chegar a partir da análise dos mesmos.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">notas.cc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">cursos</span><span class="p">,</span><span class="w"> </span><span class="n">Cod_Curso</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">14102100</span><span class="p">)</span><span class="w">
+
+</span><span class="n">repr.cc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">notas.cc</span><span class="p">,</span><span class="w"> </span><span class="n">Situacao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Reprovado"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Situacao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Reprovado por Falta"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Situacao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Trancado"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">repr.cc</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="w"> </span><span class="n">Situacao</span><span class="p">,</span><span class="w"> </span><span class="n">Periodo_Relativo</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tipo</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_boxplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">facet_grid</span><span class="p">(</span><span class="n">Creditos</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Tipo</span><span class="p">,</span><span class="w"> </span><span class="n">labeller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">label_both</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="w"> </span><span class="s2">"Matrículas em disciplinas de CC sem aprovação"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Período Relativo"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_y_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">30</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">coord_flip</span><span class="p">()</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2" /></p>
+
+<ul>
+  <li>No gráfico acima percebemos que a maior parte dos dados analisados se concentram em um período até o período relativo 10, pontos observados após esse período são geralmente considerados outliers.</li>
+  <li>
+    <p>Não há registros de disciplinas obrigatórias de 3, 5 ou 10 créditos em nenhuma das situações exibidas.</p>
+  </li>
+  <li>A mediana para disciplinas optativas de 4 créditos é a mesma para todas as situações, isso significa que para esse cenário foi mais comum quando alunos estavam cursando o sexto período relativo.</li>
+  <li>Para disciplinas obrigatórias, a categoria de Reprovação por Falta é a que apresenta maior variabilidade, enquanto para optativas o resultado é semelhante para os dois tipos de reprovação.</li>
+  <li>Disciplina de 10 créditos é a única categoria que não há pelo menos um registro para cada tipo de situação.</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">repr.cc</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="w"> </span><span class="n">Situacao</span><span class="p">,</span><span class="w"> </span><span class="n">Periodo_Relativo</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tipo</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.4</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">facet_grid</span><span class="p">(</span><span class="n">Creditos</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Tipo</span><span class="p">,</span><span class="w"> </span><span class="n">labeller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">label_both</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="w"> </span><span class="s2">"Matrículas em disciplinas de CC sem aprovação"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Período Relativo"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_y_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">30</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">coord_flip</span><span class="p">()</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
+
+<ul>
+  <li>No segundo gráfico é possível observar a concentração dos pontos, sendo as regiões de manchas mais escuras aquelas de maior concetração.</li>
+  <li>É possível afirmar que os dados se concentram mais em disciplinas obrigatórias, principalmente nas de 2 e 4 créditos. Nas optativas a concentração é maior naquelas de 4 créditos, as disciplians de 2 e 3 créditos apresentam frequência semelhante optativas as de 0 créditos obrigatórias.</li>
+  <li>Para disciplinas de 5, 6 ou 10 créditos há pouquíssimas ocorrências.</li>
+  <li>Para disciplinas obrigatórias de 2 e 4 créditos, a medida que se aumenta o valor do período relativo, as manchas de frequência ficam mais claras, indicando sua redução.</li>
+</ul>
+
+<h4 id="h-correlao-entre-as-notas-de-disciplinas-de-laboratrioprojeto-no-curso-de-cincia-da-computao-se-sim-como-ela-se-comporta-1">2 - Há correlação entre as notas de disciplinas de laboratório/projeto no curso de Ciência da Computação? Se sim, como ela se comporta?</h4>
+
+<p>Para esta análise consideramos disciplinas de laboratório ou aquelas em que parte da avaliação é referente a uma atividade prática como um projeto. Apesar de, pelo senso comum, algumas disciplinas de laboratório se diferenciarem por não apresentar conteúdo relacionado com boa parte das outras disciplinas, resolvemos incluí-las na análise por curiosidade. Foram considerados apenas alunos que cursaram pelo menos uma vez cada uma das disciplinas incluídas na análise. Nos casos em que o aluno tem mais de uma nota para a mesma disciplina, é considerada a maior nota. Utilizamos um gráfico para ilustrar a correlação de cada disciplina em pares. Abaixo você pode ver o significado de cada sigla presente na visualização.</p>
+
+<ul>
+  <li><em>leda</em>: Laboratório de Estrutuda de Dados - Período 3</li>
+  <li><em>si1</em>: Sistemas de Informação 1 - Período 4</li>
+  <li><em>lp1</em>: Laboratório de Programação 1 - Período 1</li>
+  <li><em>lp2</em>: Laboratório de Programação 2 - Período 2</li>
+  <li><em>lirc</em>: Laboratório de Interconexão de Computadores - Período 6</li>
+  <li><em>loac</em>: Laboratório de Organização e Arquitetura de Computadores - Período 4</li>
+  <li><em>les</em>: Laboratório de Engenharia de Software - Período 5</li>
+  <li><em>p1</em>: Projeto 1 - Período 7</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">corr.labs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">lp1</span><span class="p">,</span><span class="n">lp2</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">leda</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">les</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">loac</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">lirc</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">p</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">si1</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Matricula"</span><span class="p">)</span><span class="w"> 
+
+</span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cor</span><span class="p">(</span><span class="n">corr.labs</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">9</span><span class="p">])</span><span class="w">
+
+</span><span class="n">corrplot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lower"</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Correlação de disciplinas práticas em CC"</span><span class="p">,</span><span class="w">  </span><span class="n">order</span><span class="o">=</span><span class="s2">"hclust"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">brewer.pal</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"PuOr"</span><span class="p">),</span><span class="w"> </span><span class="n">addCoef.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.col</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.srt</span><span class="o">=</span><span class="m">45</span><span class="p">,</span><span class="w"> </span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
+
+<p>O gráfico acima mostra a correlação das disciplinas em pares. O tamanho do círculo indica a força de correlação. A cor diz se a correlação é positiva ou negativa, além de também indicar sua força. Dividimos cada cor em três diferentes tons siginificando correlação fraca, média e forte; quanto mais próximo de 1 ou -1 e mais escura, mais forte. Analisando o gráfico podemos chegar as seguintes conclusões:</p>
+
+<ul>
+  <li>Todas as disciplinas analisadas apresentam correlação, pois todos todos os valores são diferentes de zero.</li>
+  <li>A ausência de círculos laranjas indicam que todas as correlações são positivas.</li>
+  <li>A mais fraca correlação está entre as disciplinas p1 e lp2, com valor igual a 0.16, sendo considerada fraca.</li>
+  <li>A mais forte correlação está entre as disciplinas si1 e leda, com valor igual a 0.51, sendo considerada força média.</li>
+  <li>Mais da metade das disciplinas analisadas apresentam baixa correlação.</li>
+  <li>Nenhum par de disciplina apresentou forte correlação.</li>
+</ul>
+
+  </article>
+
+</div>
+
+
+
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Análise de Dados 2</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Análise de Dados 2</li>
+          <li><a href="mailto:your-email@domain.com">your-email@domain.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/michellymenezes">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">michellymenezes</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Resultados dos laboratórios da disciplina.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

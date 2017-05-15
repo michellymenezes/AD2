@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Laboratório 2 - Parte 2</title>
+    <meta name="description" content="Resultados dos laboratórios da disciplina.
+">
+
+    <link rel="stylesheet" href="/AD2/css/main.css">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-2-parte-2.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/AD2/">Análise de Dados 2</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/AD2/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Laboratório 2 - Parte 2</h1>
+    <p class="post-meta">May 15, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <h2 id="apresentao-dos-dados">Apresentação dos dados</h2>
+
+<p>Nesse laboratório utilizamos dados referentes aos alunos que já concluíram o curso de Ciência da Computação - UFCG. Nele se encontram, de cada aluno, todas as médias finais obtidas em cada disciplina (5-10), assim como o coeficiente de rendimento acadêmico (cra, ~4-10).</p>
+
+<p>Queremos realizar análises de regressão utilizando as disciplinas dos dois primeiros períodos e cra na tentativa de responder a seguinte pergunta:</p>
+
+<p><strong><em>O desempenho dos alunos nos dois primeiros períodos consegue explicar, em algum grau, seus desempenhos no curso como um todo?</em></strong></p>
+
+<p>Para isso, construiremos um modelo de regressão com disciplinas do primeiro e segundo período. Ao longo desse documento iremos responder perguntas a respeito do modelo e realizar comparações. Logo abaixo um breve resumo de como se distribuem as variáveis quando relacionadas e seus respectivos coeficientes de correlação.</p>
+
+<p><em>Legenda</em></p>
+
+<ul>
+  <li><strong><em>Cálculo.1</em></strong>: Cálculo Diferencial e Integral I - Período 1</li>
+  <li><strong><em>Vetorial</em></strong>: Álgebra Vetorial e Geometria Analítica - Período 1</li>
+  <li><strong><em>LPT</em></strong>: Leitura e Produção de Textos - Período 1</li>
+  <li><strong><em>P1</em></strong>: Programação I - Período 1</li>
+  <li><strong><em>LP1</em></strong>: Laboratório de Programação I - Período 1</li>
+  <li><strong><em>IC</em></strong>: Introdução à Computação - Período 1</li>
+  <li><strong><em>Cálculo.2</em></strong>: Cálculo Diferencial e Integral II - Período 2</li>
+  <li><strong><em>Discreta</em></strong>: Matemática Discreta - Período 2</li>
+  <li><strong><em>P2</em></strong>: Programação II - Período 2</li>
+  <li><strong><em>LP2</em></strong>: Laboratório de Programação II - Período 2</li>
+  <li><strong><em>Grafos</em></strong>: Teoria dos Grafos - Período 2</li>
+  <li><strong><em>Física.3</em></strong>: Fundamentos de Física Clássica - Período 2</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">graduados</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"graduados_disciplinas.csv"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">graduados</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Cálculo.Diferencial.e.Integral.I"</span><span class="p">,</span><span class="w">  </span><span class="s2">"Álgebra.Vetorial.e.Geometria.Analítica"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Leitura.e.Produção.de.Textos"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Programação.I"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Laboratório.de.Programação.I"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Introdução.à.Computação"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Cálculo.Diferencial.e.Integral.II"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Matemática.Discreta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Programação.II"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Laboratório.de.Programação.II"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Teoria.dos.Grafos"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Fundamentos.de.Física.Clássica"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
+
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">graduados</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Cálculo.1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Vetorial"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LPT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LP1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"IC"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Cálculo.2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Discreta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LP2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Grafos"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Física.3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cra"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggpairs</span><span class="p">(</span><span class="n">na.omit</span><span class="p">(</span><span class="n">graduados</span><span class="p">),</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">continuous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"smooth"</span><span class="p">),</span><span class="w"> </span><span class="n">upper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">continuous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wrap</span><span class="p">(</span><span class="s2">"cor"</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)))</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-1-1.png" alt="plot of chunk unnamed-chunk-1" /></p>
+
+<h3 id="um-modelo-de-regresso-mltipla-com-todas-as-variveis--plausvel-para-explicar-a-variao-em-y-em-que-grau">Um modelo de regressão múltipla com todas as variáveis é plausível para explicar a variação em y? Em que grau?</h3>
+
+<p>Para responder esta pergunta criamos um modelo de regressão linear múltipla que englobe todas disciplinas como variáveis independentes e o cra como variável dependente. Após a criação do modelo, obtemos um resumo do mesmo com suas principais características relacionadas a efetividade.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">rl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">cra</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados</span><span class="p">)</span><span class="w">
+
+</span><span class="n">summary</span><span class="p">(</span><span class="n">rl</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 
+## Call:
+## lm(formula = cra ~ ., data = graduados)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.8273 -0.2988  0.1069  0.2796  1.0032 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.33894    0.59783   2.240  0.02758 *  
+## Cálculo.1    0.02121    0.04907   0.432  0.66661    
+## Vetorial     0.04443    0.04762   0.933  0.35327    
+## LPT          0.09172    0.05167   1.775  0.07925 .  
+## P1          -0.02593    0.07684  -0.337  0.73660    
+## LP1         -0.02472    0.07450  -0.332  0.74082    
+## IC           0.10196    0.08639   1.180  0.24098    
+## Cálculo.2   -0.00100    0.05302  -0.019  0.98499    
+## Discreta     0.23935    0.05863   4.083 9.63e-05 ***
+## P2           0.29214    0.09553   3.058  0.00293 ** 
+## LP2         -0.02848    0.06666  -0.427  0.67024    
+## Grafos       0.09620    0.06302   1.526  0.13040    
+## Física.3    -0.01024    0.06120  -0.167  0.86745    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5046 on 90 degrees of freedom
+##   (309 observations deleted due to missingness)
+## Multiple R-squared:  0.6889,	Adjusted R-squared:  0.6474 
+## F-statistic: 16.61 on 12 and 90 DF,  p-value: &lt; 2.2e-16</code></pre></figure>
+
+<p>Utilizamos o Residual standart error (RSE) para interpretar parte do nosso modelo. RSE é o desvio padrão dos resíduos que descreve a variabilidade referente ao modelo de regressão utilizado. Queremos que o valor RSE seja o menor possível. O RSE do modelo tem valor igual a 0.5046.</p>
+
+<p>Uma segunda variável que utilizamos é o R-quadrado que apresenta valor referente ao coeficiente de determinação, ela varia entre 0-1 e indica quanto o modelo consegue explicar o valor observado, no nosso caso, o cra. Quanto maior o R-quadrado, melhor, significando que o modelo é mais explicativo. Existe uma tendência de que quanto mais variáveis o modelo possuir, maior o seu poder explicativo, incentivando a inserção de muitas variáveis e para combater isso existe o R-quadrado ajustado. R-quadrado ajustado funciona da mesma maneira que o R-quadrado, com a diferença de que ele sofre penalização se há inclusão de variáveis com muito pouco poder explicativo. Para todos os modelos deste documento estaremos utilizando valores relacionados ao R-quadrado ajustado para medir o poder de explicação dos mesmos.</p>
+
+<p>Interpretando os dados acima temos que o R-quadrado ajustado tem valor igual a 0.6474, isso significa que 64.74% do cra consegue ser explicado pelas variáveis independentes presentes no modelo. Então, sim, o modelo explica parte da variável dependente em mais de 50%.</p>
+
+<h3 id="todas-as-variveis-so-teis-para-o-modelo-de-regresso">Todas as variáveis são úteis para o modelo de regressão?</h3>
+
+<p>Apesar de o modelo explicar a variável dependente em quase 67%, nem todas as variáveis independentes que fazem parte dele apresentam influência considerável. Neste documento, utilizaremos dois principais valores para avaliar a utilidade e significância de uma variável independente presente em um modelo: seu coeficiente (relacionado a magnitude) e p-valor.</p>
+
+<p>O coeficiente de uma variável é referente ao poder de influência que ela tem na variável dependente. O p-valor é referente a probabilidade de existência por chance, queremos que este valor seja o menor possível para que a variável seja considerada importante para o modelo.</p>
+
+<p>Disciplinas como Física 3, Cálculo 2, Cálculo 1 etc, apresentam baixo coeficiente e p-valor elevado. Essas variáveis influenciam minimamente e não são consideradas úteis para o modelo. Portanto, nem todas as variáveis são úteis para o modelo de regressão apresentado.</p>
+
+<h3 id="se-a-resposta-para-a-pergunta-anterior-foi-no-construa-um-novo-modelo-sem-essas-variveis-e-o-compare-ao-modelo-com-todas-as-variveis-eg-em-termos-de-r2-e-rse">Se a resposta para a pergunta anterior foi não, construa um novo modelo sem essas variáveis e o compare ao modelo com todas as variáveis (e.g. em termos de R2 e RSE).</h3>
+
+<p>Selecionaremos variáveis baseadas em seus coeficientes e p-valor. Além disso, quando duas variáveis possuírem um alto coeficiente de correlação<em>*, removeremos uma delas, já que váriáveis muito correlacionadas inserem redundância no modelo e podem proporcionar geração de valores incosistentes. Utilizaremos o *summary</em> do modelo e o correlograma abaixo para extrair e analisar esses valores.</p>
+
+<p><em>**Um valor será considerado alto quando for &gt;= 0.65. Valor escolhido com base na comparação relativa de coeficientes obtidos.</em></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cor</span><span class="p">(</span><span class="n">na.omit</span><span class="p">(</span><span class="n">graduados</span><span class="p">[,</span><span class="m">1</span><span class="o">:</span><span class="m">12</span><span class="p">]))</span><span class="w">
+
+</span><span class="n">corrplot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lower"</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Correlação de disciplinas"</span><span class="p">,</span><span class="w">  </span><span class="n">order</span><span class="o">=</span><span class="s2">"hclust"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">brewer.pal</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"PuOr"</span><span class="p">),</span><span class="w"> </span><span class="n">addCoef.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.col</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.srt</span><span class="o">=</span><span class="m">45</span><span class="p">,</span><span class="w"> </span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
+
+<p>Iniciaremos removendo variáveis com alto coeficiente de correlação:</p>
+
+<ul>
+  <li>O coeficiente de correlação de P1 e LP1 é igual a 0.77, decidimos manter P1 porque apresenta coeficiente (-0.02593) mais significativo e menor p-valor (0.73660).</li>
+  <li>O coeficiente de correlação de P2 e Grafos é igual a 0.65, decidimos manter P2 porque apresenta coeficiente (0.29214) mais significativo e menor p-valor (0.00293).</li>
+  <li>O coeficiente de correlação de LP2 e Discreta é igual a 0.65, decidimos manter Discreta porque apresenta coeficiente (0.23935) mais significativo e menor p-valor (9.63e-05).</li>
+</ul>
+
+<p>Agora removemos as variáveis menos significativas considerando menores valores referentes ao coeficiente e maiores referentes ao p-valor:</p>
+
+<ul>
+  <li>Cálculo.1 - coeficiente: 0.02121 / p-valor: 0.66661</li>
+  <li>Cálculo.2 - coeficiente: -0.00100 / p-valor: 0.98499</li>
+  <li>Física.3 - coeficiente: -0.01024 / p-valor: 0.86745</li>
+</ul>
+
+<p>Sendo assim, nosso modelo fica da seguinte maneira:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">graduados</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"LPT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"IC"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Vetorial"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Discreta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
+
+</span><span class="n">rl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">cra</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.omit</span><span class="p">(</span><span class="n">graduados</span><span class="p">))</span><span class="w">
+</span><span class="n">predicoes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict.lm</span><span class="p">(</span><span class="n">rl</span><span class="w"> </span><span class="p">,</span><span class="n">graduados</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">graduados</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">graduados</span><span class="o">$</span><span class="n">cra</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">predicoes</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">  
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">),</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#a6761d"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Previsão do modelo"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">  
+  </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">graduados</span><span class="p">)),</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e41a1c"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">summary</span><span class="p">(</span><span class="n">rl</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 
+## Call:
+## lm(formula = cra ~ ., data = na.omit(graduados))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.26305 -0.24549  0.06888  0.34986  1.17262 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.07020    0.35305   3.031 0.002660 ** 
+## LPT          0.09195    0.03479   2.643 0.008669 ** 
+## P1           0.05407    0.03047   1.774 0.077052 .  
+## IC           0.19125    0.04939   3.872 0.000134 ***
+## Vetorial     0.14360    0.02936   4.891 1.69e-06 ***
+## Discreta     0.16460    0.03037   5.420 1.27e-07 ***
+## P2           0.17707    0.03380   5.239 3.16e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5342 on 284 degrees of freedom
+## Multiple R-squared:  0.6006,	Adjusted R-squared:  0.5921 
+## F-statistic: 71.17 on 6 and 284 DF,  p-value: &lt; 2.2e-16</code></pre></figure>
+
+<p>O modelo agora apresenta um R-quadrado ajustado mais elevado, com valor igual a 0.5921, ou seja, ele explica em 59.21% a variável dependente. Por outro lado, o RSE teve seu valor elevado para 0,5342. Apesar disso, devido ao fato de que removemos variáveis, a quantidade de linhas com valores nulos diminuiu, aumentanto o tamanho da amostra e, consequentemente, a quantidade de graus de liberdade.</p>
+
+<h3 id="analise-os-plots-de-resduos-de-cada-varivel-e-veja-se-algum-um-ou-mais-deles-indica-no-aleatoriedade-dos-erros">Analise os plots de resíduos de cada variável e veja se algum (um ou mais) deles indica não aleatoriedade dos erros.</h3>
+
+<p>Os plots abaixo são referentes aos resíduos de cada disciplina. Se obsevarmos bem, todos se comportam de maneira bem semelhante. Os resíduos estão bem espalhados em torno da reta em 0 e percebemos alguns outliers próximos ao valor -2. Não é possível notar a presença de nenhum padrão na formação dos plots, indicando que os resíduos são aleatórios, algo positivo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">LPT</span><span class="p">,</span><span class="w"> </span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Resíduos do modelo para a disciplina LPT"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Nota"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Resíduos"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#1b9e77"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#1f78b4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">P</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Resíduos do modelo para a disciplina P1"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Nota"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Resíduos"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#d95f02"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#1f78b4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">IC</span><span class="p">,</span><span class="w"> </span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Resíduos do modelo para a disciplina IC"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Nota"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Resíduos"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#7570b3"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#1f78b4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">Vetorial</span><span class="p">,</span><span class="w"> </span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Resíduos do modelo para a disciplina Vetorial"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Nota"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Resíduos"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#e7298a"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#1f78b4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">Discreta</span><span class="p">,</span><span class="w"> </span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Resíduos do modelo para a disciplina Discreta"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Nota"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Resíduos"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#66a61e"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#1f78b4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">P</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Resíduos do modelo para a disciplina LPT"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Nota"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Resíduos"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#e6ab02"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#1f78b4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" /></p>
+
+<p>Para complementar o comentário sobre os gráficos acima temos abaixo um gráfico que apresenta a frequência de resíduos. Os resíduos seguem uma distribuição normal de média 0, algo desejado para a representação de um bom modelo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">.resid</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Frequência de resíduos para grupo do sexo feminino"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">"Resíduo"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">"Frequência"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">geom_freqpoly</span><span class="p">(</span><span class="n">binwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"springgreen4"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11" /></p>
+
+<h3 id="que-perodo-consegue-explicar-melhor-o-desempenho-final-primeiro-ou-segundo">Que período consegue explicar melhor o desempenho final (primeiro ou segundo)?</h3>
+
+<p>Com base no modelo anterior criado, geramos dois novos modelos de regressão linear para cada um dos semestre e comparamos seus valores de R-quadrado ajustado e RSE.</p>
+
+<h5 id="semestre-1">Semestre 1</h5>
+
+<p>Abaixo temos a criação do modelo para as disciplinas do primeiro semestre e seu gráfico mostrando os dados da amostra com relação a predição do modelo linear proposto. Logo após, os detalhes sobre o modelo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">graduados1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="s2">"Vetorial"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LPT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"IC"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
+</span><span class="n">graduados1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.omit</span><span class="p">(</span><span class="n">graduados1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">rl1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">cra</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados1</span><span class="p">)</span><span class="w">
+</span><span class="n">predicoes1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict.lm</span><span class="p">(</span><span class="n">rl1</span><span class="w"> </span><span class="p">,</span><span class="n">graduados1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">graduados1</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">graduados1</span><span class="o">$</span><span class="n">cra</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">predicoes1</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">  
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">),</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#984ea3"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Previsão do modelo Semestre 1"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">  
+  </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">rl1</span><span class="p">,</span><span class="w"> </span><span class="n">graduados1</span><span class="p">)),</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e41a1c"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" /></p>
+
+<p>Nos detalhes abaixo concluímos que o modelo com disciplinas do primeiro período explica em 50.89% a variável dependente, pois o mesmo apresenta R-quadrado ajustado com valor igual a 0.5089. Já seu RSE é igual a 0.5841.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">summary</span><span class="p">(</span><span class="n">rl1</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 
+## Call:
+## lm(formula = cra ~ ., data = graduados1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.57648 -0.30289  0.08898  0.38674  1.22632 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.29320    0.37856   3.416 0.000724 ***
+## Vetorial     0.15711    0.03145   4.996 1.00e-06 ***
+## LPT          0.11576    0.03687   3.139 0.001864 ** 
+## P1           0.14305    0.03010   4.752 3.15e-06 ***
+## IC           0.35370    0.04865   7.270 3.23e-12 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5841 on 296 degrees of freedom
+## Multiple R-squared:  0.5154,	Adjusted R-squared:  0.5089 
+## F-statistic: 78.71 on 4 and 296 DF,  p-value: &lt; 2.2e-16</code></pre></figure>
+
+<h5 id="semestre-2">Semestre 2</h5>
+
+<p>Abaixo temos a criação do modelo para as disciplinas do segundo semestre e seu gráfico mostrando os dados da amostra com relação a predição do modelo linear proposto. Logo após, os detalhes sobre o modelo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">graduados2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Discreta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
+</span><span class="n">graduados2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.omit</span><span class="p">(</span><span class="n">graduados2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">rl2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">cra</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graduados2</span><span class="p">)</span><span class="w">
+</span><span class="n">predicoes2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict.lm</span><span class="p">(</span><span class="n">rl2</span><span class="w"> </span><span class="p">,</span><span class="n">graduados2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">graduados2</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">graduados2</span><span class="o">$</span><span class="n">cra</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">predicoes2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">  
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">),</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"#fb8072"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Previsão do modelo Semestre 2"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">  
+  </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">rl2</span><span class="p">,</span><span class="w"> </span><span class="n">graduados2</span><span class="p">)),</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e41a1c"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-2/2017-05-15-lab-2-parte-2/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
+
+<p>Nos detalhes abaixo concluímos que o modelo com disciplinas do segundo período explica em 46.03% a variável dependente, pois o mesmo apresenta R-quadrado ajustado com valor igual a 0.4603 Já seu RSE é igual a 0.6216.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">summary</span><span class="p">(</span><span class="n">rl2</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 
+## Call:
+## lm(formula = cra ~ ., data = graduados2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.3370 -0.3236  0.1042  0.3816  1.4854 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.15763    0.26422  11.951  &lt; 2e-16 ***
+## Discreta     0.29418    0.02995   9.821  &lt; 2e-16 ***
+## P2           0.28134    0.03258   8.634 3.03e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.6216 on 314 degrees of freedom
+## Multiple R-squared:  0.4637,	Adjusted R-squared:  0.4603 
+## F-statistic: 135.8 on 2 and 314 DF,  p-value: &lt; 2.2e-16</code></pre></figure>
+
+<h5 id="concluso">Conclusão</h5>
+
+<p>Considero que o modelo com variáveis relacionadas apenas ao primeiro período consegue explicar melhor o desempenho final de cada aluno porque, além de apresentar um maior R-quadrado ajustado (0.5089 &gt; 0.4603), seu RSE é de menor valor (0.5841 &lt; 0.6216).</p>
+
+<h3 id="use-o-modelo-para-predizer-o-seu-prprio-desempenho-e-compare-a-predio-com-o-seu-cra-atual-comente-o-resultado">Use o modelo para predizer o seu próprio desempenho e compare a predição com o seu CRA atual. Comente o resultado.</h3>
+
+<p>Utilizando o modelo inicial ajustados com disciplinas do primeiro e segundo período:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">notas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">LPT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8.2</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="m">1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7.6</span><span class="p">,</span><span class="w"> </span><span class="n">IC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8.4</span><span class="p">,</span><span class="w"> </span><span class="n">Vetorial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7.3</span><span class="p">,</span><span class="w"> </span><span class="n">Discreta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7.1</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="m">2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7.3</span><span class="p">)</span><span class="w">
+
+</span><span class="n">predict</span><span class="p">(</span><span class="n">rl</span><span class="p">,</span><span class="w"> </span><span class="n">notas</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##        1 
+## 7.351167</code></pre></figure>
+
+<p>O modelo prediz que, de acordo com minhas notas, meu cra deverá ser 7.35. Meu cra atual é iqual a 7.45, valor bem próximo do previsto. Talvez faltem uma ou mais variáveis no modelo para ter um valor mais próximo do real, ou uma amostra maior. Outros fatores podem influênciar como inconsistência nos dados, o fato de que atualmente alunos podem optar por cursar ou não LPT no início do curso ou simplesmente porque meu cra atual ainda não sofreu todas as alterações das disciplinas que ainda faltam ser cursadas até a conclusão do curso, fato que está incluso nos dados utilizados para construir o modelo.</p>
+
+  </article>
+
+</div>
+
+
+
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Análise de Dados 2</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Análise de Dados 2</li>
+          <li><a href="mailto:your-email@domain.com">your-email@domain.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/michellymenezes">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">michellymenezes</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Resultados dos laboratórios da disciplina.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

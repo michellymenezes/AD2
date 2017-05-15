@@ -1,0 +1,125 @@
+---
+layout: post
+title:  Laboratório 1 - Parte 3
+date: "`r Sys.time()`"
+published: true
+tags: [example1, example2]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(corrplot)
+library(plyr)
+library(RColorBrewer)
+```
+
+## Apresentação dos dados
+
+Este documento faz uma análise descritiva e responde algumas perguntas sobre dados referentes a disciplinas da Universidade Federal de Campina Grande (UFCG). Em nosso data frame os dados correspondem aos períodos 2002.1 - 2014.1 em que cada linha representa uma disciplina cursada por um aluno. As principais variáveis que podemos destacar são:
+
+* *Matricula*: Não a original, mas capaz de identificar cada aluno diferente
+* *Cod_Curso*: Código para identificar cursos diferentes. Cursos com o mesmo nome, mas em campi diferentes são considerados distintos.
+* *Nome_Curso*: Nome do curso.
+* *Cod_Disciplina*: Código para identificar cada disciplina.
+* *Nome_Disciplina*: Nome da disciplina
+* *Periodo_Relativo*: Período relativo ao qual o aluno ingressou no curso.
+* *Media_Disciplina*: Média atinginda pelo aluno ao final do período.
+* *Tipo*: Tipo de disciplina que pode ser Optativa ou Obrigatória
+* *Creditos*: Quantidade de créditos de uma disciplina, diretamente ligado a carga-horário da mesma.
+* *Situacao*: Situação com relação a disciplina que pode ser Aprovado, Reprovado, Reprovado por Falta ou Trancado.
+
+Para esta análise especificamente estaremos respondendo perguntas relacionadas ao curso de Ciêncai da Computação. Das três perguntas apresentadas no tópico a seguir, escolheremos duas para serem respondidas com base na análise dos dados.
+
+```{r warning=FALSE }
+cursos = read.csv("../../../alunosUFCGAnon.csv")
+```
+
+## Perguntas
+
+#### 1 - Como estão caracterizadas as disciplinas cursadas em que os alunos trancaram ou não obtiveram aprovação?
+
+*Provavelmente, reprovações são mais frequentes em disciplinas de 4 créditos por serem de maior quantidade e exigirem mais dedicação dos alunos. Reprovações também devem estar concentradas nos primeiros períodos de curso, já que existem alunos que ainda não conseguem conciliar bem as disciplinas ou ainda não se decidiram sobre permanecer no curso.*
+
+#### 2 - Há correlação entre as notas de disciplinas de laboratório/projeto no curso de Ciência da Computação? Se sim, como ela se comporta?
+
+*As disciplinas devem ter o mínimo de correlação positiva. Aquelas em que o conteúdo contribui para um melhor desenvolvimento de outra devem tem um maior índice de correlação, por ex,  LP2 deve ter maior correlação com LEDA, já que os conhecimentos sobre o conteúdo e linguagens vão permitir uma maior facilidade para implementar as estruturas aprendidas em LEDA.*
+
+#### 3 - Como se comportam os dados relacionados a notas de disciplinas obrigatórias e optativas?
+
+*Disciplinas optativas devem apresentar notas mais altas e menor índice de reprovação, isso porque são cursadas por escolha do aluno. Disciplinas obrigatórias relacionadas aos primeiros períodos podem apresentar um maior índice de reprovação por notas baixas ou falta, representando o pouco interesse de alguns estudantes que abandonam o curso no primeiro ano.*
+
+## Respostas
+
+#### 1 - Como estão caracterizadas as disciplinas cursadas em que os alunos tracaram ou não obtiveram aprovação?
+
+Para responder a esta pergunta selecionamos apenas as matrículas em disciplinas que a situação é de Reprovado, Reprovado por Falta ou Trancado. Para nos ajudar a visualizar diferentes perspectivas e contribuir nessa análise e extração de detalhes, temos os gráficos abaixo. Ele divide os dados de acordo com o tipo de disciplina, quantidade de créditos e situação ao longo dos períodos relativos. Abaixo de cada gráfico estão ponteadas algumas conclusões as quais podemos chegar a partir da análise dos mesmos.
+
+```{r fig.width=15, fig.height=10}
+notas.cc = subset(cursos, Cod_Curso == 14102100)
+
+repr.cc = subset(notas.cc, Situacao == "Reprovado" | Situacao == "Reprovado por Falta" | Situacao == "Trancado")
+
+ggplot(repr.cc, aes( Situacao, Periodo_Relativo, colour = Tipo)) + geom_boxplot() + facet_grid(Creditos ~ Tipo, labeller = label_both) + labs(title= "Matrículas em disciplinas de CC sem aprovação", y = "Período Relativo") + scale_y_continuous(breaks = seq(0,30, 2)) + coord_flip()
+```
+
+* No gráfico acima percebemos que a maior parte dos dados analisados se concentram em um período até o período relativo 10, pontos observados após esse período são geralmente considerados outliers.
+* Não há registros de disciplinas obrigatórias de 3, 5 ou 10 créditos em nenhuma das situações exibidas. 
+
+* A mediana para disciplinas optativas de 4 créditos é a mesma para todas as situações, isso significa que para esse cenário foi mais comum quando alunos estavam cursando o sexto período relativo.
+* Para disciplinas obrigatórias, a categoria de Reprovação por Falta é a que apresenta maior variabilidade, enquanto para optativas o resultado é semelhante para os dois tipos de reprovação.
+* Disciplina de 10 créditos é a única categoria que não há pelo menos um registro para cada tipo de situação.
+
+```{r fig.width=15, fig.height=10}
+ggplot(repr.cc, aes( Situacao, Periodo_Relativo, colour = Tipo)) + geom_point(position = position_jitter(width = .4, height = 0.4), alpha = 0.3) + facet_grid(Creditos ~ Tipo, labeller = label_both) + labs(title= "Matrículas em disciplinas de CC sem aprovação", y = "Período Relativo") + scale_y_continuous(breaks = seq(0,30, 2)) + coord_flip()
+```
+
+* No segundo gráfico é possível observar a concentração dos pontos, sendo as regiões de manchas mais escuras aquelas de maior concetração.
+* É possível afirmar que os dados se concentram mais em disciplinas obrigatórias, principalmente nas de 2 e 4 créditos. Nas optativas a concentração é maior naquelas de 4 créditos, as disciplians de 2 e 3 créditos apresentam frequência semelhante optativas as de 0 créditos obrigatórias.
+* Para disciplinas de 5, 6 ou 10 créditos há pouquíssimas ocorrências.
+* Para disciplinas obrigatórias de 2 e 4 créditos, a medida que se aumenta o valor do período relativo, as manchas de frequência ficam mais claras, indicando sua redução.
+
+#### 2 - Há correlação entre as notas de disciplinas de laboratório/projeto no curso de Ciência da Computação? Se sim, como ela se comporta?
+
+Para esta análise consideramos disciplinas de laboratório ou aquelas em que parte da avaliação é referente a uma atividade prática como um projeto. Apesar de, pelo senso comum, algumas disciplinas de laboratório se diferenciarem por não apresentar conteúdo relacionado com boa parte das outras disciplinas, resolvemos incluí-las na análise por curiosidade. Foram considerados apenas alunos que cursaram pelo menos uma vez cada uma das disciplinas incluídas na análise. Nos casos em que o aluno tem mais de uma nota para a mesma disciplina, é considerada a maior nota. Utilizamos um gráfico para ilustrar a correlação de cada disciplina em pares. Abaixo você pode ver o significado de cada sigla presente na visualização.
+
+* *leda*: Laboratório de Estrutuda de Dados - Período 3
+* *si1*: Sistemas de Informação 1 - Período 4
+* *lp1*: Laboratório de Programação 1 - Período 1
+* *lp2*: Laboratório de Programação 2 - Período 2
+* *lirc*: Laboratório de Interconexão de Computadores - Período 6
+* *loac*: Laboratório de Organização e Arquitetura de Computadores - Período 4
+* *les*: Laboratório de Engenharia de Software - Período 5
+* *p1*: Projeto 1 - Período 7
+
+```{r include=FALSE}
+notas.cc = notas.cc[!is.na(notas.cc$Media_Disciplina),]
+
+lp1 = subset(notas.cc, Cod_Disciplina == 1411180) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="lp1"))
+lp2 = subset(notas.cc, Cod_Disciplina == 1411181) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="lp2"))
+leda = subset(notas.cc, Cod_Disciplina == 1411179) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="leda"))
+les = subset(notas.cc, Cod_Disciplina == 1411183) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="les"))
+loac = subset(notas.cc, Cod_Disciplina == 1411182) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="loac"))
+lirc = subset(notas.cc, Cod_Disciplina == 1411184) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="lirc"))
+p1 = subset(notas.cc, Cod_Disciplina == 1411185) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="p1"))
+si1 = subset(notas.cc, Cod_Disciplina == 1411178) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina) %>% subset(select = c("Matricula", "Media_Disciplina")) %>% rename(c("Media_Disciplina"="si1"))
+```
+
+```{r}
+corr.labs = merge(lp1,lp2, by.x = "Matricula", by.y = "Matricula") %>% merge(leda, by.x = "Matricula", by.y = "Matricula") %>% merge(les, by.x = "Matricula", by.y = "Matricula") %>% merge(loac, by.x = "Matricula", by.y = "Matricula") %>% merge(lirc, by.x = "Matricula", by.y = "Matricula") %>% merge(p1, by.x = "Matricula", by.y = "Matricula")  %>% merge(si1, by.x = "Matricula", by.y = "Matricula") 
+
+M = cor(corr.labs[,2:9])
+
+corrplot(M, type = "lower", title = "Correlação de disciplinas práticas em CC",  order="hclust", col=brewer.pal(n=6, name="PuOr"), addCoef.col = "black", tl.col="black", tl.srt=45, mar=c(0,0,1,0) )
+
+```
+
+O gráfico acima mostra a correlação das disciplinas em pares. O tamanho do círculo indica a força de correlação. A cor diz se a correlação é positiva ou negativa, além de também indicar sua força. Dividimos cada cor em três diferentes tons siginificando correlação fraca, média e forte; quanto mais próximo de 1 ou -1 e mais escura, mais forte. Analisando o gráfico podemos chegar as seguintes conclusões:
+
+* Todas as disciplinas analisadas apresentam correlação, pois todos todos os valores são diferentes de zero.
+* A ausência de círculos laranjas indicam que todas as correlações são positivas.
+* A mais fraca correlação está entre as disciplinas p1 e lp2, com valor igual a 0.16, sendo considerada fraca.
+* A mais forte correlação está entre as disciplinas si1 e leda, com valor igual a 0.51, sendo considerada força média.
+* Mais da metade das disciplinas analisadas apresentam baixa correlação.
+* Nenhum par de disciplina apresentou forte correlação.
