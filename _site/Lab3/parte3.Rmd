@@ -1,0 +1,191 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(reshape2)
+library(rpart)
+library(caret)
+```
+ 
+## Prevendo evasão 
+ 
+Este documento é referente a continuação do Lab 3. Nesta parte 3 o objetivo é utilizar os dados anteriores e melhorar o modelo para tentar prever quais alunos irão evadir.
+
+Continuaremos utilizando o modelo de árvore de decisão, já que foi o que teve melhor resultado na parte 2. Utilizamos como dados de treino um recorte dos dados fornecidos, considerando os períodos a partir de 2011 e deixando o último período para utilizar como dados de teste.
+
+```{r warning=FALSE, message=FALSE}
+dados = read.csv("lab3_kaggle_classificacao_treino.csv")
+dados.teste.final = read.csv("lab3_kaggle_classificacao_teste.csv")
+
+mat_unicas = dados[!duplicated(dados[,1]),]
+
+contagem.distr = group_by(mat_unicas, MAT_TUR_ANO, EVADIU) %>% summarise(count = n())
+
+dados.treino = subset(dados, MAT_TUR_ANO > 2010 & (MAT_TUR_ANO < 2015))
+dados.treino = rbind(dados.treino, subset(dados, MAT_TUR_ANO == 2015 & MAT_TUR_PERIODO == 1))
+dados.teste = subset(dados, MAT_TUR_ANO == 2015 & MAT_TUR_PERIODO == 2)
+
+dados.treino = dados.treino %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO) %>% filter(!is.na(MAT_MEDIA_FINAL))
+dados.teste = dados.teste %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO) %>% filter(!is.na(MAT_MEDIA_FINAL))
+dados.teste.final = dados.teste.final %>% select(-MAT_TUR_DIS_DISCIPLINA, -MAT_TUR_ANO, -MAT_TUR_PERIODO)
+
+alunos.evadiu.treino = dados.treino %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise(EVADIU = any(EVADIU))
+
+alunos.evadiu.teste = dados.teste %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise(EVADIU = any(EVADIU))
+
+alunos.evadiu.teste.final = dados.teste.final %>%
+  group_by(MAT_ALU_MATRICULA) %>%
+  summarise()
+
+dados.treino = dados.treino %>%
+  group_by(MAT_ALU_MATRICULA, DISCIPLINA)  %>%
+  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, DISCIPLINA, MAT_MEDIA_FINAL) %>% 
+  mutate(DISCIPLINA = as.factor(gsub(" ",".",DISCIPLINA))) %>%
+  dcast(MAT_ALU_MATRICULA ~ DISCIPLINA, mean) %>%
+  merge(alunos.evadiu.treino)
+
+dados.teste = dados.teste %>%
+  group_by(MAT_ALU_MATRICULA, DISCIPLINA)  %>%
+  filter(MAT_MEDIA_FINAL == max(MAT_MEDIA_FINAL)) %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, DISCIPLINA, MAT_MEDIA_FINAL) %>% 
+  mutate(DISCIPLINA = as.factor(gsub(" ",".",DISCIPLINA))) %>%
+  dcast(MAT_ALU_MATRICULA ~ DISCIPLINA, mean) %>%
+  merge(alunos.evadiu.teste)
+
+dados.teste.final = dados.teste.final %>%
+  group_by(MAT_ALU_MATRICULA, DISCIPLINA)  %>%
+  ungroup() %>%
+  select(MAT_ALU_MATRICULA, DISCIPLINA, MAT_MEDIA_FINAL) %>% 
+  mutate(DISCIPLINA = as.factor(gsub(" ",".",DISCIPLINA))) %>%
+  dcast(MAT_ALU_MATRICULA ~ DISCIPLINA, mean) %>%
+  merge(alunos.evadiu.teste.final)
+```
+
+### Melhorando o modelo
+
+A abordagem anterior utilizada foi uso das médias das disciplinas como atributos e a adição de um novo atributo, referente se o aluno reprovou alguma das disciplinas de programação. Para a inputação de dados, foi feita uma média das notas presentes de um aluno e colocadas onde havia NA.
+
+Nessa parte, temos duas diferenças: adicionamos um novo atributo que é referente a quantidade de NA's que um aluno possui e no momento de inputação, se um aluno só possui NA's, todas as suas notas são substituídas por zero.
+
+```{r}
+dados.treino$nNA = NA
+dados.teste$nNA = NA
+dados.teste.final$nNA = NA
+
+
+for(i in 1:nrow(dados.treino)){
+  dados.treino[i,]$nNA = sum(is.na(dados.treino[i,2:7]))
+  if(i <= nrow(dados.teste)){
+    dados.teste[i,]$nNA = sum(is.na(dados.teste[i,2:7]))
+  }
+  if(i <= nrow(dados.teste.final)){
+    dados.teste.final[i,]$nNA = sum(is.na(dados.teste.final[i,2:7]))
+  }
+}
+
+for(i in 1:nrow(dados.treino)){
+  for(j in 1:ncol(dados.treino)){
+    
+    if(is.na(dados.treino[i,j])){
+      if(6-(sum(is.na(dados.treino[i,2:7]))) == 0){
+        dados.treino[i, j] = 0
+      }
+      else{
+       dados.treino[i, j] = sum(dados.treino[i,2:7], na.rm = T)/(6-sum(is.na(dados.treino[i,2:7])))
+      }
+    }
+    
+    if(i <= nrow(dados.teste) && j <= ncol(dados.teste)){
+      if(is.na(dados.teste[i,j])){
+          if(6-sum(is.na(dados.teste[i,2:7])) == 0){
+        dados.teste[i, j] = 0
+          }
+        else{
+        dados.teste[i, j] = sum(dados.teste[i,2:7], na.rm = T)/(6-sum(is.na(dados.teste[i,2:7])))
+        }
+      }
+    }
+    if(i <= nrow(dados.teste.final) && j <= ncol(dados.teste.final)){
+      if(is.na(dados.teste.final[i,j])){
+          if(6-sum(is.na(dados.teste.final[i,2:7])) == 0){
+        dados.teste.final[i, j] = 0
+          }
+        else{
+        dados.teste.final[i, j] = sum(dados.teste.final[i,2:7], na.rm = T)/(6-sum(is.na(dados.teste.final[i,2:7])))
+        }
+      }
+    }
+  }
+}
+
+dados.treino$Programacao[dados.treino$Programação.I >= 5 & dados.treino$Laboratório.de.Programação.I >= 5 ] = 0
+dados.teste$Programacao[dados.teste$Programação.I >= 5 & dados.teste$Laboratório.de.Programação.I >= 5 ] = 0
+dados.teste.final$Programacao[dados.teste.final$Programação.I >= 5 & dados.teste.final$Laboratório.de.Programação.I >= 5 ] = 0
+
+dados.treino$Programacao[is.na(dados.treino$Programacao)] = 1
+dados.teste$Programacao[is.na(dados.teste$Programacao)] = 1
+dados.teste.final$Programacao[is.na(dados.teste.final$Programacao)] = 1
+```
+
+### Criando modelo de árvore de decisão
+
+```{r}
+dt.control = rpart.control(maxdepth=30)
+
+model.tree = rpart(EVADIU ~ .,
+                           data=select(dados.treino, -MAT_ALU_MATRICULA),
+                           method="class",
+                           control=dt.control)
+
+best.tree = prune(model.tree,
+ + model.tree$cptable[which.min(model.tree$cptable[,"xerror"]),"CP"])
+```
+
+### Acurácia, precision e recall
+
+Criamos o novo modelo de árvore de decisão e pudemos notar algumas melhoras. Apesar de o valor de Recall ter permanecido o mesmo, a Acurácia foi minimamente elevada e a Precisão subiu em quase 0.20 "pontos".
+
+```{r}
+predicao = as.data.frame(predict(model.tree, select(dados.teste, -MAT_ALU_MATRICULA)))
+temp = apply(predicao['TRUE'], 2, FUN = function(x){return(x > 0.5)})
+
+dados.teste$predicao = as.factor(temp)
+temp = dados.teste %>% select(EVADIU, predicao)
+
+TP = subset(temp, EVADIU == TRUE & predicao == TRUE) %>% nrow()
+TN = subset(temp, EVADIU == FALSE & predicao == FALSE) %>% nrow()
+FP = subset(temp, EVADIU == FALSE & predicao == TRUE) %>% nrow() 
+FN = subset(temp, EVADIU == TRUE & predicao == FALSE) %>% nrow()
+```
+
+Conferindo os valores abaixo é possível conrfimar que o novo modelo apresenta melhores resultados para o teste executado. Sendo assim, esse será o modelo utilizado para tentar prever quais alunos irão evadir no desafio do Kaggle.
+
+```{r}
+print(paste('Acurácia:', (TP + TN)/(TP+TN+FP+FN)))
+print(paste('Precisão:', TP / (TP + FP)))
+print(paste('Recall:', TP / (TP + FN)))
+```
+
+Para mais detalhes, observe o a informações da matriz de confusão abaixo:
+
+```{r}
+confusionMatrix(dados.teste$EVADIU, dados.teste$predicao)
+```
+
+### Utilizando o melhor modelo no desafio Kaggle
+
+```{r warning=F}
+predicao.final = as.data.frame(predict(best.tree, select(dados.teste.final, -MAT_ALU_MATRICULA), type = "class"))
+
+result = select(dados.teste.final, MAT_ALU_MATRICULA) %>% cbind(predicao.final)
+
+names(result) = c("MAT_ALU_MATRICULA", "EVADIU")
+
+write.csv(result, "resultado.csv", row.names = F)
+```

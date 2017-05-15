@@ -1,0 +1,102 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+### Apresentação dos dados
+
+Este documento faz uma análise descritiva e responde algumas perguntas sobre dados referentes a disciplinas da Universidade Federal de Campina Grande (UFCG). Em nosso data frame os dados correspondem aos períodos 2002.1 - 2014.1 em que cada linha representa uma disciplina cursada por um aluno. As principais variáveis que podemos destacar são:
+
+* *Matricula*: Não a original, mas capaz de identificar cada aluno diferente
+* *Cod_Curso*: Código para identificar cursos diferentes. Cursos com o mesmo nome, mas em campi diferentes são considerados distintos.
+* *Nome_Curso*: Nome do curso.
+* *Cod_Disciplina*: Código para identificar cada disciplina.
+* *Nome_Disciplina*: Nome da disciplina
+* *Periodo*: Período no qual a disciplina foi cursada.
+* *Media_Disciplina*: Média atinginda pelo aluno ao final do período.
+* *Campus*: Campus ao qual o curso pertence.
+
+São listados 95 cursos com códigos diferentes. Abaixo há mais detalhes sobre os dados no geral. 
+
+```{r warning=FALSE }
+cursos = read.csv("../../alunosUFCGAnon.csv")
+
+length(unique(cursos$Cod_Curso))
+
+summary(cursos)
+```
+
+### Em quais cursos estão as melhores e piores notas? Por que você acha que isso acontece em cada caso?
+
+Existem duas maneiras principais e diretas de avaliar quais são os cursos com melhores e piores notas, pelo cáclculo de média ou mediana. Devido a quantidade muito variada de alunos em cada curso, escolhemos responder esta pergunta utilizando a mediana, dessa forma o valor não será afetado por outliers.
+
+Para cada curso, foi calculada a mediana sobre todas as médias de disciplinas dos alunos, desconsiderando valores vazios. Abaixo temos dois gráficos que, de maneira ordenada, exibe os dez melhores e piores cursos com relação a médias em disciplinas. 
+
+```{r warning=FALSE}
+cursos = cursos[!is.na(cursos$Media_Disciplina),]
+cursos_mediana = aggregate(cursos$Media_Disciplina, list(cursos$Cod_Curso, cursos$Nome_Curso, cursos$Campus), FUN = median)
+
+cursos_mediana = cursos_mediana[ order( cursos_mediana$x),]
+
+ggplot(cursos_mediana[1:10,], aes( y = x, x = reorder(Group.2, -x), fill=factor(Group.3))) + geom_bar(position="dodge", stat="identity") +  geom_text(aes(label=x),size = 4) + coord_flip() + labs(title = "Cursos com piores notas", x = "Curso", y = "Mediana", fill = "Campus")
+
+ggplot(cursos_mediana[86:95,], aes( y = x, x = reorder(Group.2, -x),, fill=factor(Group.3))) + geom_bar(stat="identity", position="dodge") +  geom_text(aes(label=x),size = 4) + coord_flip()  + labs(title = "Cursos com melhores notas", x = "Curso", y = "Mediana", fill = "Campus")
+```
+
+Segundo os gráficos acima, podemos concluir que, com mediana igual a 0.7, o curso **FÍSICA (LIC) - D** é considerado aquele com piores notas, enquanto **DIREITO - M**,  com mediana igual a 8.6, é considerado aquele com melhores notas. O curso de Física pertence ao campus **1** e o de direito ao campus **3**.
+
+```{r}
+unique(cursos[cursos$Cod_Curso == cursos_mediana[1,]$Group.1,]$Campus)
+unique(cursos[cursos$Cod_Curso == cursos_mediana[95,]$Group.1,]$Campus)
+```
+
+Esse resultado pode ser afetado de diversas maneiras. Nos dados utilizados para essa análise, para o curso de direto temos mais de 23000 valores enquando física não chega a 700. Em casos desse tipo a quantidade de desistentes ou reprovações tem um efeito maior no grupo de menor valor. Além do mais, podemos ver no boxplot abaixo que para o curso de direito as notas estão bem concentradas em altos valores e apesar de apresentar outliers, estes não exercem influência. Por outro lado, as notas do curso de física têm uma maior variabilidade e concentração de baixos valores valores. 
+
+```{r}
+ggplot(cursos[cursos$Cod_Curso == 11105110 | cursos$Cod_Curso == 31350100,], aes( y = Media_Disciplina, x = Nome_Curso)) + geom_boxplot() + labs(title = "DIREITO - M x FÍSICA (LIC) - D", x = "Curso", y = "Média")
+```
+
+### Em qual período estão as melhores e piores notas do curso de Ciência da Computação?
+
+Seguindo o mesmo procedimento adotado na questão anterior, agora agrupamos as médias por período. Porém, no gráfico abaixo é possível identificar um problema na definição de melhor e pior período. Ao verificar a mediana dos últimos períodos, vemos que todos pussuem o mesmo valor e variabilidade semelhante, impossibilitando escolher apenas um.
+
+```{r warning=FALSE}
+ccc_medias = subset(cursos, Cod_Curso == 14102100)
+
+ggplot(ccc_medias, aes(factor(Periodo), Media_Disciplina )) + geom_boxplot() + labs(title = "Notas de CC por período", x = "Período", y = "Nota") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Para contornar esse problema, vamos analisar os perídos a partir do cálculo das médias. No gráfico abaixo estão marcadas as médias das notas de cada período. Observamos que, assim como no boxplot anterior, o período 2002.1 permanece no topo com melhores notas. Por outro lado, vemos diferenças nos valores referentes aos últimos períodos que antes estavam iguais. Com um pequena diferença para 2012.1, 2014.1 apresentas a média mais baixa de notas, sendo considerado então o de piores notas.
+
+```{r wanrning = FALSE}
+ccc_medias = aggregate(ccc_medias$Media_Disciplina, list(ccc_medias$Periodo), FUN = mean, na.rm=TRUE)
+
+ggplot(ccc_medias, aes( y = x, x =factor( Group.1), group = 1)) + geom_line(color = "#d94801") + geom_point(size = 2, color = "#8c2d04") + labs(title = "Médias de notas de CC por período", x = "Período", y = "Média") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+### Existe correlação entre as notas de Matemática Discreta e Cálculo I para o curso de Ciência da Computação? Se sim, a correlação é positiva ou negativa? Qual a força dessa correlação?
+
+Para esta análise serão considerados apenas as notas de pessoas que cursaram as disciplinas Matemática Discreta e Cálculo I, em outras palavras, apenas quando houver notas disponíveis referentes as duas disciplinas ligeada a uma só matrícula. Para casos de quando há mais de uma nota para as disciplinas, apenas a maior é considerada. 
+
+Após realizado o filtro e recortes adequados, plotamos abaixo um gráfico em que as notas de Cálculo I estão representadas no eixo X e as notas de Matemática Discretas estão representadas no eixo Y. Observamos que há um tipo de marcação na imagem gerada, exatamente onde as notas atingem o valor 5. Os pontos anteriores a estar marcação estão bem dispersos, enquanto os após a marcação se encontram mais concentrados em na região direita superior.
+
+```{r warning=FALSE}
+discreta = subset(cursos, Cod_Disciplina == 1109113) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina)
+calculo = subset(cursos, Cod_Disciplina == 1109103) %>% group_by(Matricula) %>% top_n(1, Media_Disciplina)
+
+disc = subset(discreta, select = c("Matricula", "Media_Disciplina"))
+calc = subset(calculo, select = c("Matricula", "Media_Disciplina"))
+
+disc.calc = merge(calc,disc, by.x = "Matricula", by.y = "Matricula")
+
+ggplot(disc.calc, aes(Media_Disciplina.x, Media_Disciplina.y)) + geom_point(alpha = 0.5, color = "#7a0177") + labs(title = "Relação de notas Cálculo I x Matemática Discreta", x = "Notas de Cálculo I", y = "Notas de Matemática Discreta") + geom_smooth(method = lm)
+```
+
+Apesar de um pouco disperso, no gráfico acima os pontos se desenham de maneira em é possível observar uma tendência. Desconsiderando outliers, vemos que a dendência é de que as notas de ambas as disciplinas geralmente crescem juntas. Esse é um indicativo de que há correlação entre as duas variáveis. Abaixo temos o valor da correlação calculado:
+
+```{r warning=FALSE}
+cor(disc.calc$Media_Disciplina.x, disc.calc$Media_Disciplina.y)
+```
+
+Seu valor é igual a  0.6927944 e por ser diferente de zero podemos afirmar que há correlação. Um valor acima de 0 significa que essa correlação é possitiva. Quanto mais próximo de 1 ou -1, maior a força. Sendo nosso valor quase 0.70, podemos considerar que há uma forte correlação positiva.
