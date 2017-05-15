@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Laboratório 2 - Parte 3</title>
+    <meta name="description" content="Resultados dos laboratórios da disciplina.
+">
+
+    <link rel="stylesheet" href="/AD2/css/main.css">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-2-parte-3.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/AD2/">Análise de Dados 2</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/AD2/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Laboratório 2 - Parte 3</h1>
+    <p class="post-meta">May 15, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <h2 id="apresentao-dos-dados">Apresentação dos dados</h2>
+
+<p>Como continuação da Parte 2, nesse fase estaremos criando modelos de regressão, comparando-os e realizando predição de dados. Continuamos trabalhando com disciplinas dos dois primeiros semestres para a criação de um modelo que consiga calcular o cra de uma determinada matrícula. Para isso dividimos os dados em treino, validação e teste.</p>
+
+<p><em>Legenda</em></p>
+
+<ul>
+  <li><strong><em>Cálculo.1</em></strong>: Cálculo Diferencial e Integral I - Período 1</li>
+  <li><strong><em>Vetorial</em></strong>: Álgebra Vetorial e Geometria Analítica - Período 1</li>
+  <li><strong><em>LPT</em></strong>: Leitura e Produção de Textos - Período 1</li>
+  <li><strong><em>P1</em></strong>: Programação I - Período 1</li>
+  <li><strong><em>LP1</em></strong>: Laboratório de Programação I - Período 1</li>
+  <li><strong><em>IC</em></strong>: Introdução à Computação - Período 1</li>
+  <li><strong><em>Cálculo.2</em></strong>: Cálculo Diferencial e Integral II - Período 2</li>
+  <li><strong><em>Discreta</em></strong>: Matemática Discreta - Período 2</li>
+  <li><strong><em>P2</em></strong>: Programação II - Período 2</li>
+  <li><strong><em>LP2</em></strong>: Laboratório de Programação II - Período 2</li>
+  <li><strong><em>Grafos</em></strong>: Teoria dos Grafos - Período 2</li>
+  <li><strong><em>Física.3</em></strong>: Fundamentos de Física Clássica - Período 2</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados_treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"p1p2.graduados_treino.csv"</span><span class="p">)</span><span class="w">
+</span><span class="n">dados_validacao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"p1p2.graduados_validacao.csv"</span><span class="p">)</span><span class="w">
+</span><span class="n">dados_teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"test.csv"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">dados_teste</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"matricula"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Cálculo.1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Vetorial"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LPT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LP1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"IC"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Cálculo.2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Discreta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"P2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"LP2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Grafos"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Física.3"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">dados_treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_treino</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">15</span><span class="p">]</span><span class="w">
+</span><span class="n">dados_validacao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">15</span><span class="p">]</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##                          Matricula Cálculo.1 Vetorial LPT  P1 LP1  IC
+## 1 002b348d3bc88b68aa6ebd24cfc9d6a0       5.6      7.5 9.1 8.0 8.7 8.4
+## 2 007961bf3929ae353c8585e6c09df369       6.7      8.5 8.6 7.1 7.6 7.7
+## 3 00960ff73dd29b59f4432072c2219c04       7.0      5.6 6.5 7.3 8.5 7.5
+## 4 00b6f55e3639c9d3b835751a39ca6309        NA      7.3  NA  NA  NA  NA
+## 5 00eb58fa89c562efda118e64efab77a5       5.5      7.0 7.4 6.8 6.3 8.6
+## 6 01fc383ae2c2cb3e69d844272a5ecac0       6.6      5.9 8.3 9.1 8.8 9.5
+##   Cálculo.2 Discreta  P2 LP2 Grafos Física.3      cra
+## 1        NA      9.2 7.7 8.6    7.2      9.6 8.109877
+## 2        NA      5.0 5.7 8.0    7.0      7.8 6.975824
+## 3        NA      5.3 5.6 8.1    7.9      7.0 6.057282
+## 4       7.2       NA  NA  NA     NA       NA 7.766667
+## 5        NA      6.7 7.9 9.0    6.1      7.1 7.693827
+## 6        NA      6.1 6.8 9.0    5.3      7.3 6.722892</code></pre></figure>
+
+<p>Percebemos que algumas notas de disciplinas estão com valores vazios. Para que não precisemos remover toda a linha do data frame, vamos realizar imputação de dados. Decidimos que os valores vazios em disciplinas serão substituídos pelo valor do cra de suas respectivas matrículas.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">)){</span><span class="w">
+  </span><span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">)){</span><span class="w">
+    </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+      </span><span class="n">dados_treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_treino</span><span class="o">$</span><span class="n">cra</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">dados_validacao</span><span class="p">)){</span><span class="w">
+      </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados_validacao</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+        </span><span class="n">dados_validacao</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##                          Matricula Cálculo.1 Vetorial      LPT
+## 1 002b348d3bc88b68aa6ebd24cfc9d6a0  5.600000      7.5 9.100000
+## 2 007961bf3929ae353c8585e6c09df369  6.700000      8.5 8.600000
+## 3 00960ff73dd29b59f4432072c2219c04  7.000000      5.6 6.500000
+## 4 00b6f55e3639c9d3b835751a39ca6309  7.766667      7.3 7.766667
+## 5 00eb58fa89c562efda118e64efab77a5  5.500000      7.0 7.400000
+## 6 01fc383ae2c2cb3e69d844272a5ecac0  6.600000      5.9 8.300000
+##         P1      LP1       IC Cálculo.2 Discreta       P2      LP2
+## 1 8.000000 8.700000 8.400000  8.109877 9.200000 7.700000 8.600000
+## 2 7.100000 7.600000 7.700000  6.975824 5.000000 5.700000 8.000000
+## 3 7.300000 8.500000 7.500000  6.057282 5.300000 5.600000 8.100000
+## 4 7.766667 7.766667 7.766667  7.200000 7.766667 7.766667 7.766667
+## 5 6.800000 6.300000 8.600000  7.693827 6.700000 7.900000 9.000000
+## 6 9.100000 8.800000 9.500000  6.722892 6.100000 6.800000 9.000000
+##     Grafos Física.3      cra
+## 1 7.200000 9.600000 8.109877
+## 2 7.000000 7.800000 6.975824
+## 3 7.900000 7.000000 6.057282
+## 4 7.766667 7.766667 7.766667
+## 5 6.100000 7.100000 7.693827
+## 6 5.300000 7.300000 6.722892</code></pre></figure>
+
+<p>Como resultado final e para uma apresentação dos dados antes a criação de modelos, podemos ver abaixo a tabela de correlação entre a variáveis.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cor</span><span class="p">(</span><span class="n">na.omit</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">]))</span><span class="w">
+
+</span><span class="n">corrplot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lower"</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Correlação de disciplinas"</span><span class="p">,</span><span class="w">  </span><span class="n">order</span><span class="o">=</span><span class="s2">"hclust"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">brewer.pal</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"PuOr"</span><span class="p">),</span><span class="w"> </span><span class="n">addCoef.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.col</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.srt</span><span class="o">=</span><span class="m">45</span><span class="p">,</span><span class="w"> </span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
+
+<h2 id="modelo-de-regresso-ridge">Modelo de regressão Ridge</h2>
+
+<p>Iniciaremos utilizando o método de regularização Ridge Regression, que suaviza atributos relacionados e que aumentam o ruído no modelo. Porque queremos encontrar o bom valor lambda para o modelo, utilizamos nos dados de treino a função <em>train</em> para escolher aquele com menor RMSE dentre 100 possíveis valores lambda.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">set.seed</span><span class="p">(</span><span class="m">825</span><span class="p">)</span><span class="w">
+</span><span class="n">fitControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cv"</span><span class="p">,</span><span class="w">
+                           </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w">
+
+</span><span class="n">lambdaGrid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">expand.grid</span><span class="p">(</span><span class="n">lambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="o">^</span><span class="n">seq</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="m">-2</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="o">=</span><span class="m">100</span><span class="p">))</span><span class="w">
+
+</span><span class="n">ridge</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">cra</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_treino</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">],</span><span class="w">
+               </span><span class="n">method</span><span class="o">=</span><span class="s1">'ridge'</span><span class="p">,</span><span class="w">
+               </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
+                </span><span class="n">tuneGrid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambdaGrid</span><span class="p">,</span><span class="w">
+               </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">)</span><span class="w">
+</span><span class="p">)</span></code></pre></figure>
+
+<p>Abaixo vemos a sequência de valores obtidos e uma representação gráfica do mesmo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ridge</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Ridge Regression 
+## 
+## 511 samples
+##  12 predictor
+## 
+## Pre-processing: centered (12), scaled (12) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 459, 459, 459, 461, 460, 461, ... 
+## Resampling results across tuning parameters:
+## 
+##   lambda        RMSE       Rsquared 
+##   1.000000e-02  0.4702298  0.7088850
+##   1.321941e-02  0.4702420  0.7089405
+##   1.747528e-02  0.4702705  0.7090096
+##   2.310130e-02  0.4703295  0.7090939
+##   3.053856e-02  0.4704443  0.7091935
+##   4.037017e-02  0.4706593  0.7093062
+##   5.336699e-02  0.4710517  0.7094251
+##   7.054802e-02  0.4717539  0.7095363
+##   9.326033e-02  0.4729915  0.7096156
+##   1.232847e-01  0.4751422  0.7096254
+##   1.629751e-01  0.4788289  0.7095135
+##   2.154435e-01  0.4850543  0.7092155
+##   2.848036e-01  0.4953801  0.7086617
+##   3.764936e-01  0.5121245  0.7077907
+##   4.977024e-01  0.5384997  0.7065657
+##   6.579332e-01  0.5785481  0.7049890
+##   8.697490e-01  0.6367339  0.7031088
+##   1.149757e+00  0.7171769  0.7010140
+##   1.519911e+00  0.8227305  0.6988181
+##   2.009233e+00  0.9541925  0.6966382
+##   2.656088e+00  1.1098394  0.6945759
+##   3.511192e+00  1.2853530  0.6927046
+##   4.641589e+00  1.4741742  0.6910660
+##   6.135907e+00  1.6682948  0.6896735
+##   8.111308e+00  1.8593786  0.6885190
+##   1.072267e+01  2.0399445  0.6875807
+##   1.417474e+01  2.2042917  0.6868302
+##   1.873817e+01  2.3489455  0.6862375
+##   2.477076e+01  2.4726041  0.6857742
+##   3.274549e+01  2.5757280  0.6854146
+##   4.328761e+01  2.6599755  0.6851374
+##   5.722368e+01  2.7276572  0.6849245
+##   7.564633e+01  2.7813040  0.6847617
+##   1.000000e+02  2.8233754  0.6846374
+##   1.321941e+02  2.8560948  0.6845428
+##   1.747528e+02  2.8813763  0.6844709
+##   2.310130e+02  2.9008129  0.6844163
+##   3.053856e+02  2.9156984  0.6843749
+##   4.037017e+02  2.9270649  0.6843435
+##   5.336699e+02  2.9357246  0.6843197
+##   7.054802e+02  2.9423110  0.6843017
+##   9.326033e+02  2.9473137  0.6842881
+##   1.232847e+03  2.9511099  0.6842777
+##   1.629751e+03  2.9539883  0.6842699
+##   2.154435e+03  2.9561696  0.6842640
+##   2.848036e+03  2.9578219  0.6842595
+##   3.764936e+03  2.9590731  0.6842561
+##   4.977024e+03  2.9600203  0.6842536
+##   6.579332e+03  2.9607373  0.6842516
+##   8.697490e+03  2.9612799  0.6842502
+##   1.149757e+04  2.9616904  0.6842491
+##   1.519911e+04  2.9620011  0.6842482
+##   2.009233e+04  2.9622362  0.6842476
+##   2.656088e+04  2.9624140  0.6842471
+##   3.511192e+04  2.9625485  0.6842468
+##   4.641589e+04  2.9626503  0.6842465
+##   6.135907e+04  2.9627273  0.6842463
+##   8.111308e+04  2.9627856  0.6842461
+##   1.072267e+05  2.9628296  0.6842460
+##   1.417474e+05  2.9628630  0.6842459
+##   1.873817e+05  2.9628882  0.6842458
+##   2.477076e+05  2.9629073  0.6842458
+##   3.274549e+05  2.9629217  0.6842457
+##   4.328761e+05  2.9629326  0.6842457
+##   5.722368e+05  2.9629409  0.6842457
+##   7.564633e+05  2.9629471  0.6842457
+##   1.000000e+06  2.9629518  0.6842457
+##   1.321941e+06  2.9629554  0.6842457
+##   1.747528e+06  2.9629581  0.6842456
+##   2.310130e+06  2.9629602  0.6842456
+##   3.053856e+06  2.9629617  0.6842456
+##   4.037017e+06  2.9629629  0.6842456
+##   5.336699e+06  2.9629638  0.6842456
+##   7.054802e+06  2.9629644  0.6842456
+##   9.326033e+06  2.9629650  0.6842456
+##   1.232847e+07  2.9629653  0.6842456
+##   1.629751e+07  2.9629656  0.6842456
+##   2.154435e+07  2.9629658  0.6842456
+##   2.848036e+07  2.9629660  0.6842456
+##   3.764936e+07  2.9629661  0.6842456
+##   4.977024e+07  2.9629662  0.6842456
+##   6.579332e+07  2.9629663  0.6842456
+##   8.697490e+07  2.9629664  0.6842456
+##   1.149757e+08  2.9629664  0.6842456
+##   1.519911e+08  2.9629664  0.6842456
+##   2.009233e+08  2.9629665  0.6842456
+##   2.656088e+08  2.9629665  0.6842456
+##   3.511192e+08  2.9629665  0.6842456
+##   4.641589e+08  2.9629665  0.6842456
+##   6.135907e+08  2.9629665  0.6842456
+##   8.111308e+08  2.9629665  0.6842456
+##   1.072267e+09  2.9629665  0.6842456
+##   1.417474e+09  2.9629665  0.6842456
+##   1.873817e+09  2.9629665  0.6842456
+##   2.477076e+09  2.9629665  0.6842456
+##   3.274549e+09  2.9629665  0.6842456
+##   4.328761e+09  2.9629665  0.6842456
+##   5.722368e+09  2.9629665  0.6842456
+##   7.564633e+09  2.9629665  0.6842456
+##   1.000000e+10  2.9629665  0.6842456
+## 
+## RMSE was used to select the optimal model using  the smallest value.
+## The final value used for the model was lambda = 0.01.</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">ridge</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
+
+<p>Em seguida, realizamos a predição dos dados, mas agora utilizando os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ridge.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">ridge</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+
+</span><span class="n">ridge.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" /></p>
+
+<p>O RMSE alto indica que o erro na predição foi alto. Ao utlizar a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.449.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
+##    0.449    0.665</code></pre></figure>
+
+<h2 id="modelo-de-regresso-lasso">Modelo de regressão Lasso</h2>
+
+<p>Assim como no tópico anterior, criaremos um novo modelo agora utilizando o método Lasso para a seleção de preditores. Após a criação e treinamento do modelo, também realizaremos a predição do mesmo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">cra</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_treino</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">],</span><span class="w">
+               </span><span class="n">method</span><span class="o">=</span><span class="s1">'lasso'</span><span class="p">,</span><span class="w">
+                </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
+               </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">)</span><span class="w">
+</span><span class="p">)</span></code></pre></figure>
+
+<p>O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## The lasso 
+## 
+## 511 samples
+##  12 predictor
+## 
+## Pre-processing: centered (12), scaled (12) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 511, 511, 511, 511, 511, 511, ... 
+## Resampling results across tuning parameters:
+## 
+##   fraction   RMSE       Rsquared 
+##   0.1000000  0.8141437  0.5276665
+##   0.1888889  0.7557930  0.5766531
+##   0.2777778  0.7032861  0.6194808
+##   0.3666667  0.6550835  0.6513060
+##   0.4555556  0.6108729  0.6726158
+##   0.5444444  0.5717756  0.6873726
+##   0.6333333  0.5381594  0.6989018
+##   0.7222222  0.5107670  0.7071166
+##   0.8111111  0.4906253  0.7129157
+##   0.9000000  0.4793249  0.7158749
+## 
+## RMSE was used to select the optimal model using  the smallest value.
+## The final value used for the model was fraction = 0.9.</code></pre></figure>
+
+<p>Para realizar a predição dos dados também utilizamos os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+
+</span><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" /></p>
+
+<p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.437.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
+##    0.437    0.663</code></pre></figure>
+
+<h2 id="comparao-de-modelos">Comparação de modelos</h2>
+
+<p>Realizamos a comparação de modelos com base nos valores obtidos no RMSE. Quanto mais baixo o valor, melhor. Abaixo temos os gráficos mostrados anteriormente, agora lado a lado para uma melhor comparação.Vemos que o comportamento nos dados de validação é bem semelhante, os gráficos gerados não apresentam uma diferença perceptível muito significante.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">compare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ridge.pred</span><span class="w">
+</span><span class="n">compare</span><span class="o">$</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Ridge"</span><span class="w">
+</span><span class="n">lasso.pred</span><span class="o">$</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Lasso"</span><span class="w">
+
+</span><span class="n">compare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">compare</span><span class="p">,</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">compare</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">facet_grid</span><span class="p">(</span><span class="n">.</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">model</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">geom_abline</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Observado x Previsão (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" /></p>
+
+<p>Assim como nos gráficos, o fenômeno se repetiu para os valores de RSME. Ambos são altos e com quase o mesmo valor. Porém, o RMSE do modelo Lasso consegue atingir um menor valor. Podemos então considerar que o melhor modelo é o que utiliza da técnica Lasso. O melhor modelo é aquele que possui o RMSE mais baixo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
+##    0.449    0.665</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
+##    0.437    0.663</code></pre></figure>
+
+<h2 id="importncia-de-variveis-no-modelo-lasso">Importância de variáveis no modelo Lasso</h2>
+
+<p>Geramos uma representação gráfica com a importância das variáveis e mais abaixo estão os valores detalhados sobre a importância das mesmas. Vemos que Cálculo 2 é apresentada como a variável de maior importância, seguida por IC e P2. Temos apenas uma variável discartada que foi Física 3, apresentando overall igual a 0.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">))</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## loess r-squared variable importance
+## 
+##           Overall
+## Cálculo.2 100.000
+## IC         41.837
+## P2         25.549
+## Discreta   23.305
+## P1         18.968
+## Grafos     17.809
+## Vetorial   14.513
+## Cálculo.1  13.001
+## LP1        12.518
+## LP2         8.069
+## LPT         3.667
+## Física.3    0.000</code></pre></figure>
+
+<h2 id="re-treino-de-modelo-lasso-com-dados-de-validao">Re-treino de modelo Lasso com dados de validação</h2>
+
+<p>Repetiremos aqui os passos realizados na construção e treino do modelo Lasso. Porém, desta vez estaremos utilizando os dados de validação para treinar o modelo. Segue:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">cra</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">],</span><span class="w">
+               </span><span class="n">method</span><span class="o">=</span><span class="s1">'lasso'</span><span class="p">,</span><span class="w">
+                </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
+               </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">))</span></code></pre></figure>
+
+<p>O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## The lasso 
+## 
+## 37 samples
+## 12 predictors
+## 
+## Pre-processing: centered (12), scaled (12) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 37, 37, 37, 37, 37, 37, ... 
+## Resampling results across tuning parameters:
+## 
+##   fraction   RMSE       Rsquared 
+##   0.1000000  0.5702018  0.6457216
+##   0.1888889  0.5076296  0.6046636
+##   0.2777778  0.4768178  0.5827288
+##   0.3666667  0.4624886  0.5785330
+##   0.4555556  0.4655663  0.5696089
+##   0.5444444  0.4835833  0.5538252
+##   0.6333333  0.5053069  0.5392726
+##   0.7222222  0.5311599  0.5230208
+##   0.8111111  0.5608953  0.5000516
+##   0.9000000  0.5913489  0.4724158
+## 
+## RMSE was used to select the optimal model using  the smallest value.
+## The final value used for the model was fraction = 0.3666667.</code></pre></figure>
+
+<p>Em seguida, a realização de predição utilizando os mesmos dados. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+
+</span><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17" /></p>
+
+<p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.454. Ao interpretar o resultado da função entendemos que houve um aumento no valor do RMSE e, consequentemente, uma piora no modelo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
+##    0.454    0.674</code></pre></figure>
+
+<h2 id="tentativa-de-melhora-no-modelo">Tentativa de melhora no modelo</h2>
+
+<p>Para tentar melhorar o modelo, vamos tentar uma nova abordagem para imputação de dados. Inicialmente, fazíamos a substituição de valores NA pelo valor do cra. Agora substituiremos esses valores vazios pela média das notas do primeiro período.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados_treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"p1p2.graduados_treino.csv"</span><span class="p">)</span><span class="w">
+</span><span class="n">dados_validacao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"p1p2.graduados_validacao.csv"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">dados_treino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_treino</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">15</span><span class="p">]</span><span class="w">
+</span><span class="n">dados_validacao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">15</span><span class="p">]</span><span class="w">
+
+</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">)){</span><span class="w">
+  </span><span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">)){</span><span class="w">
+    </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+      </span><span class="n">dados_treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowMeans</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">13</span><span class="p">],</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">dados_validacao</span><span class="p">)){</span><span class="w">
+      </span><span class="k">if</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">dados_validacao</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])){</span><span class="w">
+        </span><span class="n">dados_validacao</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowMeans</span><span class="p">(</span><span class="n">dados_treino</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="o">:</span><span class="m">13</span><span class="p">],</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Assim como nos tópicos anteriores, criamos o modelo utlizando os dados de treino.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">cra</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_treino</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">],</span><span class="w">
+               </span><span class="n">method</span><span class="o">=</span><span class="s1">'lasso'</span><span class="p">,</span><span class="w">
+                </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
+               </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">))</span></code></pre></figure>
+
+<p>O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## The lasso 
+## 
+## 511 samples
+##  12 predictor
+## 
+## Pre-processing: centered (12), scaled (12) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 511, 511, 511, 511, 511, 511, ... 
+## Resampling results across tuning parameters:
+## 
+##   fraction   RMSE       Rsquared 
+##   0.1000000  0.8150713  0.4021364
+##   0.1888889  0.7729049  0.4584215
+##   0.2777778  0.7338854  0.4913313
+##   0.3666667  0.6982370  0.5111362
+##   0.4555556  0.6666010  0.5237566
+##   0.5444444  0.6395067  0.5332335
+##   0.6333333  0.6172118  0.5403274
+##   0.7222222  0.5999298  0.5463035
+##   0.8111111  0.5881088  0.5508598
+##   0.9000000  0.5820381  0.5540132
+## 
+## RMSE was used to select the optimal model using  the smallest value.
+## The final value used for the model was fraction = 0.9.</code></pre></figure>
+
+<p>Em seguida, a realização de predição utilizando os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+
+</span><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-22-1.png" alt="plot of chunk unnamed-chunk-22" /></p>
+
+<p>Geramos uma representação gráfica com a importância das variáveis e mais abaixo estão os valores detalhados sobre a importância das mesmas. Vemos que Cálculo 2 continua sendo apresentada como a variável de maior importância, seguida por IC e agora Grafos. Temos apenas uma variável discartada que para o novo modelo foi LPT, apresentando overall igual a 0.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">))</span></code></pre></figure>
+
+<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-23-1.png" alt="plot of chunk unnamed-chunk-23" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## loess r-squared variable importance
+## 
+##           Overall
+## Cálculo.2  100.00
+## IC          65.81
+## Grafos      57.15
+## Vetorial    54.07
+## P2          48.15
+## Discreta    41.75
+## P1          29.17
+## Cálculo.1   28.00
+## LP1         23.17
+## Física.3    22.91
+## LP2         20.43
+## LPT          0.00</code></pre></figure>
+
+<p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.411. Ao interpretar o resultado da função entendemos que houve uma diminuição no valor do RMSE e, consequentemente, uma melhora no modelo.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
+##    0.411    0.670</code></pre></figure>
+
+<h2 id="gerando-dados-de-predio">Gerando dados de predição</h2>
+
+<p>Para gerar dados de predição utilizamos dados de teste. Realizamos a predição de cra a partir das disciplinas dos dois primeiros semestres. O resultado foi submetido na plataforma Kaggle.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">head</span><span class="p">(</span><span class="n">dados_teste</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##                          matricula Cálculo.1 Vetorial LPT  P1  LP1
+## 1 037119c4740aa04d14742993e4aab789       8.2      9.1 8.3 7.0 10.0
+## 2 0402a824ba0c87f73209cdb49b5072be       5.0      7.7 7.8 8.8  7.1
+## 3 075d778a8444ef224757557479320148       5.2      5.0 9.6 7.8  6.2
+## 4 09b9a1b335be033c236add2ba699c13f       7.6      6.0 8.7 7.0  8.4
+## 5 0d3c0ddcdd2a97627575c27b5d1a058a       8.3      8.1 7.0 8.4  9.4
+## 6 107f352e7c2d881c0f5f72a4584cd8fd       5.5      6.9 7.3 7.0  9.1
+##    IC Cálculo.2 Discreta  P2 LP2 Grafos Física.3
+## 1 7.7       9.2      9.7 9.2 8.9    9.1      9.0
+## 2 8.8       7.3      7.3 7.1 7.3    8.0      6.0
+## 3 5.4       5.1      5.0 5.7 7.0    7.0      9.3
+## 4 7.0       5.0      5.9 7.8 6.0    6.6      5.9
+## 5 8.4       7.8      7.9 8.5 8.5    8.0      8.0
+## 6 7.4       7.0      7.6 9.4 5.2    8.4      8.8</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados_teste</span><span class="o">$</span><span class="n">cra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+</span><span class="n">dados_teste</span><span class="o">$</span><span class="n">cra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_teste</span><span class="p">)</span><span class="w">
+</span><span class="n">dados_teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_teste</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="s2">"matricula"</span><span class="p">,</span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">dados_teste</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##                          matricula      cra
+## 1 037119c4740aa04d14742993e4aab789 8.309662
+## 2 0402a824ba0c87f73209cdb49b5072be 7.380805
+## 3 075d778a8444ef224757557479320148 6.478184
+## 4 09b9a1b335be033c236add2ba699c13f 6.809691
+## 5 0d3c0ddcdd2a97627575c27b5d1a058a 7.816722
+## 6 107f352e7c2d881c0f5f72a4584cd8fd 7.552772</code></pre></figure>
+
+
+  </article>
+
+</div>
+
+
+
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Análise de Dados 2</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Análise de Dados 2</li>
+          <li><a href="mailto:martha.menezes@ccc.ufcg.edu.br">martha.menezes@ccc.ufcg.edu.br</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/michellymenezes">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">michellymenezes</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Resultados dos laboratórios da disciplina.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,6 +1,6 @@
 # Site settings
 title: Análise de Dados 2
-email: your-email@domain.com
+email: martha.menezes@ccc.ufcg.edu.br
 description: > # this means to ignore newlines until "baseurl:"
   Resultados dos laboratórios da disciplina.
 baseurl: "/AD2" # the subpath of your site, e.g. /blog/
