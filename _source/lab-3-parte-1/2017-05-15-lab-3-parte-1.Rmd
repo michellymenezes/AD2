@@ -5,10 +5,12 @@ date: "`r Sys.time()`"
 published: true
 tags: [example1, example2]
 ---
+```{r}
+knitr::opts_chunk$set(screenshot.force = FALSE)
 
+```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(screenshot.force = FALSE)
 knitr::opts_chunk$set(echo = TRUE)
 library(highcharter)
 library(dplyr)
