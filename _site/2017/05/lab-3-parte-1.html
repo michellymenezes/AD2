@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Laboratório 3 - Parte 1</title>
+    <meta name="description" content="Resultados dos laboratórios da disciplina.
+">
+
+    <link rel="stylesheet" href="/AD2/css/main.css">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-3-parte-1.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/AD2/">Análise de Dados 2</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/AD2/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Laboratório 3 - Parte 1</h1>
+    <p class="post-meta">May 15, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <p>Este documento é referente a Parte 1 do Lab 3, aqui estaremos fazendo uma análise descritiva para o entendimento dos dados. A base de dados que iremos utilizar é referente aos anos de 2000 a 2015 e mostra a frequência de evasão de alunos de Ciência da Computação ao fim do primeiro semestre de aula no curso durante esse período de tempo. Teremos as seguintes colunas em nossa base de dados com seus respectivos significados:</p>
+
+<ul>
+  <li><strong>MAT_ALU_MATRICULA</strong>: Matrícula aluno (anonimizado)</li>
+  <li><strong>MAT_TUR_DIS_DISCIPLINA</strong>: Código Disciplina</li>
+  <li><strong>disciplina</strong>: Nome Disciplina</li>
+  <li><strong>MAT_TUR_ANO</strong>: Ano da matrícula</li>
+  <li><strong>MAT_MEDIA_FINAL</strong>: Média obtida na disciplina</li>
+  <li><strong>EVADIU</strong>: Variável-alvo que indica se o aluno evadiu ou não ao término do período.</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"treino_classificacao.csv"</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="uma-visualizao-que-mostre-em-que-ano-houve-mais-evases">Uma visualização que mostre em que ano houve mais evasões</h2>
+
+<p>Abaixo temos uma visualização que mostra a quantidade de evasões ao longo dos anos. É possível perceber que 2011 foi o ano em que ocorreu mais evasões, um total de 9. Vale salientar que esse valor pode ser maior nesse ano pela maior quantidade de alunos que se matricularam. Até 2010 a quantidade de matrículas atingiu o valor máximo de 83, a partir de 2011 esse valor passou para 113, chegando a atingir 197 em 2015.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">evasoes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">dados</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">contagem.evasoes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">evasoes</span><span class="p">[</span><span class="o">!</span><span class="n">duplicated</span><span class="p">(</span><span class="n">evasoes</span><span class="p">[,</span><span class="m">1</span><span class="p">]),],</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">summarise</span><span class="p">(</span><span class="n">Evasao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="n">EVADIU</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">T</span><span class="p">)))</span><span class="w">
+
+</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">highchart</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_xAxis</span><span class="p">(</span><span class="n">categories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">contagem.evasoes</span><span class="o">$</span><span class="n">MAT_TUR_ANO</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_add_series</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">contagem.evasoes</span><span class="o">$</span><span class="n">Evasao</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Evasões"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_title</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Evasões ao longo dos anos"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_colors</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"purple"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_yAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Total de evasões"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_xAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ano"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">p</span></code></pre></figure>
+
+<p><img src="/AD2figure/source/lab-3-parte-1/2017-05-15-lab-3-parte-1/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2" /></p>
+
+<h2 id="distribuio-das-classes">Distribuição das classes</h2>
+
+<p>A classe de evasão está distribuída da seguinte maneira ao longo dos anos:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">mat_unicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados</span><span class="p">[</span><span class="o">!</span><span class="n">duplicated</span><span class="p">(</span><span class="n">dados</span><span class="p">[,</span><span class="m">1</span><span class="p">]),]</span><span class="w">
+
+</span><span class="n">contagem.distr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">mat_unicas</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">summarise</span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">())</span><span class="w">
+
+</span><span class="n">hchart</span><span class="p">(</span><span class="n">contagem.distr</span><span class="p">,</span><span class="w"> </span><span class="s2">"column"</span><span class="p">,</span><span class="w"> </span><span class="n">hcaes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MAT_TUR_ANO</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">),</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'Não evadiu'</span><span class="p">,</span><span class="w"> </span><span class="s2">"Evadiu"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">  </span><span class="n">hc_title</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Distribuição das classes"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_colors</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"darkblue"</span><span class="p">,</span><span class="w"> </span><span class="s2">"orange"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_yAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Total de alunos"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_xAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ano"</span><span class="p">))</span></code></pre></figure>
+
+<p><img src="/AD2figure/source/lab-3-parte-1/2017-05-15-lab-3-parte-1/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
+
+<h2 id="desbalanceamento-de-classes">Desbalanceamento de classes</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="w"> </span><span class="n">contagem.total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">mat_unicas</span><span class="p">,</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">summarise</span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">())</span><span class="w">
+
+</span><span class="n">hchart</span><span class="p">(</span><span class="n">contagem.total</span><span class="p">,</span><span class="w"> </span><span class="s2">"column"</span><span class="p">,</span><span class="w"> </span><span class="n">hcaes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">),</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'Não evadiu'</span><span class="p">,</span><span class="w"> </span><span class="s2">"Evadiu"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">  </span><span class="n">hc_title</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Distribuição da classe"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_plotOptions</span><span class="p">(</span><span class="n">column</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">stacking</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"normal"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_colors</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"darkblue"</span><span class="p">,</span><span class="w"> </span><span class="s2">"orange"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_yAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Total de alunos"</span><span class="p">))</span></code></pre></figure>
+
+<p><img src="/AD2figure/source/lab-3-parte-1/2017-05-15-lab-3-parte-1/unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4" /></p>
+
+<p>Observando o gráfico acima é possível reparar que a classe relacionada a evasão está desbalanceada, apresentando a seguinte proporção:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">contagem.total</span><span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">2</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">contagem.total</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">contagem.total</span><span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">2</span><span class="p">])</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##       count
+## 1 0.0392302</code></pre></figure>
+
+<p>Uma classe desbalanceada pode influenciar negativamente nos algorítimos de aprendizado uma vez que a parte de maior proporção tende a enviesar o desempenho de classficadores. Tais algorítimos visam minimizar erros gerais, que classes em minoria possuem baixa contribuição. Além disso, os algorítmos assumem que os dados apresentam classes balanceadas assim como que erros são obtidos de diferentes classes.</p>
+
+<h2 id="um-novo-atributo">Um novo atributo</h2>
+
+<p>Adicionamos agora um novo atributo aos dados. O atributo é referente a reprovações nas disciplinas Programação I e Laboratório de Programação I. Entram nessa situação notas nas disciplinas que são abaixo de 5.0. São possíveis os seguintes valores:</p>
+
+<ul>
+  <li><strong>0</strong>: quando o aluno não reprovou nenhuma da duas disciplinas.</li>
+  <li><strong>1</strong>: quando o aluno reprovou apenas uma das disciplinas.</li>
+  <li><strong>2</strong>: quando o aluno reprovou ambas as disciplinas.</li>
+</ul>
+
+<p>Utilizamos esse atributo por imaginar que alunos que reprovam disciplinas de programação no primeiro semestre são aqueles que não se interessam ou têm dificuldade no conteúdo e tendem a ficar desmotivados com relação ao futuro no curso. Em outras palavras, eles percebem que essa não é a carreira que querem seguir e como consequência evadem.</p>
+
+<p>Abaixo vemos uma repersentação gráfica com o novo atributo:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">novo_atr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">dados</span><span class="p">,</span><span class="w"> </span><span class="n">disciplina</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Programação I"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">disciplina</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Laboratório de Programação I"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">MAT_ALU_MATRICULA</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">mutate</span><span class="p">(</span><span class="n">rep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">MAT_MEDIA_FINAL</span><span class="w"> </span><span class="o">&lt;</span><span class="m">5</span><span class="p">))</span><span class="w">
+
+</span><span class="n">mat_unicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">novo_atr</span><span class="p">[</span><span class="o">!</span><span class="n">duplicated</span><span class="p">(</span><span class="n">novo_atr</span><span class="p">[,</span><span class="m">1</span><span class="p">]),]</span><span class="w">
+</span><span class="n">contagem.freq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">group_by</span><span class="p">(</span><span class="n">mat_unicas</span><span class="p">,</span><span class="w"> </span><span class="n">rep</span><span class="p">,</span><span class="n">EVADIU</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">summarise</span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">())</span><span class="w">
+
+</span><span class="n">hchart</span><span class="p">(</span><span class="n">contagem.freq</span><span class="p">[</span><span class="n">contagem.freq</span><span class="o">$</span><span class="n">EVADIU</span><span class="o">==</span><span class="nb">T</span><span class="p">,],</span><span class="w"> </span><span class="s2">"column"</span><span class="p">,</span><span class="w"> </span><span class="n">hcaes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rep</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">),</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Evadiu"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">  </span><span class="n">hc_title</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Distribuição evasão"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_colors</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"darkred"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_xAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Número de reprovações em P1 e LP1"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_yAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Total de alunos"</span><span class="p">))</span></code></pre></figure>
+
+<p><img src="/AD2figure/source/lab-3-parte-1/2017-05-15-lab-3-parte-1/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" /></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">hchart</span><span class="p">(</span><span class="n">contagem.freq</span><span class="p">[</span><span class="n">contagem.freq</span><span class="o">$</span><span class="n">EVADIU</span><span class="o">==</span><span class="nb">F</span><span class="p">,],</span><span class="w"> </span><span class="s2">"column"</span><span class="p">,</span><span class="w"> </span><span class="n">hcaes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rep</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EVADIU</span><span class="p">),</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Não evadiu"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">  </span><span class="n">hc_title</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Distribuição não-evasão"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_colors</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"darkred"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_xAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Número de reprovações em P1 e LP1"</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">hc_yAxis</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Total de alunos"</span><span class="p">))</span></code></pre></figure>
+
+<p><img src="/AD2figure/source/lab-3-parte-1/2017-05-15-lab-3-parte-1/unnamed-chunk-6-2.png" alt="plot of chunk unnamed-chunk-6" /></p>
+
+<p>Percebemos que os alunos que evadiram se concentram no grupo dos que reprovaram ambas as disciplinas, reparamos também que dos alunos que evadiram nenhum reprovou apenas uma das disciplinas. Também é possível notar que o número de alunos que <strong>não</strong> evadiram é consideravelmente maior no cenário em que não há reprovações.</p>
+
+<p>Os gráficos nos mostram que a maior frequência de evasão e não-evasão ocorrem em grupos diferentes. As distribuições dos atributos tem valores diferentes entre as classes e isso ajuda mais o classificador, pois os valores podem ser separados mais facilmente, reduzindo a probabilidade de erros no momento de predição da classe.</p>
+
+  </article>
+
+</div>
+
+
+
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Análise de Dados 2</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Análise de Dados 2</li>
+          <li><a href="mailto:martha.menezes@ccc.ufcg.edu.br">martha.menezes@ccc.ufcg.edu.br</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/michellymenezes">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">michellymenezes</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Resultados dos laboratórios da disciplina.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
