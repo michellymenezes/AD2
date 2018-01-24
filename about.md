@@ -3,9 +3,10 @@ layout: page
 title: About
 permalink: /about/
 ---
+Esse é um portifolio com alguns exemplos que realizei enquanto cursava uma disciplina na universidade e aprendia um pouco sobre Aprendizagem de Máquina. Tudo foi realizado utilizando a linguagem R.
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+A disciplina foi Análise de Dados 2, ministrada pelo professor Leandro Balby.
 
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
+*This is a portfolio with some examples that I made while doing a subject in Uni and learning a bit of Machine Learning. Everything was done by using the R language.*
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
+*The subject was Data Analysis 2 where the professor was Leandro Balby.*
