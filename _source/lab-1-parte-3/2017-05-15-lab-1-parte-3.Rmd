@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Laboratório 1 - Parte 3
+title:  Ciência da Computação UFCG - Segunda análise descritiva
 date: "`r Sys.time()`"
 published: true
 tags: [example1, example2]

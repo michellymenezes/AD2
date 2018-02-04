@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Laboratório 1 - Parte 3</title>
+    <title>Ciência da Computação UFCG - Segunda análise descritiva</title>
     <meta name="description" content="Resultados dos laboratórios da disciplina.
 ">
 
     <link rel="stylesheet" href="/AD2/css/main.css">
-    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-1-parte-3.html">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2018/02/lab-1-parte-3.html">
 </head>
 
 
@@ -57,8 +57,8 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Laboratório 1 - Parte 3</h1>
-    <p class="post-meta">May 15, 2017</p>
+    <h1 class="post-title">Ciência da Computação UFCG - Segunda análise descritiva</h1>
+    <p class="post-meta">Feb 3, 2018</p>
   </header>
 
   <article class="post-content">
@@ -109,7 +109,7 @@
 
 </span><span class="n">ggplot</span><span class="p">(</span><span class="n">repr.cc</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="w"> </span><span class="n">Situacao</span><span class="p">,</span><span class="w"> </span><span class="n">Periodo_Relativo</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tipo</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_boxplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">facet_grid</span><span class="p">(</span><span class="n">Creditos</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Tipo</span><span class="p">,</span><span class="w"> </span><span class="n">labeller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">label_both</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="w"> </span><span class="s2">"Matrículas em disciplinas de CC sem aprovação"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Período Relativo"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_y_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">30</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">coord_flip</span><span class="p">()</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2" /></p>
+<p><img src="/AD2figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2" /></p>
 
 <ul>
   <li>No gráfico acima percebemos que a maior parte dos dados analisados se concentram em um período até o período relativo 10, pontos observados após esse período são geralmente considerados outliers.</li>
@@ -123,7 +123,7 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">repr.cc</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="w"> </span><span class="n">Situacao</span><span class="p">,</span><span class="w"> </span><span class="n">Periodo_Relativo</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tipo</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.4</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.4</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">facet_grid</span><span class="p">(</span><span class="n">Creditos</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">Tipo</span><span class="p">,</span><span class="w"> </span><span class="n">labeller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">label_both</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="w"> </span><span class="s2">"Matrículas em disciplinas de CC sem aprovação"</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Período Relativo"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_y_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">30</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">coord_flip</span><span class="p">()</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
+<p><img src="/AD2figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
 
 <ul>
   <li>No segundo gráfico é possível observar a concentração dos pontos, sendo as regiões de manchas mais escuras aquelas de maior concetração.</li>
@@ -153,7 +153,7 @@
 
 </span><span class="n">corrplot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lower"</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Correlação de disciplinas práticas em CC"</span><span class="p">,</span><span class="w">  </span><span class="n">order</span><span class="o">=</span><span class="s2">"hclust"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">brewer.pal</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"PuOr"</span><span class="p">),</span><span class="w"> </span><span class="n">addCoef.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.col</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.srt</span><span class="o">=</span><span class="m">45</span><span class="p">,</span><span class="w"> </span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
+<p><img src="/AD2figure/source/lab-1-parte-3/2017-05-15-lab-1-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
 
 <p>O gráfico acima mostra a correlação das disciplinas em pares. O tamanho do círculo indica a força de correlação. A cor diz se a correlação é positiva ou negativa, além de também indicar sua força. Dividimos cada cor em três diferentes tons siginificando correlação fraca, média e forte; quanto mais próximo de 1 ou -1 e mais escura, mais forte. Analisando o gráfico podemos chegar as seguintes conclusões:</p>
 

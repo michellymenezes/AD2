@@ -11,7 +11,7 @@
 ">
 
     <link rel="stylesheet" href="/AD2/css/main.css">
-    <link rel="canonical" href="http://yourdomain.com/AD2/2017/05/lab-2-parte-3.html">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2018/02/lab-2-parte-3.html">
 </head>
 
 
@@ -58,7 +58,7 @@
 
   <header class="post-header">
     <h1 class="post-title">Laboratório 2 - Parte 3</h1>
-    <p class="post-meta">May 15, 2017</p>
+    <p class="post-meta">Feb 3, 2018</p>
   </header>
 
   <article class="post-content">
@@ -154,7 +154,7 @@
 
 </span><span class="n">corrplot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lower"</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Correlação de disciplinas"</span><span class="p">,</span><span class="w">  </span><span class="n">order</span><span class="o">=</span><span class="s2">"hclust"</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">brewer.pal</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"PuOr"</span><span class="p">),</span><span class="w"> </span><span class="n">addCoef.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.col</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="n">tl.srt</span><span class="o">=</span><span class="m">45</span><span class="p">,</span><span class="w"> </span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" /></p>
 
 <h2 id="modelo-de-regresso-ridge">Modelo de regressão Ridge</h2>
 
@@ -294,7 +294,7 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">ridge</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
 
 <p>Em seguida, realizamos a predição dos dados, mas agora utilizando os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
 
@@ -304,7 +304,7 @@
 
 </span><span class="n">ggplot</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" /></p>
 
 <p>O RMSE alto indica que o erro na predição foi alto. Ao utlizar a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.449.</p>
 
@@ -327,7 +327,7 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /></p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
 
@@ -364,7 +364,7 @@
 
 </span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" /></p>
 
 <p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.437.</p>
 
@@ -389,7 +389,7 @@
   </span><span class="n">geom_abline</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
   </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Observado x Previsão (validação)"</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" /></p>
 
 <p>Assim como nos gráficos, o fenômeno se repetiu para os valores de RSME. Ambos são altos e com quase o mesmo valor. Porém, o RMSE do modelo Lasso consegue atingir um menor valor. Podemos então considerar que o melhor modelo é o que utiliza da técnica Lasso. O melhor modelo é aquele que possui o RMSE mais baixo.</p>
 
@@ -409,7 +409,7 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">))</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
@@ -442,7 +442,7 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /></p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
 
@@ -479,7 +479,7 @@
 
 </span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17" /></p>
 
 <p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.454. Ao interpretar o resultado da função entendemos que houve um aumento no valor do RMSE e, consequentemente, uma piora no modelo.</p>
 
@@ -522,7 +522,7 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21" /></p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
 
@@ -559,13 +559,13 @@
 
 </span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-22-1.png" alt="plot of chunk unnamed-chunk-22" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-22-1.png" alt="plot of chunk unnamed-chunk-22" /></p>
 
 <p>Geramos uma representação gráfica com a importância das variáveis e mais abaixo estão os valores detalhados sobre a importância das mesmas. Vemos que Cálculo 2 continua sendo apresentada como a variável de maior importância, seguida por IC e agora Grafos. Temos apenas uma variável discartada que para o novo modelo foi LPT, apresentando overall igual a 0.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">))</span></code></pre></figure>
 
-<p><img src="/AD2/figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-23-1.png" alt="plot of chunk unnamed-chunk-23" /></p>
+<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-23-1.png" alt="plot of chunk unnamed-chunk-23" /></p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
