@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Laboratório 2 - Parte 2
+title: Uso de Regrassão Logística
 date: "`r Sys.time()`"
 published: true
 tags: [example1, example2]
@@ -14,6 +14,7 @@ library(corrplot)
 library(RColorBrewer)
 
 ```
+
 ## Apresentação dos dados
 
 Nesse laboratório utilizamos dados referentes aos alunos que já concluíram o curso de Ciência da Computação - UFCG. Nele se encontram, de cada aluno, todas as médias finais obtidas em cada disciplina (5-10), assim como o coeficiente de rendimento acadêmico (cra, ~4-10).

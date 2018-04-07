@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Laboratório 2 - Parte 3
+title: Uso de modelos de regressão com Ridge e Lasso
 date: "`r Sys.time()`"
 published: true
 tags: [example1, example2]

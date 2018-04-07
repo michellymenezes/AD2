@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Laboratório 2 - Parte 3</title>
+    <title>Uso de modelos de regressão com Ridge e Lasso</title>
     <meta name="description" content="Resultados dos laboratórios da disciplina.
 ">
 
     <link rel="stylesheet" href="/AD2/css/main.css">
-    <link rel="canonical" href="http://yourdomain.com/AD2/2018/02/lab-2-parte-3.html">
+    <link rel="canonical" href="http://yourdomain.com/AD2/2018/04/lab-2-parte-3.html">
 </head>
 
 
@@ -57,8 +57,8 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Laboratório 2 - Parte 3</h1>
-    <p class="post-meta">Feb 3, 2018</p>
+    <h1 class="post-title">Uso de modelos de regressão com Ridge e Lasso</h1>
+    <p class="post-meta">Apr 6, 2018</p>
   </header>
 
   <article class="post-content">
@@ -173,145 +173,39 @@
                </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">)</span><span class="w">
 </span><span class="p">)</span></code></pre></figure>
 
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 1 package is needed for this model and is not installed. (elasticnet). Would you like to try to install it now?</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error: Required package is missing</code></pre></figure>
+
 <p>Abaixo vemos a sequência de valores obtidos e uma representação gráfica do mesmo.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ridge</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">## Ridge Regression 
-## 
-## 511 samples
-##  12 predictor
-## 
-## Pre-processing: centered (12), scaled (12) 
-## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 459, 459, 459, 461, 460, 461, ... 
-## Resampling results across tuning parameters:
-## 
-##   lambda        RMSE       Rsquared 
-##   1.000000e-02  0.4702298  0.7088850
-##   1.321941e-02  0.4702420  0.7089405
-##   1.747528e-02  0.4702705  0.7090096
-##   2.310130e-02  0.4703295  0.7090939
-##   3.053856e-02  0.4704443  0.7091935
-##   4.037017e-02  0.4706593  0.7093062
-##   5.336699e-02  0.4710517  0.7094251
-##   7.054802e-02  0.4717539  0.7095363
-##   9.326033e-02  0.4729915  0.7096156
-##   1.232847e-01  0.4751422  0.7096254
-##   1.629751e-01  0.4788289  0.7095135
-##   2.154435e-01  0.4850543  0.7092155
-##   2.848036e-01  0.4953801  0.7086617
-##   3.764936e-01  0.5121245  0.7077907
-##   4.977024e-01  0.5384997  0.7065657
-##   6.579332e-01  0.5785481  0.7049890
-##   8.697490e-01  0.6367339  0.7031088
-##   1.149757e+00  0.7171769  0.7010140
-##   1.519911e+00  0.8227305  0.6988181
-##   2.009233e+00  0.9541925  0.6966382
-##   2.656088e+00  1.1098394  0.6945759
-##   3.511192e+00  1.2853530  0.6927046
-##   4.641589e+00  1.4741742  0.6910660
-##   6.135907e+00  1.6682948  0.6896735
-##   8.111308e+00  1.8593786  0.6885190
-##   1.072267e+01  2.0399445  0.6875807
-##   1.417474e+01  2.2042917  0.6868302
-##   1.873817e+01  2.3489455  0.6862375
-##   2.477076e+01  2.4726041  0.6857742
-##   3.274549e+01  2.5757280  0.6854146
-##   4.328761e+01  2.6599755  0.6851374
-##   5.722368e+01  2.7276572  0.6849245
-##   7.564633e+01  2.7813040  0.6847617
-##   1.000000e+02  2.8233754  0.6846374
-##   1.321941e+02  2.8560948  0.6845428
-##   1.747528e+02  2.8813763  0.6844709
-##   2.310130e+02  2.9008129  0.6844163
-##   3.053856e+02  2.9156984  0.6843749
-##   4.037017e+02  2.9270649  0.6843435
-##   5.336699e+02  2.9357246  0.6843197
-##   7.054802e+02  2.9423110  0.6843017
-##   9.326033e+02  2.9473137  0.6842881
-##   1.232847e+03  2.9511099  0.6842777
-##   1.629751e+03  2.9539883  0.6842699
-##   2.154435e+03  2.9561696  0.6842640
-##   2.848036e+03  2.9578219  0.6842595
-##   3.764936e+03  2.9590731  0.6842561
-##   4.977024e+03  2.9600203  0.6842536
-##   6.579332e+03  2.9607373  0.6842516
-##   8.697490e+03  2.9612799  0.6842502
-##   1.149757e+04  2.9616904  0.6842491
-##   1.519911e+04  2.9620011  0.6842482
-##   2.009233e+04  2.9622362  0.6842476
-##   2.656088e+04  2.9624140  0.6842471
-##   3.511192e+04  2.9625485  0.6842468
-##   4.641589e+04  2.9626503  0.6842465
-##   6.135907e+04  2.9627273  0.6842463
-##   8.111308e+04  2.9627856  0.6842461
-##   1.072267e+05  2.9628296  0.6842460
-##   1.417474e+05  2.9628630  0.6842459
-##   1.873817e+05  2.9628882  0.6842458
-##   2.477076e+05  2.9629073  0.6842458
-##   3.274549e+05  2.9629217  0.6842457
-##   4.328761e+05  2.9629326  0.6842457
-##   5.722368e+05  2.9629409  0.6842457
-##   7.564633e+05  2.9629471  0.6842457
-##   1.000000e+06  2.9629518  0.6842457
-##   1.321941e+06  2.9629554  0.6842457
-##   1.747528e+06  2.9629581  0.6842456
-##   2.310130e+06  2.9629602  0.6842456
-##   3.053856e+06  2.9629617  0.6842456
-##   4.037017e+06  2.9629629  0.6842456
-##   5.336699e+06  2.9629638  0.6842456
-##   7.054802e+06  2.9629644  0.6842456
-##   9.326033e+06  2.9629650  0.6842456
-##   1.232847e+07  2.9629653  0.6842456
-##   1.629751e+07  2.9629656  0.6842456
-##   2.154435e+07  2.9629658  0.6842456
-##   2.848036e+07  2.9629660  0.6842456
-##   3.764936e+07  2.9629661  0.6842456
-##   4.977024e+07  2.9629662  0.6842456
-##   6.579332e+07  2.9629663  0.6842456
-##   8.697490e+07  2.9629664  0.6842456
-##   1.149757e+08  2.9629664  0.6842456
-##   1.519911e+08  2.9629664  0.6842456
-##   2.009233e+08  2.9629665  0.6842456
-##   2.656088e+08  2.9629665  0.6842456
-##   3.511192e+08  2.9629665  0.6842456
-##   4.641589e+08  2.9629665  0.6842456
-##   6.135907e+08  2.9629665  0.6842456
-##   8.111308e+08  2.9629665  0.6842456
-##   1.072267e+09  2.9629665  0.6842456
-##   1.417474e+09  2.9629665  0.6842456
-##   1.873817e+09  2.9629665  0.6842456
-##   2.477076e+09  2.9629665  0.6842456
-##   3.274549e+09  2.9629665  0.6842456
-##   4.328761e+09  2.9629665  0.6842456
-##   5.722368e+09  2.9629665  0.6842456
-##   7.564633e+09  2.9629665  0.6842456
-##   1.000000e+10  2.9629665  0.6842456
-## 
-## RMSE was used to select the optimal model using  the smallest value.
-## The final value used for the model was lambda = 0.01.</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): objeto 'ridge' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">ridge</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in plot(ridge): objeto 'ridge' não encontrado</code></pre></figure>
 
 <p>Em seguida, realizamos a predição dos dados, mas agora utilizando os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ridge.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">ridge</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ridge.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">ridge</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span></code></pre></figure>
 
-</span><span class="n">ridge.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in predict(ridge, dados_validacao[, 2:14]): objeto 'ridge' não encontrado</code></pre></figure>
 
-</span><span class="n">ggplot</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ridge.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in data.frame(pred = ridge.pred, obs = dados_validacao$cra): objeto 'ridge.pred' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in ggplot(ridge.pred, aes(x = pred, y = obs)): objeto 'ridge.pred' não encontrado</code></pre></figure>
 
 <p>O RMSE alto indica que o erro na predição foi alto. Ao utlizar a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.449.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
-##    0.449    0.665</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in defaultSummary(ridge.pred): objeto 'ridge.pred' não encontrado</code></pre></figure>
 
 <h2 id="modelo-de-regresso-lasso">Modelo de regressão Lasso</h2>
 
@@ -323,85 +217,77 @@
                </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">)</span><span class="w">
 </span><span class="p">)</span></code></pre></figure>
 
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 1 package is needed for this model and is not installed. (elasticnet). Would you like to try to install it now?</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error: Required package is missing</code></pre></figure>
+
 <p>O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in plot(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">## The lasso 
-## 
-## 511 samples
-##  12 predictor
-## 
-## Pre-processing: centered (12), scaled (12) 
-## Resampling: Bootstrapped (25 reps) 
-## Summary of sample sizes: 511, 511, 511, 511, 511, 511, ... 
-## Resampling results across tuning parameters:
-## 
-##   fraction   RMSE       Rsquared 
-##   0.1000000  0.8141437  0.5276665
-##   0.1888889  0.7557930  0.5766531
-##   0.2777778  0.7032861  0.6194808
-##   0.3666667  0.6550835  0.6513060
-##   0.4555556  0.6108729  0.6726158
-##   0.5444444  0.5717756  0.6873726
-##   0.6333333  0.5381594  0.6989018
-##   0.7222222  0.5107670  0.7071166
-##   0.8111111  0.4906253  0.7129157
-##   0.9000000  0.4793249  0.7158749
-## 
-## RMSE was used to select the optimal model using  the smallest value.
-## The final value used for the model was fraction = 0.9.</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): objeto 'lasso' não encontrado</code></pre></figure>
 
 <p>Para realizar a predição dos dados também utilizamos os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span></code></pre></figure>
 
-</span><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in predict(lasso, dados_validacao[, 2:14]): objeto 'lasso' não encontrado</code></pre></figure>
 
-</span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in data.frame(pred = lasso.pred, obs = dados_validacao$cra): objeto 'lasso.pred' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in ggplot(lasso.pred, aes(x = pred, y = obs)): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.437.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
-##    0.437    0.663</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in defaultSummary(lasso.pred): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <h2 id="comparao-de-modelos">Comparação de modelos</h2>
 
 <p>Realizamos a comparação de modelos com base nos valores obtidos no RMSE. Quanto mais baixo o valor, melhor. Abaixo temos os gráficos mostrados anteriormente, agora lado a lado para uma melhor comparação.Vemos que o comportamento nos dados de validação é bem semelhante, os gráficos gerados não apresentam uma diferença perceptível muito significante.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">compare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ridge.pred</span><span class="w">
-</span><span class="n">compare</span><span class="o">$</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Ridge"</span><span class="w">
-</span><span class="n">lasso.pred</span><span class="o">$</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Lasso"</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">compare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ridge.pred</span></code></pre></figure>
 
-</span><span class="n">compare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">compare</span><span class="p">,</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): objeto 'ridge.pred' não encontrado</code></pre></figure>
 
-</span><span class="n">ggplot</span><span class="p">(</span><span class="n">compare</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">compare</span><span class="o">$</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Ridge"</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in compare$model &lt;- "Ridge": objeto 'compare' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="o">$</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Lasso"</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in lasso.pred$model &lt;- "Lasso": objeto 'lasso.pred' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">compare</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">compare</span><span class="p">,</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in rbind(compare, lasso.pred): objeto 'compare' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">compare</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
   </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
   </span><span class="n">facet_grid</span><span class="p">(</span><span class="n">.</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">model</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
   </span><span class="n">geom_abline</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
   </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Observado x Previsão (validação)"</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in ggplot(compare, aes(x = pred, y = obs)): objeto 'compare' não encontrado</code></pre></figure>
 
 <p>Assim como nos gráficos, o fenômeno se repetiu para os valores de RSME. Ambos são altos e com quase o mesmo valor. Porém, o RMSE do modelo Lasso consegue atingir um menor valor. Podemos então considerar que o melhor modelo é o que utiliza da técnica Lasso. O melhor modelo é aquele que possui o RMSE mais baixo.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">ridge.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
-##    0.449    0.665</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in defaultSummary(ridge.pred): objeto 'ridge.pred' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
-##    0.437    0.663</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in defaultSummary(lasso.pred): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <h2 id="importncia-de-variveis-no-modelo-lasso">Importância de variáveis no modelo Lasso</h2>
 
@@ -409,25 +295,11 @@
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">))</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in varImp(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">## loess r-squared variable importance
-## 
-##           Overall
-## Cálculo.2 100.000
-## IC         41.837
-## P2         25.549
-## Discreta   23.305
-## P1         18.968
-## Grafos     17.809
-## Vetorial   14.513
-## Cálculo.1  13.001
-## LP1        12.518
-## LP2         8.069
-## LPT         3.667
-## Física.3    0.000</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in varImp(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <h2 id="re-treino-de-modelo-lasso-com-dados-de-validao">Re-treino de modelo Lasso com dados de validação</h2>
 
@@ -438,55 +310,39 @@
                 </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
                </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">))</span></code></pre></figure>
 
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 1 package is needed for this model and is not installed. (elasticnet). Would you like to try to install it now?</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error: Required package is missing</code></pre></figure>
+
 <p>O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in plot(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">## The lasso 
-## 
-## 37 samples
-## 12 predictors
-## 
-## Pre-processing: centered (12), scaled (12) 
-## Resampling: Bootstrapped (25 reps) 
-## Summary of sample sizes: 37, 37, 37, 37, 37, 37, ... 
-## Resampling results across tuning parameters:
-## 
-##   fraction   RMSE       Rsquared 
-##   0.1000000  0.5702018  0.6457216
-##   0.1888889  0.5076296  0.6046636
-##   0.2777778  0.4768178  0.5827288
-##   0.3666667  0.4624886  0.5785330
-##   0.4555556  0.4655663  0.5696089
-##   0.5444444  0.4835833  0.5538252
-##   0.6333333  0.5053069  0.5392726
-##   0.7222222  0.5311599  0.5230208
-##   0.8111111  0.5608953  0.5000516
-##   0.9000000  0.5913489  0.4724158
-## 
-## RMSE was used to select the optimal model using  the smallest value.
-## The final value used for the model was fraction = 0.3666667.</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): objeto 'lasso' não encontrado</code></pre></figure>
 
 <p>Em seguida, a realização de predição utilizando os mesmos dados. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span></code></pre></figure>
 
-</span><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in predict(lasso, dados_validacao[, 2:14]): objeto 'lasso' não encontrado</code></pre></figure>
 
-</span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in data.frame(pred = lasso.pred, obs = dados_validacao$cra): objeto 'lasso.pred' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in ggplot(lasso.pred, aes(x = pred, y = obs)): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.454. Ao interpretar o resultado da função entendemos que houve um aumento no valor do RMSE e, consequentemente, uma piora no modelo.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
-##    0.454    0.674</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in defaultSummary(lasso.pred): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <h2 id="tentativa-de-melhora-no-modelo">Tentativa de melhora no modelo</h2>
 
@@ -518,79 +374,49 @@
                 </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
                </span><span class="n">preProcess</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'center'</span><span class="p">,</span><span class="w"> </span><span class="s1">'scale'</span><span class="p">))</span></code></pre></figure>
 
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## 1 package is needed for this model and is not installed. (elasticnet). Would you like to try to install it now?</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error: Required package is missing</code></pre></figure>
+
 <p>O gráfico abaixo ilustra os 10 valores obtidos para fraction e a relação com seus respectivos RMSE. Em seguida os mesmos valores em detalhes.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in plot(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">## The lasso 
-## 
-## 511 samples
-##  12 predictor
-## 
-## Pre-processing: centered (12), scaled (12) 
-## Resampling: Bootstrapped (25 reps) 
-## Summary of sample sizes: 511, 511, 511, 511, 511, 511, ... 
-## Resampling results across tuning parameters:
-## 
-##   fraction   RMSE       Rsquared 
-##   0.1000000  0.8150713  0.4021364
-##   0.1888889  0.7729049  0.4584215
-##   0.2777778  0.7338854  0.4913313
-##   0.3666667  0.6982370  0.5111362
-##   0.4555556  0.6666010  0.5237566
-##   0.5444444  0.6395067  0.5332335
-##   0.6333333  0.6172118  0.5403274
-##   0.7222222  0.5999298  0.5463035
-##   0.8111111  0.5881088  0.5508598
-##   0.9000000  0.5820381  0.5540132
-## 
-## RMSE was used to select the optimal model using  the smallest value.
-## The final value used for the model was fraction = 0.9.</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): objeto 'lasso' não encontrado</code></pre></figure>
 
 <p>Em seguida, a realização de predição utilizando os dados de validação. Abaixo temos um gráfico representando a validação do modelo, incluindo a “linha preditora” e resíduos.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_validacao</span><span class="p">[,</span><span class="m">2</span><span class="o">:</span><span class="m">14</span><span class="p">])</span></code></pre></figure>
 
-</span><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in predict(lasso, dados_validacao[, 2:14]): objeto 'lasso' não encontrado</code></pre></figure>
 
-</span><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lasso.pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_validacao</span><span class="o">$</span><span class="n">cra</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-22-1.png" alt="plot of chunk unnamed-chunk-22" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in data.frame(pred = lasso.pred, obs = dados_validacao$cra): objeto 'lasso.pred' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ggplot</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obs</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_jitter</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="m">0.2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_abline</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"darkred"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"Previsão x Observado (validação)"</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in ggplot(lasso.pred, aes(x = pred, y = obs)): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <p>Geramos uma representação gráfica com a importância das variáveis e mais abaixo estão os valores detalhados sobre a importância das mesmas. Vemos que Cálculo 2 continua sendo apresentada como a variável de maior importância, seguida por IC e agora Grafos. Temos apenas uma variável discartada que para o novo modelo foi LPT, apresentando overall igual a 0.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">))</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-2-parte-3/2017-05-15-lab-2-parte-3/unnamed-chunk-23-1.png" alt="plot of chunk unnamed-chunk-23" /></p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in varImp(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">varImp</span><span class="p">(</span><span class="n">lasso</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">## loess r-squared variable importance
-## 
-##           Overall
-## Cálculo.2  100.00
-## IC          65.81
-## Grafos      57.15
-## Vetorial    54.07
-## P2          48.15
-## Discreta    41.75
-## P1          29.17
-## Cálculo.1   28.00
-## LP1         23.17
-## Física.3    22.91
-## LP2         20.43
-## LPT          0.00</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in varImp(lasso): objeto 'lasso' não encontrado</code></pre></figure>
 
 <p>Utilizando a função <em>round</em> é fornecido que o RMSE obtido no modelo Ridge foi igual a 0.411. Ao interpretar o resultado da função entendemos que houve uma diminuição no valor do RMSE e, consequentemente, uma melhora no modelo.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="nf">round</span><span class="p">(</span><span class="n">defaultSummary</span><span class="p">(</span><span class="n">lasso.pred</span><span class="p">),</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##     RMSE Rsquared 
-##    0.411    0.670</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in defaultSummary(lasso.pred): objeto 'lasso.pred' não encontrado</code></pre></figure>
 
 <h2 id="gerando-dados-de-predio">Gerando dados de predição</h2>
 
@@ -614,17 +440,20 @@
 ## 6 7.4       7.0      7.6 9.4 5.2    8.4      8.8</code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados_teste</span><span class="o">$</span><span class="n">cra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
-</span><span class="n">dados_teste</span><span class="o">$</span><span class="n">cra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_teste</span><span class="p">)</span><span class="w">
-</span><span class="n">dados_teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_teste</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="s2">"matricula"</span><span class="p">,</span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
+</span><span class="n">dados_teste</span><span class="o">$</span><span class="n">cra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">lasso</span><span class="p">,</span><span class="w"> </span><span class="n">dados_teste</span><span class="p">)</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">## Error in predict(lasso, dados_teste): objeto 'lasso' não encontrado</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dados_teste</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dados_teste</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="s2">"matricula"</span><span class="p">,</span><span class="s2">"cra"</span><span class="p">)]</span><span class="w">
 </span><span class="n">head</span><span class="p">(</span><span class="n">dados_teste</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">##                          matricula      cra
-## 1 037119c4740aa04d14742993e4aab789 8.309662
-## 2 0402a824ba0c87f73209cdb49b5072be 7.380805
-## 3 075d778a8444ef224757557479320148 6.478184
-## 4 09b9a1b335be033c236add2ba699c13f 6.809691
-## 5 0d3c0ddcdd2a97627575c27b5d1a058a 7.816722
-## 6 107f352e7c2d881c0f5f72a4584cd8fd 7.552772</code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">##                          matricula cra
+## 1 037119c4740aa04d14742993e4aab789  NA
+## 2 0402a824ba0c87f73209cdb49b5072be  NA
+## 3 075d778a8444ef224757557479320148  NA
+## 4 09b9a1b335be033c236add2ba699c13f  NA
+## 5 0d3c0ddcdd2a97627575c27b5d1a058a  NA
+## 6 107f352e7c2d881c0f5f72a4584cd8fd  NA</code></pre></figure>
 
 
   </article>

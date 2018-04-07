@@ -146,7 +146,7 @@
 ## 3 0134dc0b387e4dff42a0d2b45423564b
 ## 4 0189d03cbf10376083a4a70ec39dab90
 ## 5 01cb852b7b7bc76cc99e7f32376d7166
-## 6 02188304b2556b3bd0a6a4f4bc2f1f4d
+## 6 02188304b2556b3bd0a6a4f4bc2/f1f4d
 ##   Álgebra.Vetorial.e.Geometria.Analítica
 ## 1                                    9.4
 ## 2                                    1.0
@@ -327,7 +327,7 @@
 
 </span><span class="n">plot</span><span class="p">(</span><span class="n">model.ridge</span><span class="p">,</span><span class="w"> </span><span class="n">xvar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lambda"</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13" /></p>
+<p><img src="/AD2/figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13" /></p>
 
 <p>Para selecionar um modelo ridge executamos a função <strong>cv.glmnet</strong> que fará validação cruzada. Na parte superior do gráfico é possível ver quantos coeficientes de variáveis não-zero estão no modelo. Há todas as 7 variáveis no modelo, 6 variáveis e o intercept, e nenhum coeficiente é zero.</p>
 
@@ -337,7 +337,7 @@
 
 </span><span class="n">plot</span><span class="p">(</span><span class="n">cv.ridge</span><span class="p">,</span><span class="w"> </span><span class="n">sub</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
+<p><img src="/AD2/figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /></p>
 
 <h5 id="lasso">Lasso</h5>
 
@@ -351,13 +351,13 @@
                 </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'binomial'</span><span class="p">)</span><span class="w">
 </span><span class="n">plot</span><span class="p">(</span><span class="n">model.lasso</span><span class="p">,</span><span class="w"> </span><span class="n">xvar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lambda"</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-15-1.png" alt="plot of chunk unnamed-chunk-15" /></p>
+<p><img src="/AD2/figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-15-1.png" alt="plot of chunk unnamed-chunk-15" /></p>
 
 <p>O plot tem várias opções, o desvio, por exemplo, está relacionado fraction deviance explained, que é equivalente a r-quadrado em regressão. Notamos que muito do r-quadrado foi explicado por basicamente duas variáveis, representadas pelas cores verde e azul claro.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">model.lasso</span><span class="p">,</span><span class="n">xvar</span><span class="o">=</span><span class="s2">"dev"</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /></p>
+<p><img src="/AD2/figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /></p>
 
 <p>Coeficientes podem ser extraídos do glmmod. Aqui mostrado com 2 variáveis selecionadas. sendo elas Introdução.à.Computação e Leitura.e.Produção.de.Textos. Decidimos então que o melhor modelo para regressão logística será composto apenas por essas duas variáveis intependentes.</p>
 
@@ -387,7 +387,7 @@
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">cv.lasso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cv.glmnet</span><span class="p">(</span><span class="n">model.matrix</span><span class="p">(</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="w"> </span><span class="o">-</span><span class="n">MAT_ALU_MATRICULA</span><span class="w"> </span><span class="o">-</span><span class="n">evadiu</span><span class="p">,</span><span class="w"> </span><span class="n">dados.treino</span><span class="p">),</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">dados.treino</span><span class="o">$</span><span class="n">evadiu</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="o">=</span><span class="s2">"binomial"</span><span class="p">)</span><span class="w">
 </span><span class="n">plot</span><span class="p">(</span><span class="n">cv.lasso</span><span class="p">)</span></code></pre></figure>
 
-<p><img src="/AD2figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18" /></p>
+<p><img src="/AD2/figure/source/lab-3-parte-2/2017-05-15-lab-3-parte-2/unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18" /></p>
 
 <p>E definimos o <strong>novo melhor modelo de regressão logística</strong>.</p>
 
